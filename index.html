@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#030303">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FIM">
+    <meta name="description" content="Découvre tes goûts culinaires et trouve ton menu parfait">
+
+```
+<!-- PWA -->
+<link rel="manifest" href="data:application/json,%7B%22name%22%3A%22FIM%20-%20Trouve%20ton%20go%C3%BBt%22%2C%22short_name%22%3A%22FIM%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23030303%22%2C%22theme_color%22%3A%22%23030303%22%2C%22orientation%22%3A%22portrait%22%7D">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23030303' width='100' height='100' rx='20'/><text x='50' y='68' text-anchor='middle' font-size='45' font-family='serif' fill='%23C9A962'>FIM</text></svg>">
+
+<title>FIM - Trouve ton goût</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Preload images -->
+<link rel="preload" as="image" href="https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?w=800&h=700&fit=crop&q=80">
+<link rel="preload" as="image" href="https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=800&h=700&fit=crop&q=80">
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+    }
+
+    :root {
+        --bg-deep: #030303;
+        --bg-card: rgba(15, 15, 18, 0.92);
+        --bg-glass: rgba(255, 255, 255, 0.02);
+        --accent-gold: #C9A962;
+        --accent-copper: #D4A574;
+        --accent-cream: #F5E6D3;
+        --accent-glow: #E8B866;
+        --text-primary: #FAFAFA;
+        --text-secondary: rgba(255, 255, 255, 0.45);
+        --gradient-luxury: linear-gradient(135deg, #E8B866 0%, #C9A962 50%, #A68B4B 100%);
+        --glass-border: rgba(255, 255, 255, 0.06);
+        --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+        --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+        --safe-top: env(safe-area-inset-top);
+        --safe-bottom: env(safe-area-inset-bottom);
+    }
+
+    html {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    body {
+        font-family: 'Outfit', sans-serif;
+        background: var(--bg-deep);
+        color: var(--text-primary);
+        height: 100%;
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        position: fixed;
+        width: 100%;
+        overscroll-behavior: none;
+    }
+
+    /* ===== APP CONTAINER ===== */
+    .app {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* ===== AMBIENT BACKGROUND ===== */
+    .ambient-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(100px);
+        will-change: transform;
+        transform: translateZ(0);
+    }
+
+    .orb-1 {
+        width: 70vmax;
+        height: 70vmax;
+        background: radial-gradient(circle, rgba(201, 169, 98, 0.22) 0%, transparent 70%);
+        top: -30vmax;
+        left: -25vmax;
+        animation: orbDrift1 30s ease-in-out infinite;
+    }
+
+    .orb-2 {
+        width: 60vmax;
+        height: 60vmax;
+        background: radial-gradient(circle, rgba(212, 165, 116, 0.18) 0%, transparent 70%);
+        bottom: -25vmax;
+        right: -20vmax;
+        animation: orbDrift2 35s ease-in-out infinite;
+    }
+
+    .orb-3 {
+        width: 50vmax;
+        height: 50vmax;
+        background: radial-gradient(circle, rgba(232, 184, 102, 0.12) 0%, transparent 70%);
+        top: 35%;
+        left: 25%;
+        animation: orbDrift3 25s ease-in-out infinite;
+    }
+
+    @keyframes orbDrift1 {
+        0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+        33% { transform: translate3d(40px, 25px, 0) scale(1.08); }
+        66% { transform: translate3d(-25px, 40px, 0) scale(0.95); }
+    }
+
+    @keyframes orbDrift2 {
+        0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+        33% { transform: translate3d(-35px, -25px, 0) scale(0.92); }
+        66% { transform: translate3d(25px, -15px, 0) scale(1.05); }
+    }
+
+    @keyframes orbDrift3 {
+        0%, 100% { transform: translate3d(-50%, -50%, 0) scale(1); }
+        50% { transform: translate3d(calc(-50% + 35px), calc(-50% + 25px), 0) scale(1.12); }
+    }
+
+    .grain-overlay {
+        position: fixed;
+        top: -50%;
+        left: -50%;
+        right: -50%;
+        bottom: -50%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        opacity: 0.015;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    /* ===== PAGES ===== */
+    .page {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s var(--ease-smooth), visibility 0.5s, transform 0.5s var(--ease-smooth);
+        z-index: 10;
+        transform: scale(0.96);
+        padding-top: var(--safe-top);
+        padding-bottom: var(--safe-bottom);
+    }
+
+    .page.active {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1);
+    }
+
+    .page.exit {
+        opacity: 0;
+        transform: scale(1.04);
+    }
+
+    /* ===== HOME PAGE ===== */
+    .home-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 50px 28px 35px;
+        max-width: 500px;
+        margin: 0 auto;
+        width: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .logo-section {
+        text-align: center;
+        margin-bottom: 35px;
+        opacity: 0;
+        animation: logoReveal 1.2s var(--ease-smooth) 0.1s forwards;
+    }
+
+    @keyframes logoReveal {
+        0% { opacity: 0; transform: translate3d(0, -40px, 0) scale(0.85); filter: blur(15px); }
+        100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+    }
+
+    .logo {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(80px, 20vw, 110px);
+        font-weight: 600;
+        letter-spacing: -5px;
+        background: var(--gradient-luxury);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        display: inline-block;
+        line-height: 0.85;
+    }
+
+    .logo::before {
+        content: 'FIM';
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: var(--gradient-luxury);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: blur(35px);
+        opacity: 0.5;
+        z-index: -1;
+    }
+
+    .tagline {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        letter-spacing: 7px;
+        text-transform: uppercase;
+        margin-top: 14px;
+    }
+
+    .hero-visual {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        min-height: 300px;
+        perspective: 1500px;
+        opacity: 0;
+        animation: heroFadeIn 1s var(--ease-smooth) 0.4s forwards;
+    }
+
+    @keyframes heroFadeIn {
+        from { opacity: 0; transform: translate3d(0, 20px, 0) scale(0.92); }
+        to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    }
+
+    .floating-cards {
+        position: relative;
+        width: 280px;
+        height: 350px;
+        transform-style: preserve-3d;
+    }
+
+    .preview-card {
+        position: absolute;
+        width: 230px;
+        height: 300px;
+        border-radius: 28px;
+        background: var(--bg-card);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        border: 1px solid var(--glass-border);
+        overflow: hidden;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(201, 169, 98, 0.06);
+        transition: all 0.9s var(--ease-smooth);
+        transform-style: preserve-3d;
+        will-change: transform;
+    }
+
+    .preview-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+        pointer-events: none;
+        border-radius: 28px 28px 0 0;
+    }
+
+    .preview-card:nth-child(1) {
+        transform: rotate3d(0, 1, 0.1, 18deg) rotate(-14deg) translate3d(-30px, 0, -70px);
+        z-index: 1;
+    }
+
+    .preview-card:nth-child(2) {
+        transform: rotate3d(0, 1, -0.1, 14deg) rotate(9deg) translate3d(30px, -18px, -35px);
+        z-index: 2;
+    }
+
+    .preview-card:nth-child(3) {
+        transform: rotate3d(0, 0, 1, -2deg) translate3d(0, 8px, 0);
+        z-index: 3;
+    }
+
+    .floating-cards:hover .preview-card:nth-child(1) {
+        transform: rotate3d(0, 1, 0.1, 28deg) rotate(-20deg) translate3d(-60px, 0, -100px) scale(0.9);
+    }
+
+    .floating-cards:hover .preview-card:nth-child(2) {
+        transform: rotate3d(0, 1, -0.1, 22deg) rotate(16deg) translate3d(60px, -30px, -60px) scale(0.9);
+    }
+
+    .floating-cards:hover .preview-card:nth-child(3) {
+        transform: rotate3d(0, 0, 1, 0deg) translate3d(0, -12px, 40px) scale(1.06);
+        box-shadow: 0 60px 120px rgba(0, 0, 0, 0.6), 0 0 100px rgba(201, 169, 98, 0.12);
+    }
+
+    .preview-card-img {
+        width: 100%;
+        height: 175px;
+        object-fit: cover;
+        transition: transform 0.7s var(--ease-smooth);
+    }
+
+    .floating-cards:hover .preview-card:nth-child(3) .preview-card-img {
+        transform: scale(1.08);
+    }
+
+    .preview-card-content {
+        padding: 18px 22px;
+    }
+
+    .preview-card-emoji {
+        font-size: 32px;
+        margin-bottom: 8px;
+    }
+
+    .preview-card-question {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 1.3;
+    }
+
+    .cta-section {
+        opacity: 0;
+        animation: ctaReveal 0.9s var(--ease-smooth) 0.7s forwards;
+        padding-bottom: 10px;
+    }
+
+    @keyframes ctaReveal {
+        from { opacity: 0; transform: translate3d(0, 40px, 0); }
+        to { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+
+    .cta-button {
+        width: 100%;
+        padding: 22px 36px;
+        border: none;
+        border-radius: 18px;
+        background: var(--gradient-luxury);
+        color: #080808;
+        font-family: 'Outfit', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        cursor: pointer;
+        transition: all 0.4s var(--ease-smooth);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 45px rgba(201, 169, 98, 0.28);
+        -webkit-appearance: none;
+        touch-action: manipulation;
+    }
+
+    .cta-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+        transition: left 0.6s var(--ease-smooth);
+    }
+
+    .cta-button::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, transparent 100%);
+        border-radius: 18px 18px 0 0;
+        pointer-events: none;
+    }
+
+    .cta-button:hover::before {
+        left: 100%;
+    }
+
+    .cta-button:active {
+        transform: scale(0.97);
+        transition: transform 0.1s;
+    }
+
+    .cta-text {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .cta-arrow {
+        font-size: 18px;
+        transition: transform 0.3s var(--ease-bounce);
+    }
+
+    .cta-button:hover .cta-arrow {
+        transform: translateX(5px);
+    }
+
+    .login-link {
+        text-align: center;
+        margin-top: 24px;
+        font-size: 14px;
+        color: var(--text-secondary);
+    }
+
+    .login-link a {
+        color: var(--accent-gold);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .features-preview {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 40px;
+        padding-top: 28px;
+        border-top: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .feature-item {
+        text-align: center;
+    }
+
+    .feature-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        background: var(--bg-glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin: 0 auto 12px;
+        transition: all 0.4s var(--ease-smooth);
+    }
+
+    .feature-item:active .feature-icon {
+        transform: scale(0.92);
+        background: rgba(201, 169, 98, 0.15);
+    }
+
+    .feature-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--text-secondary);
+        font-weight: 600;
+    }
+
+    /* ===== SWIPE PAGE ===== */
+    .swipe-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 24px 14px;
+        position: relative;
+        z-index: 10;
+        flex-shrink: 0;
+    }
+
+    .back-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        background: var(--bg-glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s var(--ease-smooth);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-appearance: none;
+        touch-action: manipulation;
+    }
+
+    .back-btn:active {
+        transform: scale(0.92);
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .progress-container {
+        flex: 1;
+        max-width: 140px;
+        margin: 0 18px;
+    }
+
+    .progress-bar {
+        height: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        overflow: visible;
+        position: relative;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: var(--gradient-luxury);
+        border-radius: 10px;
+        transition: width 0.7s var(--ease-smooth);
+        width: 10%;
+        position: relative;
+        box-shadow: 0 0 15px rgba(201, 169, 98, 0.4);
+    }
+
+    .progress-fill::after {
+        content: '';
+        position: absolute;
+        right: -5px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 14px;
+        height: 14px;
+        background: var(--accent-gold);
+        border-radius: 50%;
+        box-shadow: 0 0 15px var(--accent-gold), 0 0 30px var(--accent-gold);
+        animation: pulseGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseGlow {
+        0%, 100% { transform: translateY(-50%) scale(1); opacity: 1; }
+        50% { transform: translateY(-50%) scale(1.15); opacity: 0.8; }
+    }
+
+    .progress-text {
+        font-size: 10px;
+        color: var(--text-secondary);
+        text-align: center;
+        margin-top: 10px;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+    }
+
+    .streak-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 16px;
+        background: linear-gradient(135deg, rgba(232, 184, 102, 0.12) 0%, rgba(201, 169, 98, 0.06) 100%);
+        border: 1px solid rgba(232, 184, 102, 0.2);
+        border-radius: 30px;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--accent-glow);
+    }
+
+    .streak-fire {
+        display: inline-block;
+        animation: fireWiggle 0.4s ease-in-out infinite alternate;
+    }
+
+    @keyframes fireWiggle {
+        from { transform: rotate(-8deg) scale(1); }
+        to { transform: rotate(8deg) scale(1.1); }
+    }
+
+    .swipe-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 24px 10px;
+        position: relative;
+        overflow: visible;
+        perspective: 1800px;
+    }
+
+    .card-stack {
+        position: relative;
+        width: 100%;
+        max-width: 380px;
+        height: min(520px, 60vh);
+        transform-style: preserve-3d;
+    }
+
+    .swipe-card {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 32px;
+        background: var(--bg-card);
+        backdrop-filter: blur(50px);
+        -webkit-backdrop-filter: blur(50px);
+        border: 1px solid var(--glass-border);
+        overflow: hidden;
+        cursor: grab;
+        touch-action: pan-y;
+        user-select: none;
+        will-change: transform, opacity;
+        transform-style: preserve-3d;
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.55), 0 0 50px rgba(201, 169, 98, 0.04);
+    }
+
+    .swipe-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 100%);
+        pointer-events: none;
+        z-index: 5;
+        border-radius: 32px 32px 0 0;
+    }
+
+    .swipe-card:active {
+        cursor: grabbing;
+    }
+
+    .swipe-card.active-card {
+        z-index: 30;
+    }
+
+    .swipe-card.behind-1 {
+        z-index: 20;
+        transform: scale(0.93) translateY(22px) translateZ(-35px);
+        opacity: 0.75;
+        pointer-events: none;
+        filter: brightness(0.88);
+        transition: all 0.6s var(--ease-smooth);
+    }
+
+    .swipe-card.behind-2 {
+        z-index: 10;
+        transform: scale(0.86) translateY(44px) translateZ(-70px);
+        opacity: 0.45;
+        pointer-events: none;
+        filter: brightness(0.75);
+        transition: all 0.6s var(--ease-smooth);
+    }
+
+    .card-image-container {
+        position: relative;
+        width: 100%;
+        height: 58%;
+        overflow: hidden;
+    }
+
+    .card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        pointer-events: none;
+        transition: transform 0.6s var(--ease-smooth);
+    }
+
+    .swipe-card.active-card:hover .card-image {
+        transform: scale(1.05);
+    }
+
+    .card-image-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(180deg, transparent 0%, var(--bg-card) 100%);
+        pointer-events: none;
+    }
+
+    .card-content {
+        padding: 22px 28px 30px;
+        text-align: center;
+        position: relative;
+    }
+
+    .card-category {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 18px;
+        background: linear-gradient(135deg, rgba(201, 169, 98, 0.12) 0%, rgba(166, 139, 75, 0.06) 100%);
+        border: 1px solid rgba(201, 169, 98, 0.18);
+        border-radius: 30px;
+        font-size: 9px;
+        font-weight: 700;
+        color: var(--accent-gold);
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+        margin-bottom: 18px;
+    }
+
+    .card-category-dot {
+        width: 5px;
+        height: 5px;
+        background: var(--accent-gold);
+        border-radius: 50%;
+        animation: dotPulse 1.5s ease-in-out infinite;
+        box-shadow: 0 0 8px var(--accent-gold);
+    }
+
+    @keyframes dotPulse {
+        0%, 100% { opacity: 0.4; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.4); }
+    }
+
+    .card-question {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(26px, 7vw, 32px);
+        font-weight: 500;
+        line-height: 1.2;
+        color: var(--text-primary);
+        letter-spacing: -0.3px;
+    }
+
+    .swipe-indicator {
+        position: absolute;
+        top: 42%;
+        padding: 16px 30px;
+        border-radius: 16px;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 100;
+        text-transform: uppercase;
+        transform-origin: center;
+    }
+
+    .swipe-indicator.like {
+        right: 24px;
+        background: linear-gradient(135deg, #34C759 0%, #2DB550 100%);
+        color: white;
+        transform: translateY(-50%) rotate(12deg) scale(0.6);
+        box-shadow: 0 15px 40px rgba(52, 199, 89, 0.45);
+        transition: all 0.25s var(--ease-bounce);
+    }
+
+    .swipe-indicator.nope {
+        left: 24px;
+        background: linear-gradient(135deg, #FF453A 0%, #E63B30 100%);
+        color: white;
+        transform: translateY(-50%) rotate(-12deg) scale(0.6);
+        box-shadow: 0 15px 40px rgba(255, 69, 58, 0.45);
+        transition: all 0.25s var(--ease-bounce);
+    }
+
+    .swipe-indicator.visible {
+        opacity: 1;
+    }
+
+    .swipe-indicator.visible.like {
+        transform: translateY(-50%) rotate(12deg) scale(1);
+    }
+
+    .swipe-indicator.visible.nope {
+        transform: translateY(-50%) rotate(-12deg) scale(1);
+    }
+
+    .swipe-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 28px;
+        padding: 12px 24px 30px;
+        flex-shrink: 0;
+    }
+
+    .swipe-btn {
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        font-size: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s var(--ease-smooth);
+        -webkit-appearance: none;
+        touch-action: manipulation;
+    }
+
+    .swipe-btn.nope {
+        background: linear-gradient(145deg, rgba(255, 69, 58, 0.1) 0%, rgba(230, 59, 48, 0.05) 100%);
+        border: 2px solid rgba(255, 69, 58, 0.3);
+        color: #FF453A;
+        box-shadow: 0 12px 35px rgba(255, 69, 58, 0.18);
+    }
+
+    .swipe-btn.like {
+        background: linear-gradient(145deg, rgba(52, 199, 89, 0.1) 0%, rgba(45, 181, 80, 0.05) 100%);
+        border: 2px solid rgba(52, 199, 89, 0.3);
+        color: #34C759;
+        box-shadow: 0 12px 35px rgba(52, 199, 89, 0.18);
+    }
+
+    .swipe-btn:active {
+        transform: scale(0.88);
+        transition: transform 0.1s;
+    }
+
+    .swipe-btn.nope:active {
+        background: rgba(255, 69, 58, 0.2);
+    }
+
+    .swipe-btn.like:active {
+        background: rgba(52, 199, 89, 0.2);
+    }
+
+    .swipe-btn-icon {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* ===== RESULTS PAGE ===== */
+    .results-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 40px 28px 40px;
+        max-width: 500px;
+        margin: 0 auto;
+        width: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .results-header {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .results-emoji {
+        font-size: 85px;
+        margin-bottom: 24px;
+        opacity: 0;
+        animation: emojiExplode 0.7s var(--ease-bounce) 0.2s forwards;
+    }
+
+    @keyframes emojiExplode {
+        0% { transform: scale(0) rotate(-25deg); opacity: 0; }
+        50% { transform: scale(1.25) rotate(12deg); opacity: 1; }
+        75% { transform: scale(0.92) rotate(-4deg); }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .results-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(34px, 9vw, 42px);
+        font-weight: 600;
+        margin-bottom: 12px;
+        background: var(--gradient-luxury);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        opacity: 0;
+        animation: slideUp 0.6s var(--ease-smooth) 0.4s forwards;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(25px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .results-subtitle {
+        font-size: 15px;
+        color: var(--text-secondary);
+        opacity: 0;
+        animation: slideUp 0.6s var(--ease-smooth) 0.5s forwards;
+    }
+
+    .profile-card {
+        background: var(--bg-card);
+        backdrop-filter: blur(50px);
+        border: 1px solid var(--glass-border);
+        border-radius: 28px;
+        padding: 30px;
+        margin-bottom: 22px;
+        opacity: 0;
+        animation: cardReveal 0.7s var(--ease-smooth) 0.6s forwards;
+        position: relative;
+        overflow: hidden;
+    }
+
+    @keyframes cardReveal {
+        from { opacity: 0; transform: translateY(40px) scale(0.96); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .profile-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        background: linear-gradient(180deg, rgba(201, 169, 98, 0.06) 0%, transparent 100%);
+        pointer-events: none;
+    }
+
+    .profile-type {
+        font-size: 10px;
+        color: var(--accent-gold);
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+
+    .profile-name {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 30px;
+        font-weight: 600;
+        margin-bottom: 14px;
+        letter-spacing: -0.5px;
+        line-height: 1.1;
+    }
+
+    .profile-desc {
+        color: var(--text-secondary);
+        line-height: 1.7;
+        margin-bottom: 24px;
+        font-size: 14px;
+    }
+
+    .taste-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .taste-tag {
+        padding: 10px 18px;
+        background: linear-gradient(135deg, rgba(201, 169, 98, 0.1) 0%, rgba(166, 139, 75, 0.05) 100%);
+        border: 1px solid rgba(201, 169, 98, 0.18);
+        border-radius: 30px;
+        font-size: 13px;
+        color: var(--accent-cream);
+        font-weight: 500;
+        transition: all 0.3s var(--ease-smooth);
+    }
+
+    .taste-tag:active {
+        transform: scale(0.95);
+        background: rgba(201, 169, 98, 0.18);
+    }
+
+    .menu-preview {
+        background: var(--bg-card);
+        backdrop-filter: blur(50px);
+        border: 1px solid var(--glass-border);
+        border-radius: 28px;
+        padding: 30px;
+        opacity: 0;
+        animation: cardReveal 0.7s var(--ease-smooth) 0.75s forwards;
+    }
+
+    .menu-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 24px;
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 18px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        transition: all 0.3s var(--ease-smooth);
+    }
+
+    .menu-item:last-child {
+        border-bottom: none;
+    }
+
+    .menu-item:active {
+        background: rgba(255, 255, 255, 0.02);
+        margin: 0 -15px;
+        padding-left: 15px;
+        padding-right: 15px;
+        border-radius: 12px;
+    }
+
+    .menu-item-emoji {
+        font-size: 42px;
+        transition: transform 0.3s var(--ease-bounce);
+    }
+
+    .menu-item:active .menu-item-emoji {
+        transform: scale(1.15) rotate(-5deg);
+    }
+
+    .menu-item-details {
+        flex: 1;
+    }
+
+    .menu-item-name {
+        font-weight: 600;
+        margin-bottom: 5px;
+        font-size: 15px;
+    }
+
+    .menu-item-desc {
+        font-size: 12px;
+        color: var(--text-secondary);
+        line-height: 1.4;
+    }
+
+    .results-cta {
+        margin-top: 30px;
+        opacity: 0;
+        animation: cardReveal 0.7s var(--ease-smooth) 0.9s forwards;
+        padding-bottom: 20px;
+    }
+
+    .share-btn {
+        width: 100%;
+        padding: 18px;
+        border: 2px solid rgba(201, 169, 98, 0.3);
+        border-radius: 16px;
+        background: transparent;
+        color: var(--accent-gold);
+        font-family: 'Outfit', sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.4s var(--ease-smooth);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        -webkit-appearance: none;
+        touch-action: manipulation;
+    }
+
+    .share-btn:active {
+        transform: scale(0.97);
+        background: rgba(201, 169, 98, 0.1);
+    }
+
+    /* ===== CONFETTI ===== */
+    .confetti-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 1000;
+        overflow: hidden;
+    }
+
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        opacity: 0;
+    }
+
+    @keyframes confettiFall {
+        0% {
+            opacity: 1;
+            transform: translateY(-100%) rotate(0deg);
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(100vh) rotate(720deg);
+        }
+    }
+
+    /* ===== TOAST ===== */
+    .toast {
+        position: fixed;
+        bottom: 100px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: var(--bg-card);
+        backdrop-filter: blur(30px);
+        border: 1px solid var(--glass-border);
+        padding: 14px 24px;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text-primary);
+        opacity: 0;
+        transition: all 0.4s var(--ease-bounce);
+        z-index: 500;
+        pointer-events: none;
+    }
+
+    .toast.visible {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    /* ===== LOADING SKELETON ===== */
+    .skeleton {
+        background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+</style>
+```
+
+</head>
+<body>
+    <div class="app">
+        <!-- AMBIENT BACKGROUND -->
+        <div class="ambient-bg">
+            <div class="orb orb-1"></div>
+            <div class="orb orb-2"></div>
+            <div class="orb orb-3"></div>
+        </div>
+        <div class="grain-overlay"></div>
+
+```
+    <!-- CONFETTI CONTAINER -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- HOME PAGE -->
+    <div class="page active" id="homePage">
+        <div class="home-content">
+            <div class="logo-section">
+                <div class="logo">FIM</div>
+                <div class="tagline">Trouve ton goût</div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="floating-cards">
+                    <div class="preview-card">
+                        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500&h=400&fit=crop&q=80" alt="" class="preview-card-img" loading="lazy">
+                        <div class="preview-card-content">
+                            <div class="preview-card-emoji">🍝</div>
+                            <div class="preview-card-question">Les pâtes al dente ?</div>
+                        </div>
+                    </div>
+                    <div class="preview-card">
+                        <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&h=400&fit=crop&q=80" alt="" class="preview-card-img" loading="lazy">
+                        <div class="preview-card-content">
+                            <div class="preview-card-emoji">🍕</div>
+                            <div class="preview-card-question">Pizza maison ?</div>
+                        </div>
+                    </div>
+                    <div class="preview-card">
+                        <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=500&h=400&fit=crop&q=80" alt="" class="preview-card-img" loading="lazy">
+                        <div class="preview-card-content">
+                            <div class="preview-card-emoji">🥗</div>
+                            <div class="preview-card-question">Salades fraîches ?</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta-section">
+                <button class="cta-button" onclick="navigateTo('swipe')">
+                    <span class="cta-text">
+                        Découvrir mes goûts
+                        <span class="cta-arrow">→</span>
+                    </span>
+                </button>
+                <div class="login-link">
+                    Déjà inscrit ? <a href="#" onclick="showToast('Bientôt disponible !')">Se connecter</a>
+                </div>
+                <div class="features-preview">
+                    <div class="feature-item" onclick="showToast('Menu personnalisé selon tes goûts')">
+                        <div class="feature-icon">🎯</div>
+                        <div class="feature-label">Menu Perso</div>
+                    </div>
+                    <div class="feature-item" onclick="showToast('Grimpe dans les ligues !')">
+                        <div class="feature-icon">🏆</div>
+                        <div class="feature-label">Ligues</div>
+                    </div>
+                    <div class="feature-item" onclick="showToast('Partage tes recettes')">
+                        <div class="feature-icon">👥</div>
+                        <div class="feature-label">Communauté</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SWIPE PAGE -->
+    <div class="page" id="swipePage">
+        <div class="swipe-header">
+            <button class="back-btn" onclick="navigateTo('home')">←</button>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">1 / 10</div>
+            </div>
+            <div class="streak-badge">
+                <span class="streak-fire">🔥</span>
+                <span id="streakCount">3</span>
+            </div>
+        </div>
+
+        <div class="swipe-container">
+            <div class="card-stack" id="cardStack"></div>
+        </div>
+
+        <div class="swipe-buttons">
+            <button class="swipe-btn nope" onclick="swipeCard('left')">
+                <span class="swipe-btn-icon">✕</span>
+            </button>
+            <button class="swipe-btn like" onclick="swipeCard('right')">
+                <span class="swipe-btn-icon">♥</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- RESULTS PAGE -->
+    <div class="page" id="resultsPage">
+        <div class="results-content">
+            <div class="results-header">
+                <div class="results-emoji">🎉</div>
+                <h1 class="results-title">Profil découvert !</h1>
+                <p class="results-subtitle">Voici ce qu'on sait de tes goûts</p>
+            </div>
+
+            <div class="profile-card">
+                <div class="profile-type">Ton profil culinaire</div>
+                <div class="profile-name">L'Épicurien Audacieux</div>
+                <p class="profile-desc">Tu aimes les saveurs prononcées et tu n'as pas peur de sortir de ta zone de confort. Les plats traditionnels revisités te font vibrer.</p>
+                <div class="taste-tags">
+                    <span class="taste-tag">🌶️ Épicé</span>
+                    <span class="taste-tag">🧀 Fromager</span>
+                    <span class="taste-tag">🍖 Carnivore</span>
+                    <span class="taste-tag">🌍 Monde</span>
+                </div>
+            </div>
+
+            <div class="menu-preview">
+                <h2 class="menu-title">🍽️ Ton menu de la semaine</h2>
+                <div class="menu-item">
+                    <span class="menu-item-emoji">🥘</span>
+                    <div class="menu-item-details">
+                        <div class="menu-item-name">Tajine d'agneau aux abricots</div>
+                        <div class="menu-item-desc">Sucré-salé parfait pour ton palais</div>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-item-emoji">🍝</span>
+                    <div class="menu-item-details">
+                        <div class="menu-item-name">Cacio e Pepe relevé</div>
+                        <div class="menu-item-desc">Le classique italien avec du piment</div>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-item-emoji">🌮</span>
+                    <div class="menu-item-details">
+                        <div class="menu-item-name">Tacos al pastor maison</div>
+                        <div class="menu-item-desc">Street food mexicaine authentique</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-cta">
+                <button class="share-btn" onclick="shareProfile()">
+                    <span>📤</span>
+                    Partager mon profil
+                </button>
+                <button class="cta-button" onclick="navigateTo('home')">
+                    <span class="cta-text">
+                        Créer mon compte
+                        <span class="cta-arrow">→</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===== DATA =====
+    const questions = [
+        { category: "Goût", question: "Tu aimes les plats épicés ?", image: "https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?w=800&h=700&fit=crop&q=80" },
+        { category: "Texture", question: "Fan de fromage fondu ?", image: "https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=800&h=700&fit=crop&q=80" },
+        { category: "Cuisine", question: "La cuisine asiatique ?", image: "https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=800&h=700&fit=crop&q=80" },
+        { category: "Style", question: "Plutôt fait maison ?", image: "https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=800&h=700&fit=crop&q=80" },
+        { category: "Goût", question: "Le sucré-salé ?", image: "https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=800&h=700&fit=crop&q=80" },
+        { category: "Légume", question: "Les champignons ?", image: "https://images.unsplash.com/photo-1504545102780-26774c1bb073?w=800&h=700&fit=crop&q=80" },
+        { category: "Protéine", question: "Viande rouge ?", image: "https://images.unsplash.com/photo-1544025162-d76694265947?w=800&h=700&fit=crop&q=80" },
+        { category: "Cuisine", question: "La cuisine italienne ?", image: "https://images.unsplash.com/photo-1498579150354-977475b7ea0b?w=800&h=700&fit=crop&q=80" },
+        { category: "Dessert", question: "Chocolat noir ?", image: "https://images.unsplash.com/photo-1481391319762-47dff72954d9?w=800&h=700&fit=crop&q=80" },
+        { category: "Style", question: "Les plats en sauce ?", image: "https://images.unsplash.com/photo-1547592180-85f173990554?w=800&h=700&fit=crop&q=80" }
+    ];
+
+    // ===== STATE =====
+    let currentIndex = 0;
+    let answers = [];
+    let startX = 0;
+    let startY = 0;
+    let currentX = 0;
+    let isDragging = false;
+    let activeCard = null;
+    let streak = 3;
+
+    // ===== HAPTIC FEEDBACK =====
+    function haptic(type = 'light') {
+        if ('vibrate' in navigator) {
+            const patterns = {
+                light: [10],
+                medium: [20],
+                heavy: [30],
+                success: [10, 50, 20],
+                error: [30, 50, 30]
+            };
+            navigator.vibrate(patterns[type] || patterns.light);
+        }
+    }
+
+    // ===== NAVIGATION =====
+    function navigateTo(page) {
+        haptic('light');
+        
+        const pages = document.querySelectorAll('.page');
+        const currentPage = document.querySelector('.page.active');
+        const targetPage = document.getElementById(page + 'Page');
+        
+        if (currentPage) {
+            currentPage.classList.add('exit');
+            setTimeout(() => {
+                currentPage.classList.remove('active', 'exit');
+            }, 400);
+        }
+        
+        setTimeout(() => {
+            targetPage.classList.add('active');
+            
+            if (page === 'swipe') {
+                currentIndex = 0;
+                answers = [];
+                renderCards();
+            }
+            
+            if (page === 'results') {
+                triggerConfetti();
+                haptic('success');
+            }
+        }, 150);
+    }
+
+    // ===== TOAST =====
+    function showToast(message) {
+        haptic('light');
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('visible');
+        
+        setTimeout(() => {
+            toast.classList.remove('visible');
+        }, 2500);
+    }
+
+    // ===== CONFETTI =====
+    function triggerConfetti() {
+        const container = document.getElementById('confettiContainer');
+        const colors = ['#C9A962', '#E8B866', '#D4A574', '#34C759', '#FF453A', '#FFFFFF'];
+        
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+            confetti.style.width = (Math.random() * 8 + 6) + 'px';
+            confetti.style.height = confetti.style.width;
+            confetti.style.animation = `confettiFall ${Math.random() * 2 + 2}s ease-out forwards`;
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            
+            container.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 4000);
+        }
+    }
+
+    // ===== CARD RENDERING =====
+    function renderCards() {
+        const stack = document.getElementById('cardStack');
+        stack.innerHTML = '';
+        
+        // Preload next images
+        for (let i = currentIndex; i < Math.min(currentIndex + 3, questions.length); i++) {
+            const img = new Image();
+            img.src = questions[i].image;
+        }
+
+        for (let i = Math.min(currentIndex + 2, questions.length - 1); i >= currentIndex; i--) {
+            if (i >= questions.length) continue;
+            
+            const q = questions[i];
+            const card = document.createElement('div');
+            card.className = 'swipe-card';
+            card.dataset.index = i;
+            
+            if (i === currentIndex) {
+                card.classList.add('active-card');
+            } else if (i === currentIndex + 1) {
+                card.classList.add('behind-1');
+            } else if (i === currentIndex + 2) {
+                card.classList.add('behind-2');
+            }
+            
+            card.innerHTML = `
+                <div class="card-image-container">
+                    <img src="${q.image}" alt="" class="card-image" draggable="false">
+                    <div class="card-image-overlay"></div>
+                </div>
+                <div class="card-content">
+                    <span class="card-category">
+                        <span class="card-category-dot"></span>
+                        ${q.category}
+                    </span>
+                    <h2 class="card-question">${q.question}</h2>
+                </div>
+                <div class="swipe-indicator like">OUI</div>
+                <div class="swipe-indicator nope">NON</div>
+            `;
+
+            if (i === currentIndex) {
+                setupCardListeners(card);
+            }
+
+            stack.appendChild(card);
+        }
+
+        updateProgress();
+    }
+
+    // ===== TOUCH HANDLING =====
+    function setupCardListeners(card) {
+        activeCard = card;
+        
+        card.addEventListener('touchstart', handleDragStart, { passive: true });
+        card.addEventListener('mousedown', handleDragStart);
+    }
+
+    function handleDragStart(e) {
+        if (!activeCard) return;
+        
+        isDragging = true;
+        startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+        
+        activeCard.style.transition = 'none';
+        
+        document.addEventListener('touchmove', handleDrag, { passive: true });
+        document.addEventListener('mousemove', handleDrag);
+        document.addEventListener('touchend', handleDragEnd);
+        document.addEventListener('mouseup', handleDragEnd);
+    }
+
+    function handleDrag(e) {
+        if (!isDragging || !activeCard) return;
+        
+        currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        const currentY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+        
+        const diffX = currentX - startX;
+        const diffY = currentY - startY;
+        
+        const rotation = diffX * 0.06;
+        const tiltY = diffY * 0.015;
+        
+        activeCard.style.transform = `
+            translate3d(${diffX}px, ${diffY * 0.25}px, 0) 
+            rotate(${rotation}deg)
+            rotateX(${-tiltY}deg)
+        `;
+        
+        // Indicators
+        const likeIndicator = activeCard.querySelector('.swipe-indicator.like');
+        const nopeIndicator = activeCard.querySelector('.swipe-indicator.nope');
+        
+        const threshold = 50;
+        
+        if (diffX > threshold) {
+            likeIndicator.classList.add('visible');
+            likeIndicator.style.opacity = Math.min((diffX - threshold) / 80, 1);
+            nopeIndicator.classList.remove('visible');
+        } else if (diffX < -threshold) {
+            nopeIndicator.classList.add('visible');
+            nopeIndicator.style.opacity = Math.min((-diffX - threshold) / 80, 1);
+            likeIndicator.classList.remove('visible');
+        } else {
+            likeIndicator.classList.remove('visible');
+            nopeIndicator.classList.remove('visible');
+        }
+
+        // Animate behind cards
+        const progress = Math.min(Math.abs(diffX) / 180, 1);
+        const behind1 = document.querySelector('.swipe-card.behind-1');
+        const behind2 = document.querySelector('.swipe-card.behind-2');
+        
+        if (behind1) {
+            behind1.style.transition = 'none';
+            behind1.style.transform = `
+                scale(${0.93 + progress * 0.07}) 
+                translateY(${22 - progress * 22}px) 
+                translateZ(${-35 + progress * 35}px)
+            `;
+            behind1.style.opacity = 0.75 + progress * 0.25;
+            behind1.style.filter = `brightness(${0.88 + progress * 0.12})`;
+        }
+        
+        if (behind2) {
+            behind2.style.transition = 'none';
+            behind2.style.transform = `
+                scale(${0.86 + progress * 0.07}) 
+                translateY(${44 - progress * 22}px) 
+                translateZ(${-70 + progress * 35}px)
+            `;
+            behind2.style.opacity = 0.45 + progress * 0.3;
+            behind2.style.filter = `brightness(${0.75 + progress * 0.13})`;
+        }
+    }
+
+    function handleDragEnd() {
+        if (!isDragging || !activeCard) return;
+        
+        document.removeEventListener('touchmove', handleDrag);
+        document.removeEventListener('mousemove', handleDrag);
+        document.removeEventListener('touchend', handleDragEnd);
+        document.removeEventListener('mouseup', handleDragEnd);
+        
+        isDragging = false;
+        
+        const diffX = currentX - startX;
+        const swipeThreshold = 100;
+        
+        if (diffX > swipeThreshold) {
+            completeSwipe('right');
+        } else if (diffX < -swipeThreshold) {
+            completeSwipe('left');
+        } else {
+            // Spring back
+            haptic('light');
+            activeCard.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            activeCard.style.transform = '';
+            
+            activeCard.querySelector('.swipe-indicator.like').classList.remove('visible');
+            activeCard.querySelector('.swipe-indicator.nope').classList.remove('visible');
+            
+            resetBehindCards();
+        }
+    }
+
+    function resetBehindCards() {
+        const behind1 = document.querySelector('.swipe-card.behind-1');
+        const behind2 = document.querySelector('.swipe-card.behind-2');
+        
+        if (behind1) {
+            behind1.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            behind1.style.transform = '';
+            behind1.style.opacity = '';
+            behind1.style.filter = '';
+        }
+        
+        if (behind2) {
+            behind2.style.transition = 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+            behind2.style.transform = '';
+            behind2.style.opacity = '';
+            behind2.style.filter = '';
+        }
+    }
+
+    function swipeCard(direction) {
+        if (!activeCard) return;
+        
+        haptic('medium');
+        
+        const indicator = activeCard.querySelector(`.swipe-indicator.${direction === 'right' ? 'like' : 'nope'}`);
+        indicator.classList.add('visible');
+        indicator.style.opacity = 1;
+        
+        setTimeout(() => completeSwipe(direction), 120);
+    }
+
+    function completeSwipe(direction) {
+        if (!activeCard) return;
+        
+        haptic(direction === 'right' ? 'success' : 'light');
+        
+        const card = activeCard;
+        const multiplier = direction === 'right' ? 1 : -1;
+        
+        // Save answer
+        answers.push({
+            question: questions[currentIndex].question,
+            answer: direction === 'right'
+        });
+        
+        // Update streak
+        if (direction === 'right') {
+            streak++;
+            document.getElementById('streakCount').textContent = streak;
+        }
+        
+        // Animate out
+        card.style.transition = 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease';
+        card.style.transform = `translate3d(${multiplier * 140}%, 0, 0) rotate(${multiplier * 25}deg)`;
+        card.style.opacity = '0';
+        
+        // Promote behind cards
+        const behind1 = document.querySelector('.swipe-card.behind-1');
+        const behind2 = document.querySelector('.swipe-card.behind-2');
+        
+        if (behind1) {
+            behind1.style.transition = 'all 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+            behind1.style.transform = 'scale(1) translateY(0) translateZ(0)';
+            behind1.style.opacity = '1';
+            behind1.style.filter = 'brightness(1)';
+        }
+        
+        if (behind2) {
+            behind2.style.transition = 'all 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+            behind2.style.transform = 'scale(0.93) translateY(22px) translateZ(-35px)';
+            behind2.style.opacity = '0.75';
+            behind2.style.filter = 'brightness(0.88)';
+        }
+        
+        setTimeout(() => {
+            currentIndex++;
+            if (currentIndex >= questions.length) {
+                navigateTo('results');
+            } else {
+                renderCards();
+            }
+        }, 450);
+    }
+
+    function updateProgress() {
+        const progress = ((currentIndex + 1) / questions.length) * 100;
+        document.getElementById('progressFill').style.width = `${progress}%`;
+        document.getElementById('progressText').textContent = `${currentIndex + 1} / ${questions.length}`;
+    }
+
+    // ===== SHARE =====
+    function shareProfile() {
+        haptic('medium');
+        
+        if (navigator.share) {
+            navigator.share({
+                title: 'Mon profil FIM',
+                text: 'Je suis un Épicurien Audacieux ! Découvre ton profil culinaire sur FIM 🍽️',
+                url: window.location.href
+            }).catch(() => {
+                showToast('Partage annulé');
+            });
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText('Je suis un Épicurien Audacieux ! Découvre ton profil culinaire sur FIM 🍽️').then(() => {
+                showToast('Copié dans le presse-papier !');
+            });
+        }
+    }
+
+    // ===== PREVENT PULL TO REFRESH =====
+    document.body.addEventListener('touchmove', function(e) {
+        if (e.target.closest('.swipe-card')) {
+            // Allow card swiping
+        }
+    }, { passive: true });
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+        // Preload first images
+        questions.slice(0, 3).forEach(q => {
+            const img = new Image();
+            img.src = q.image;
+        });
+    });
+</script>
+```
+
+</body>
+</html>
