@@ -1,0 +1,75 @@
+// ===== QUESTIONS =====
+const QUESTIONS = [
+    { id: 'spicy', question: 'Tu aimes les plats épicés ?', emoji: '🌶️', tags: ['spicy'], image: 'https://images.unsplash.com/photo-1625220194771-7ebdea0b70b9?w=600&h=400&fit=crop' },
+    { id: 'garlic', question: 'Fan d\'ail ?', emoji: '🧄', tags: ['garlic'], image: 'https://images.unsplash.com/photo-1615477550927-6ec8445b4b11?w=600&h=400&fit=crop' },
+    { id: 'herbs', question: 'Herbes fraîches dans tes plats ?', emoji: '🌿', tags: ['herbs'], image: 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=600&h=400&fit=crop' },
+    { id: 'sweet_savory', question: 'Tu aimes le sucré-salé ?', emoji: '🍯', tags: ['sweet_savory'], image: 'https://images.unsplash.com/photo-1432139509613-5c4255815697?w=600&h=400&fit=crop' },
+    { id: 'lemon', question: 'Une touche de citron ?', emoji: '🍋', tags: ['lemon', 'fresh'], image: 'https://images.unsplash.com/photo-1590502593747-42a996133562?w=600&h=400&fit=crop' },
+    { id: 'cheese', question: 'Plus y\'a de fromage, mieux c\'est ?', emoji: '🧀', tags: ['cheese'], image: 'https://images.unsplash.com/photo-1452195100486-9cc805987862?w=600&h=400&fit=crop', requires: { extras: ['cheese'] } },
+    { id: 'crispy', question: 'Tu craques pour le croustillant ?', emoji: '🥓', tags: ['crispy'], image: 'https://images.unsplash.com/photo-1528607929212-2636ec44253e?w=600&h=400&fit=crop' },
+    { id: 'creamy', question: 'Sauces crémeuses ?', emoji: '🥛', tags: ['creamy'], image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=600&h=400&fit=crop' },
+    { id: 'sauce', question: 'Tu aimes quand ça sauce bien ?', emoji: '🍝', tags: ['sauce'], image: 'https://images.unsplash.com/photo-1598866594230-a7c12756260f?w=600&h=400&fit=crop' },
+    { id: 'italian', question: 'La cuisine italienne ?', emoji: '🇮🇹', tags: ['italian'], image: 'https://images.unsplash.com/photo-1498579150354-977475b7ea0b?w=600&h=400&fit=crop' },
+    { id: 'asian', question: 'Cuisine asiatique ?', emoji: '🥢', tags: ['asian'], image: 'https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=600&h=400&fit=crop' },
+    { id: 'mexican', question: 'Tacos, burritos... ça te parle ?', emoji: '🌮', tags: ['mexican', 'spicy'], image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&h=400&fit=crop' },
+    { id: 'indian', question: 'Curry et saveurs indiennes ?', emoji: '🍛', tags: ['indian', 'spicy'], image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&h=400&fit=crop' },
+    { id: 'japanese', question: 'Cuisine japonaise ?', emoji: '🍱', tags: ['japanese', 'asian'], image: 'https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?w=600&h=400&fit=crop' },
+    { id: 'thai', question: 'Pad thaï, tom yum... ?', emoji: '🇹🇭', tags: ['thai', 'asian', 'spicy'], image: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=600&h=400&fit=crop' },
+    { id: 'korean', question: 'Kimchi et BBQ coréen ?', emoji: '🇰🇷', tags: ['korean', 'asian', 'spicy'], image: 'https://images.unsplash.com/photo-1590301157890-4810ed352733?w=600&h=400&fit=crop' },
+    { id: 'steak', question: 'Un bon steak ?', emoji: '🥩', tags: ['meat', 'steak'], image: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&h=400&fit=crop', excludeDiet: ['vegetarian', 'vegan'] },
+    { id: 'chicken', question: 'Poulet rôti ?', emoji: '🍗', tags: ['meat', 'chicken'], image: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600&h=400&fit=crop', excludeDiet: ['vegetarian', 'vegan'] },
+    { id: 'salmon', question: 'Saumon ?', emoji: '🍣', tags: ['fish', 'salmon'], image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&h=400&fit=crop', excludeDiet: ['vegan'] },
+    { id: 'seafood', question: 'Fruits de mer ?', emoji: '🦐', tags: ['seafood'], image: 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=600&h=400&fit=crop', excludeDiet: ['vegetarian', 'vegan'] },
+    { id: 'tofu', question: 'Tofu ?', emoji: '🧊', tags: ['tofu', 'vegan'], image: 'https://images.unsplash.com/photo-1628679474900-eb53fa8d4e8a?w=600&h=400&fit=crop' },
+    { id: 'mushroom', question: 'Champignons ?', emoji: '🍄', tags: ['mushroom'], image: 'https://images.unsplash.com/photo-1504545102780-26774c1bb073?w=600&h=400&fit=crop' },
+    { id: 'avocado', question: 'Avocat ?', emoji: '🥑', tags: ['avocado', 'healthy'], image: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=600&h=400&fit=crop' },
+    { id: 'tomato', question: 'Tomates fraîches ?', emoji: '🍅', tags: ['tomato', 'fresh'], image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=600&h=400&fit=crop' },
+    { id: 'bbq', question: 'Sauce BBQ ?', emoji: '🔥', tags: ['bbq', 'smoky'], image: 'https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?w=600&h=400&fit=crop' },
+    { id: 'healthy', question: 'Manger healthy ?', emoji: '🥗', tags: ['healthy'], image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=400&fit=crop' },
+    { id: 'comfort', question: 'Comfort food ?', emoji: '🍔', tags: ['comfort'], image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&h=400&fit=crop' },
+    { id: 'street', question: 'Street food ?', emoji: '🌯', tags: ['street'], image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&h=400&fit=crop' },
+    { id: 'chocolate', question: 'Chocolat ?', emoji: '🍫', tags: ['chocolate', 'sweet'], image: 'https://images.unsplash.com/photo-1511381939415-e44015466834?w=600&h=400&fit=crop' },
+    { id: 'pastry', question: 'Pâtisseries ?', emoji: '🥐', tags: ['pastry', 'sweet'], image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&h=400&fit=crop' },
+    { id: 'icecream', question: 'Glaces et sorbets ?', emoji: '🍨', tags: ['icecream', 'cold'], image: 'https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600&h=400&fit=crop' },
+    { id: 'fruit', question: 'Fruits frais ?', emoji: '🍓', tags: ['fruit', 'fresh'], image: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=600&h=400&fit=crop' },
+    { id: 'wine_red', question: 'Vin rouge ?', emoji: '🍷', tags: ['wine_red'], image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&h=400&fit=crop', requires: { alcohol: true, extras: ['wine'] } },
+    { id: 'wine_white', question: 'Vin blanc ?', emoji: '🥂', tags: ['wine_white'], image: 'https://images.unsplash.com/photo-1566452348683-81f9c56220f1?w=600&h=400&fit=crop', requires: { alcohol: true, extras: ['wine'] } },
+    { id: 'soft_cheese', question: 'Fromages à pâte molle (brie, camembert) ?', emoji: '🧀', tags: ['soft_cheese'], image: 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=600&h=400&fit=crop', requires: { extras: ['cheese'] } }
+];
+
+// ===== MEALS =====
+const MEALS = {
+    starters: [
+        { id: 'carpaccio', name: 'Carpaccio de bœuf', emoji: '🥩', desc: 'Fines tranches, parmesan, roquette', tags: ['meat', 'italian', 'fresh'], wine: 'Chianti', ingredients: [{ name: 'Bœuf (filet)', qty: '400g', cat: 'viande' }, { name: 'Parmesan', qty: '80g', cat: 'fromage' }, { name: 'Roquette', qty: '100g', cat: 'légumes' }, { name: 'Huile d\'olive', qty: '4 cs', cat: 'épicerie' }, { name: 'Citron', qty: '1', cat: 'fruits' }] },
+        { id: 'veloute', name: 'Velouté de butternut', emoji: '🥣', desc: 'Doux et onctueux, touche de muscade', tags: ['healthy', 'creamy', 'comfort'], wine: 'Chardonnay', vegan: true, ingredients: [{ name: 'Butternut', qty: '1 kg', cat: 'légumes' }, { name: 'Oignon', qty: '1', cat: 'légumes' }, { name: 'Crème', qty: '20cl', cat: 'crémerie' }, { name: 'Muscade', qty: '1 pincée', cat: 'épicerie' }] },
+        { id: 'salade_grecque', name: 'Salade grecque', emoji: '🥗', desc: 'Feta, olives, concombre, tomates', tags: ['fresh', 'cheese', 'healthy', 'tomato'], wine: 'Assyrtiko', vegetarian: true, ingredients: [{ name: 'Feta', qty: '200g', cat: 'fromage' }, { name: 'Concombre', qty: '1', cat: 'légumes' }, { name: 'Tomates', qty: '4', cat: 'légumes' }, { name: 'Olives noires', qty: '100g', cat: 'épicerie' }, { name: 'Oignon rouge', qty: '1', cat: 'légumes' }] },
+        { id: 'tartare_saumon', name: 'Tartare de saumon', emoji: '🍣', desc: 'Avocat, sésame, sauce soja', tags: ['fish', 'salmon', 'asian', 'avocado', 'fresh'], wine: 'Sancerre', ingredients: [{ name: 'Saumon frais', qty: '400g', cat: 'poisson' }, { name: 'Avocat', qty: '2', cat: 'légumes' }, { name: 'Sauce soja', qty: '3 cs', cat: 'épicerie' }, { name: 'Sésame', qty: '2 cs', cat: 'épicerie' }, { name: 'Citron vert', qty: '1', cat: 'fruits' }] }
+    ],
+    mains: [
+        { id: 'risotto', name: 'Risotto aux champignons', emoji: '🍚', desc: 'Crémeux, parmesan, champignons variés', tags: ['italian', 'mushroom', 'creamy', 'cheese', 'comfort'], wine: 'Barolo', vegetarian: true, ingredients: [{ name: 'Riz arborio', qty: '350g', cat: 'épicerie' }, { name: 'Champignons', qty: '400g', cat: 'légumes' }, { name: 'Parmesan', qty: '100g', cat: 'fromage' }, { name: 'Vin blanc', qty: '15cl', cat: 'épicerie' }, { name: 'Bouillon', qty: '1L', cat: 'épicerie' }, { name: 'Échalote', qty: '2', cat: 'légumes' }] },
+        { id: 'pad_thai', name: 'Pad Thaï', emoji: '🍜', desc: 'Nouilles sautées, cacahuètes, citron vert', tags: ['thai', 'asian', 'spicy', 'street'], wine: 'Riesling', ingredients: [{ name: 'Nouilles de riz', qty: '400g', cat: 'épicerie' }, { name: 'Crevettes', qty: '300g', cat: 'poisson' }, { name: 'Cacahuètes', qty: '100g', cat: 'épicerie' }, { name: 'Sauce poisson', qty: '3 cs', cat: 'épicerie' }, { name: 'Citron vert', qty: '2', cat: 'fruits' }, { name: 'Œufs', qty: '2', cat: 'crémerie' }] },
+        { id: 'tikka', name: 'Poulet Tikka Masala', emoji: '🍛', desc: 'Sauce tomate épicée, riz basmati', tags: ['indian', 'spicy', 'chicken', 'meat', 'creamy'], wine: 'Gewürztraminer', ingredients: [{ name: 'Poulet', qty: '600g', cat: 'viande' }, { name: 'Tomates concassées', qty: '400g', cat: 'épicerie' }, { name: 'Crème', qty: '20cl', cat: 'crémerie' }, { name: 'Épices tikka', qty: '3 cs', cat: 'épicerie' }, { name: 'Riz basmati', qty: '300g', cat: 'épicerie' }] },
+        { id: 'cacio', name: 'Cacio e Pepe', emoji: '🍝', desc: 'Pecorino, poivre noir, pâtes', tags: ['italian', 'cheese', 'comfort', 'sauce'], wine: 'Vermentino', vegetarian: true, ingredients: [{ name: 'Spaghetti', qty: '400g', cat: 'épicerie' }, { name: 'Pecorino Romano', qty: '200g', cat: 'fromage' }, { name: 'Poivre noir', qty: '2 cs', cat: 'épicerie' }] },
+        { id: 'teriyaki', name: 'Saumon Teriyaki', emoji: '🐟', desc: 'Sauce soja sucrée, riz, légumes', tags: ['japanese', 'asian', 'salmon', 'fish', 'sweet_savory'], wine: 'Pinot Gris', ingredients: [{ name: 'Pavés de saumon', qty: '4', cat: 'poisson' }, { name: 'Sauce soja', qty: '6 cs', cat: 'épicerie' }, { name: 'Mirin', qty: '4 cs', cat: 'épicerie' }, { name: 'Riz japonais', qty: '300g', cat: 'épicerie' }, { name: 'Brocoli', qty: '300g', cat: 'légumes' }] },
+        { id: 'buddha', name: 'Buddha Bowl', emoji: '🥗', desc: 'Quinoa, légumes rôtis, houmous', tags: ['healthy', 'vegan', 'avocado', 'fresh'], wine: 'Sauvignon Blanc', vegan: true, ingredients: [{ name: 'Quinoa', qty: '250g', cat: 'épicerie' }, { name: 'Pois chiches', qty: '400g', cat: 'épicerie' }, { name: 'Patate douce', qty: '2', cat: 'légumes' }, { name: 'Avocat', qty: '2', cat: 'légumes' }, { name: 'Houmous', qty: '200g', cat: 'épicerie' }] }
+    ],
+    desserts: [
+        { id: 'tiramisu', name: 'Tiramisu', emoji: '☕', desc: 'Mascarpone, café, cacao', tags: ['italian', 'creamy', 'chocolate', 'sweet'], wine: 'Marsala', vegetarian: true, ingredients: [{ name: 'Mascarpone', qty: '500g', cat: 'crémerie' }, { name: 'Biscuits cuillère', qty: '200g', cat: 'épicerie' }, { name: 'Café fort', qty: '30cl', cat: 'épicerie' }, { name: 'Œufs', qty: '4', cat: 'crémerie' }, { name: 'Cacao', qty: '2 cs', cat: 'épicerie' }] },
+        { id: 'fondant', name: 'Fondant au chocolat', emoji: '🍫', desc: 'Cœur coulant, intense', tags: ['chocolate', 'sweet', 'comfort'], wine: 'Banyuls', vegetarian: true, ingredients: [{ name: 'Chocolat noir', qty: '200g', cat: 'épicerie' }, { name: 'Beurre', qty: '150g', cat: 'crémerie' }, { name: 'Œufs', qty: '4', cat: 'crémerie' }, { name: 'Sucre', qty: '100g', cat: 'épicerie' }, { name: 'Farine', qty: '50g', cat: 'épicerie' }] },
+        { id: 'salade_fruits', name: 'Salade de fruits', emoji: '🍓', desc: 'Fruits de saison, menthe', tags: ['fruit', 'fresh', 'healthy'], vegan: true, ingredients: [{ name: 'Fraises', qty: '250g', cat: 'fruits' }, { name: 'Mangue', qty: '1', cat: 'fruits' }, { name: 'Kiwi', qty: '2', cat: 'fruits' }, { name: 'Menthe fraîche', qty: '1 bouquet', cat: 'légumes' }] },
+        { id: 'crumble', name: 'Crumble aux pommes', emoji: '🍎', desc: 'Pommes caramélisées, pâte croustillante', tags: ['fruit', 'crispy', 'sweet', 'pastry', 'comfort'], wine: 'Cidre', vegetarian: true, ingredients: [{ name: 'Pommes', qty: '6', cat: 'fruits' }, { name: 'Beurre', qty: '125g', cat: 'crémerie' }, { name: 'Farine', qty: '150g', cat: 'épicerie' }, { name: 'Sucre cassonade', qty: '100g', cat: 'épicerie' }, { name: 'Cannelle', qty: '1 cc', cat: 'épicerie' }] }
+    ],
+    cheeses: [
+        { id: 'brie', name: 'Brie de Meaux', emoji: '🧀', desc: 'Doux et crémeux', tags: ['soft_cheese', 'creamy'] },
+        { id: 'comte', name: 'Comté 18 mois', emoji: '🧀', desc: 'Fruité et puissant', tags: ['hard_cheese'] },
+        { id: 'roquefort', name: 'Roquefort', emoji: '🧀', desc: 'Persillé, caractère', tags: ['blue_cheese', 'strong'] }
+    ]
+};
+
+// ===== PROFILES =====
+const PROFILES = [
+    { id: 'epicurien', name: 'L\'Épicurien Audacieux', desc: 'Tu adores les saveurs intenses et les cuisines du monde. Épices, piment et découvertes sont tes maîtres-mots !', emoji: '🌶️', tags: ['spicy', 'indian', 'thai', 'mexican', 'korean'], traits: ['aventurier', 'épicé', 'exotique'] },
+    { id: 'gourmet', name: 'Le Gourmet Classique', desc: 'Tu apprécies les valeurs sûres et les saveurs raffinées. Fromage, vin et sauces crémeuses te font fondre.', emoji: '🧀', tags: ['cheese', 'wine_red', 'sauce', 'creamy'], traits: ['classique', 'raffiné', 'traditionnel'] },
+    { id: 'healthy', name: 'Le Healthy Gourmand', desc: 'Tu privilégies la fraîcheur et l\'équilibre. Légumes, poisson et saveurs légères sont ton quotidien.', emoji: '🥗', tags: ['healthy', 'avocado', 'salmon', 'herbs', 'lemon', 'fruit'], traits: ['frais', 'équilibré', 'léger'] },
+    { id: 'comfort', name: 'L\'Amateur de Comfort Food', desc: 'Tu aimes les plats réconfortants et généreux. Fromage fondant, pâtes et gourmandises te rendent heureux.', emoji: '🍝', tags: ['cheese', 'italian', 'comfort', 'creamy', 'pastry'], traits: ['gourmand', 'réconfortant', 'généreux'] }
+];
