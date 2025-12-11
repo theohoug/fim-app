@@ -3,46 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#030303">
+    <meta name="theme-color" content="#0a0a0b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="FIM">
-    <title>FIM - Trouve ton goût</title>
+    <meta name="apple-mobile-web-app-title" content="FoodMatchs">
+    <title>FoodMatchs - Trouve ton menu parfait</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/pages.css">
-    <link rel="stylesheet" href="css/animations.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div class="app">
-        <div class="ambient-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
+        <div class="ambient-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
         <div class="toast" id="toast"></div>
         <div class="confetti-container" id="confettiContainer"></div>
 
         <!-- HOME -->
         <div class="page home-page active" id="homePage">
             <div class="page-content">
-                <div class="logo-section animate-logo">
-                    <div class="logo">FIM</div>
-                    <div class="tagline">Trouve ton goût</div>
+                <div class="logo-section animate-in">
+                    <div class="logo">FoodMatchs</div>
+                    <div class="tagline">Trouve ton menu parfait</div>
                 </div>
-                <div class="hero-visual animate-hero">
+                <div class="hero-visual animate-in delay-1">
                     <div class="floating-cards">
-                        <div class="preview-card"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=350&fit=crop&q=80" class="preview-card-img" loading="lazy" alt=""><div class="preview-card-content"><div class="preview-card-emoji">🍝</div><div class="preview-card-question">Les pâtes al dente ?</div></div></div>
-                        <div class="preview-card"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=350&fit=crop&q=80" class="preview-card-img" loading="lazy" alt=""><div class="preview-card-content"><div class="preview-card-emoji">🍕</div><div class="preview-card-question">Pizza maison ?</div></div></div>
-                        <div class="preview-card"><img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=350&fit=crop&q=80" class="preview-card-img" loading="lazy" alt=""><div class="preview-card-content"><div class="preview-card-emoji">🥗</div><div class="preview-card-question">Salades fraîches ?</div></div></div>
+                        <div class="preview-card"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop&q=80" class="preview-card-img" alt=""><div class="preview-card-content"><div class="preview-card-emoji">🍝</div><div class="preview-card-question">Pâtes ?</div></div></div>
+                        <div class="preview-card"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop&q=80" class="preview-card-img" alt=""><div class="preview-card-content"><div class="preview-card-emoji">🍕</div><div class="preview-card-question">Pizza ?</div></div></div>
+                        <div class="preview-card"><img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop&q=80" class="preview-card-img" alt=""><div class="preview-card-content"><div class="preview-card-emoji">🥗</div><div class="preview-card-question">Salade ?</div></div></div>
                     </div>
                 </div>
-                <div class="cta-section animate-cta">
-                    <button class="btn btn-primary" onclick="navigateTo('allergens')"><span class="btn-content">Découvrir mes goûts <span>→</span></span></button>
-                    <div class="login-link">Déjà inscrit ? <a class="link" onclick="showAuth('login')">Se connecter</a></div>
+                <div class="cta-section animate-in delay-2">
+                    <button class="btn btn-primary" onclick="navigateTo('allergens')"><span class="btn-content">Découvrir mes goûts →</span></button>
+                    <div class="login-link">Déjà membre ? <span class="link" onclick="navigateTo('auth')">Se connecter</span></div>
                     <div class="feature-grid">
-                        <div class="feature-item" onclick="showToast('Menu personnalisé')"><div class="feature-icon">🎯</div><div class="feature-label">Menu Perso</div></div>
-                        <div class="feature-item" onclick="showToast('Accords mets-vins')"><div class="feature-icon">🍷</div><div class="feature-label">Vins</div></div>
-                        <div class="feature-item" onclick="showToast('Liste de courses')"><div class="feature-icon">🛒</div><div class="feature-label">Courses</div></div>
+                        <div class="feature-item"><div class="feature-icon">🎯</div><div class="feature-label">Menu Perso</div></div>
+                        <div class="feature-item"><div class="feature-icon">🍷</div><div class="feature-label">Vins</div></div>
+                        <div class="feature-item"><div class="feature-icon">🛒</div><div class="feature-label">Courses</div></div>
                     </div>
                 </div>
             </div>
@@ -56,16 +53,18 @@
                     <h1 class="setup-title">Tes allergènes</h1>
                     <p class="setup-subtitle">Sélectionne ce que tu ne peux pas manger</p>
                 </div>
-                <div class="setup-grid stagger-children">
-                    <div class="option-card multi" onclick="toggleAllergen('gluten', this)"><div class="option-card-left"><span class="option-card-icon">🌾</span><div><div class="option-card-label">Gluten</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" onclick="toggleAllergen('lactose', this)"><div class="option-card-left"><span class="option-card-icon">🥛</span><div><div class="option-card-label">Lactose</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" onclick="toggleAllergen('nuts', this)"><div class="option-card-left"><span class="option-card-icon">🥜</span><div><div class="option-card-label">Fruits à coque</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" onclick="toggleAllergen('seafood', this)"><div class="option-card-left"><span class="option-card-icon">🦐</span><div><div class="option-card-label">Fruits de mer</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" onclick="toggleAllergen('eggs', this)"><div class="option-card-left"><span class="option-card-icon">🥚</span><div><div class="option-card-label">Œufs</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" onclick="toggleAllergen('soy', this)"><div class="option-card-left"><span class="option-card-icon">🫘</span><div><div class="option-card-label">Soja</div></div></div><div class="option-card-check"></div></div>
+                <div class="setup-grid">
+                    <div class="option-card multi" onclick="toggleOption(this, 'allergen', 'gluten')"><div class="option-card-left"><span class="option-card-icon">🌾</span><div class="option-card-label">Gluten</div></div><div class="option-card-check"></div></div>
+                    <div class="option-card multi" onclick="toggleOption(this, 'allergen', 'lactose')"><div class="option-card-left"><span class="option-card-icon">🥛</span><div class="option-card-label">Lactose</div></div><div class="option-card-check"></div></div>
+                    <div class="option-card multi" onclick="toggleOption(this, 'allergen', 'nuts')"><div class="option-card-left"><span class="option-card-icon">🥜</span><div class="option-card-label">Fruits à coque</div></div><div class="option-card-check"></div></div>
+                    <div class="option-card multi" onclick="toggleOption(this, 'allergen', 'seafood')"><div class="option-card-left"><span class="option-card-icon">🦐</span><div class="option-card-label">Fruits de mer</div></div><div class="option-card-check"></div></div>
+                    <div class="option-card multi" onclick="toggleOption(this, 'allergen', 'eggs')"><div class="option-card-left"><span class="option-card-icon">🥚</span><div class="option-card-label">Œufs</div></div><div class="option-card-check"></div></div>
+                    <div class="option-card multi" onclick="toggleOption(this, 'allergen', 'soy')"><div class="option-card-left"><span class="option-card-icon">🫘</span><div class="option-card-label">Soja</div></div><div class="option-card-check"></div></div>
+                    <div class="option-card multi" onclick="toggleOption(this, 'allergen', 'fish')"><div class="option-card-left"><span class="option-card-icon">🐟</span><div class="option-card-label">Poisson</div></div><div class="option-card-check"></div></div>
+                    <div class="option-card multi" onclick="toggleOption(this, 'allergen', 'sesame')"><div class="option-card-left"><span class="option-card-icon">⚪</span><div class="option-card-label">Sésame</div></div><div class="option-card-check"></div></div>
                 </div>
                 <div class="setup-actions">
-                    <button class="btn btn-primary" onclick="navigateTo('diet')"><span class="btn-content">Continuer <span>→</span></span></button>
+                    <button class="btn btn-primary" onclick="navigateTo('diet')"><span class="btn-content">Continuer →</span></button>
                     <div class="skip-link" onclick="navigateTo('diet')">Aucun allergène →</div>
                     <div class="back-link" onclick="navigateTo('home')">← Retour</div>
                 </div>
@@ -80,13 +79,14 @@
                     <h1 class="setup-title">Ton régime</h1>
                     <p class="setup-subtitle">Qu'est-ce que tu manges ?</p>
                 </div>
-                <div class="setup-options stagger-children">
-                    <div class="option-card selected" onclick="App.setDietPreference('vegetarian', false); document.querySelectorAll('#dietPage .diet-meat').forEach(e=>e.classList.remove('selected')); this.classList.add('selected')"><div class="option-card-left"><span class="option-card-icon">🥩</span><div><div class="option-card-label">Je mange de la viande</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card diet-meat" onclick="App.setDietPreference('vegetarian', true); document.querySelectorAll('#dietPage .option-card').forEach(e=>e.classList.remove('selected')); this.classList.add('selected')"><div class="option-card-left"><span class="option-card-icon">🥬</span><div><div class="option-card-label">Je suis végétarien</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card selected" onclick="this.classList.toggle('selected'); App.setDietPreference('drinksAlcohol', this.classList.contains('selected'))"><div class="option-card-left"><span class="option-card-icon">🍷</span><div><div class="option-card-label">Je bois de l'alcool</div><div class="option-card-desc">Pour les accords mets-vins</div></div></div><div class="option-card-check"></div></div>
+                <div class="setup-options">
+                    <div class="option-card selected" onclick="selectSingle(this, 'diet', 'omnivore')"><div class="option-card-left"><span class="option-card-icon">🥩</span><div><div class="option-card-label">Je mange de tout</div></div></div><div class="option-card-check"></div></div>
+                    <div class="option-card" onclick="selectSingle(this, 'diet', 'vegetarian')"><div class="option-card-left"><span class="option-card-icon">🥬</span><div><div class="option-card-label">Végétarien</div></div></div><div class="option-card-check"></div></div>
+                    <div class="option-card" onclick="selectSingle(this, 'diet', 'vegan')"><div class="option-card-left"><span class="option-card-icon">🌱</span><div><div class="option-card-label">Végan</div></div></div><div class="option-card-check"></div></div>
+                    <div class="option-card multi selected" onclick="toggleOption(this, 'alcohol', 'yes')"><div class="option-card-left"><span class="option-card-icon">🍷</span><div><div class="option-card-label">Je bois de l'alcool</div><div class="option-card-desc">Pour les accords mets-vins</div></div></div><div class="option-card-check"></div></div>
                 </div>
                 <div class="setup-actions">
-                    <button class="btn btn-primary" onclick="navigateTo('menuType')"><span class="btn-content">Continuer <span>→</span></span></button>
+                    <button class="btn btn-primary" onclick="navigateTo('menuType')"><span class="btn-content">Continuer →</span></button>
                     <div class="back-link" onclick="navigateTo('allergens')">← Retour</div>
                 </div>
             </div>
@@ -100,14 +100,14 @@
                     <h1 class="setup-title">Ton menu</h1>
                     <p class="setup-subtitle">Qu'est-ce que tu veux composer ?</p>
                 </div>
-                <div class="setup-options stagger-children">
-                    <div class="option-card menu-type-option selected" onclick="setMenuType('full', this)"><div class="option-card-left"><span class="option-card-icon">🍽️</span><div><div class="option-card-label">Menu complet</div><div class="option-card-desc">Entrée + Plat + Dessert</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card menu-type-option" onclick="setMenuType('starter_main', this)"><div class="option-card-left"><span class="option-card-icon">🥗</span><div><div class="option-card-label">Entrée + Plat</div><div class="option-card-desc">Sans dessert</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card menu-type-option" onclick="setMenuType('main_dessert', this)"><div class="option-card-left"><span class="option-card-icon">🍰</span><div><div class="option-card-label">Plat + Dessert</div><div class="option-card-desc">Sans entrée</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card menu-type-option" onclick="setMenuType('main_only', this)"><div class="option-card-left"><span class="option-card-icon">🍲</span><div><div class="option-card-label">Plat seul</div><div class="option-card-desc">Simple et efficace</div></div></div><div class="option-card-check"></div></div>
+                <div class="setup-options">
+                    <div class="option-card selected" onclick="selectSingle(this, 'menuType', 'full')"><div class="option-card-left"><span class="option-card-icon">🍽️</span><div><div class="option-card-label">Menu complet</div><div class="option-card-desc">Entrée + Plat + Dessert</div></div></div><div class="option-card-check"></div></div>
+                    <div class="option-card" onclick="selectSingle(this, 'menuType', 'starter_main')"><div class="option-card-left"><span class="option-card-icon">🥗</span><div><div class="option-card-label">Entrée + Plat</div><div class="option-card-desc">Sans dessert</div></div></div><div class="option-card-check"></div></div>
+                    <div class="option-card" onclick="selectSingle(this, 'menuType', 'main_dessert')"><div class="option-card-left"><span class="option-card-icon">🍰</span><div><div class="option-card-label">Plat + Dessert</div><div class="option-card-desc">Sans entrée</div></div></div><div class="option-card-check"></div></div>
+                    <div class="option-card" onclick="selectSingle(this, 'menuType', 'main_only')"><div class="option-card-left"><span class="option-card-icon">🍲</span><div><div class="option-card-label">Plat seul</div><div class="option-card-desc">Simple et efficace</div></div></div><div class="option-card-check"></div></div>
                 </div>
                 <div class="setup-actions">
-                    <button class="btn btn-primary" onclick="navigateTo('options')"><span class="btn-content">Continuer <span>→</span></span></button>
+                    <button class="btn btn-primary" onclick="navigateTo('options')"><span class="btn-content">Continuer →</span></button>
                     <div class="back-link" onclick="navigateTo('diet')">← Retour</div>
                 </div>
             </div>
@@ -121,21 +121,23 @@
                     <h1 class="setup-title">Les extras</h1>
                     <p class="setup-subtitle">Personnalise ton expérience</p>
                 </div>
-                <div class="setup-options stagger-children">
-                    <div class="option-card multi" onclick="toggleCheesePlate(this)"><div class="option-card-left"><span class="option-card-icon">🧀</span><div><div class="option-card-label">Plateau fromage</div><div class="option-card-desc">Questions sur tes fromages préférés</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" onclick="toggleWinePairing(this)"><div class="option-card-left"><span class="option-card-icon">🍷</span><div><div class="option-card-label">Accords mets-vins</div><div class="option-card-desc">Suggestions de vins avec chaque plat</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" onclick="toggleShoppingList(this)"><div class="option-card-left"><span class="option-card-icon">🛒</span><div><div class="option-card-label">Liste de courses</div><div class="option-card-desc">Organisée par rayon</div></div></div><div class="option-card-check"></div></div>
+                <div class="setup-options">
+                    <div class="option-card multi" onclick="toggleOption(this, 'extra', 'cheese')"><div class="option-card-left"><span class="option-card-icon">🧀</span><div><div class="option-card-label">Plateau fromage</div><div class="option-card-desc">Questions sur tes fromages</div></div></div><div class="option-card-check"></div></div>
+                    <div class="option-card multi" onclick="toggleOption(this, 'extra', 'wine')"><div class="option-card-left"><span class="option-card-icon">🍷</span><div><div class="option-card-label">Accords mets-vins</div><div class="option-card-desc">Suggestions de vins</div></div></div><div class="option-card-check"></div></div>
+                    <div class="option-card multi" onclick="toggleOption(this, 'extra', 'shopping')"><div class="option-card-left"><span class="option-card-icon">🛒</span><div><div class="option-card-label">Liste de courses</div><div class="option-card-desc">Organisée par rayon</div></div></div><div class="option-card-check"></div></div>
                 </div>
-                <div class="card" style="margin-top: 20px; text-align: center;">
-                    <div class="option-card-label" style="margin-bottom: 16px;">Pour combien de personnes ?</div>
-                    <div class="stepper">
-                        <button class="stepper-btn btn" onclick="decrementServings()">−</button>
-                        <div><div class="stepper-value" id="servingsValue">2</div><div class="stepper-label">personnes</div></div>
-                        <button class="stepper-btn btn" onclick="incrementServings()">+</button>
+                <div class="card">
+                    <div style="text-align: center;">
+                        <div class="option-card-label" style="margin-bottom: 20px;">Pour combien de personnes ?</div>
+                        <div class="stepper">
+                            <button class="stepper-btn" onclick="changeServings(-1)">−</button>
+                            <div><div class="stepper-value" id="servingsValue">2</div><div class="stepper-label">personnes</div></div>
+                            <button class="stepper-btn" onclick="changeServings(1)">+</button>
+                        </div>
                     </div>
                 </div>
                 <div class="setup-actions">
-                    <button class="btn btn-primary" onclick="navigateTo('questionCount')"><span class="btn-content">C'est parti ! <span>→</span></span></button>
+                    <button class="btn btn-primary" onclick="navigateTo('questionCount')"><span class="btn-content">C'est parti ! →</span></button>
                     <div class="back-link" onclick="navigateTo('menuType')">← Retour</div>
                 </div>
             </div>
@@ -148,13 +150,13 @@
                     <h1 class="setup-title">Combien de questions ?</h1>
                     <p class="setup-subtitle">Plus tu réponds, plus ton profil sera précis !</p>
                 </div>
-                <div class="setup-options stagger-children">
-                    <div class="option-card question-count-option" onclick="selectQuestionCount(10, this)"><div class="option-card-left"><span class="option-card-number">10</span><div><div class="option-card-label">Questions</div><div class="option-card-desc">~2 min</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card question-count-option selected" onclick="selectQuestionCount(30, this)"><div class="option-card-left"><span class="option-card-number">30</span><div><div class="option-card-label">Questions</div><div class="option-card-desc">~5 min</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card question-count-option" onclick="selectQuestionCount(50, this)"><div class="option-card-left"><span class="option-card-number">50</span><div><div class="option-card-label">Questions</div><div class="option-card-desc">~8 min</div></div></div><div class="option-card-check"></div></div>
+                <div class="setup-options">
+                    <div class="option-card" onclick="selectSingle(this, 'questionCount', '10')"><div class="option-card-left"><span class="option-card-number">10</span><div><div class="option-card-label">Questions</div><div class="option-card-desc">~2 min • Aperçu rapide</div></div></div><div class="option-card-check"></div></div>
+                    <div class="option-card selected" onclick="selectSingle(this, 'questionCount', '30')"><div class="option-card-left"><span class="option-card-number">30</span><div><div class="option-card-label">Questions</div><div class="option-card-desc">~5 min • Recommandé</div></div></div><div class="option-card-check"></div></div>
+                    <div class="option-card" onclick="selectSingle(this, 'questionCount', '50')"><div class="option-card-left"><span class="option-card-number">50</span><div><div class="option-card-label">Questions</div><div class="option-card-desc">~8 min • Profil détaillé</div></div></div><div class="option-card-check"></div></div>
                 </div>
                 <div class="setup-actions">
-                    <button class="btn btn-primary" onclick="startQuiz()"><span class="btn-content">Commencer <span>→</span></span></button>
+                    <button class="btn btn-primary" onclick="startQuiz()"><span class="btn-content">Commencer →</span></button>
                     <div class="back-link" onclick="navigateTo('options')">← Retour</div>
                 </div>
             </div>
@@ -164,7 +166,7 @@
         <div class="page swipe-page" id="swipePage">
             <div class="swipe-header">
                 <button class="btn btn-icon" onclick="navigateTo('questionCount')">←</button>
-                <div class="progress-container"><div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 10%"></div></div><div class="progress-text" id="progressText">1 / 30</div></div>
+                <div class="progress-container"><div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 3%"></div></div><div class="progress-text" id="progressText">1 / 30</div></div>
                 <div class="streak-badge"><span class="animate-fire">🔥</span><span id="streakCount">0</span></div>
             </div>
             <div class="swipe-container"><div class="card-stack" id="cardStack"></div></div>
@@ -178,28 +180,65 @@
         <div class="page results-page" id="resultsPage">
             <div class="page-content">
                 <div class="results-header">
-                    <div class="results-emoji animate-emoji">🎉</div>
-                    <h1 class="results-title animate-slide-up">Profil découvert !</h1>
-                    <p class="results-subtitle animate-slide-up delay-100">Voici ce qu'on sait de tes goûts</p>
+                    <div class="results-emoji">🎉</div>
+                    <h1 class="results-title">Profil découvert !</h1>
+                    <p class="results-subtitle">Voici ce qu'on sait de tes goûts</p>
                 </div>
-                <div class="card profile-card animate-card delay-200">
+                <div class="card profile-card">
                     <div class="profile-type">Ton profil culinaire</div>
-                    <div class="profile-name">L'Épicurien Audacieux</div>
-                    <p class="profile-desc">Tu aimes les saveurs prononcées et tu n'as pas peur de sortir de ta zone de confort.</p>
-                    <div class="tags-container profile-tags"><span class="tag">🌶️ Épicé</span><span class="tag">🧀 Fromager</span><span class="tag">🍖 Carnivore</span></div>
+                    <div class="profile-name" id="profileName">L'Épicurien Audacieux</div>
+                    <p class="profile-desc" id="profileDesc">Tu aimes les saveurs prononcées.</p>
+                    <div class="tags-container" id="profileTags"><span class="tag">🌶️ Épicé</span></div>
                 </div>
-                <div class="card animate-card delay-300">
-                    <h2 class="card-title">🍽️ Ton menu</h2>
-                    <div class="menu-list">
-                        <div class="menu-item"><span class="menu-item-emoji">🥘</span><div class="menu-item-details"><div class="menu-item-name">Tajine d'agneau aux abricots</div><div class="menu-item-desc">Sucré-salé parfait pour ton palais</div></div></div>
-                        <div class="menu-item"><span class="menu-item-emoji">🍝</span><div class="menu-item-details"><div class="menu-item-name">Cacio e Pepe relevé</div><div class="menu-item-desc">Le classique italien avec du piment</div></div></div>
-                        <div class="menu-item"><span class="menu-item-emoji">🌮</span><div class="menu-item-details"><div class="menu-item-name">Tacos al pastor</div><div class="menu-item-desc">Street food mexicaine</div></div></div>
-                    </div>
+                <div class="card">
+                    <h2 class="card-title">🍽️ Menu recommandé</h2>
+                    <div class="menu-list" id="menuList"></div>
                 </div>
-                <div class="results-cta animate-card delay-400">
-                    <button class="btn btn-secondary" onclick="shareProfile()"><span>📤</span> Partager mon profil</button>
-                    <button class="btn btn-primary" onclick="showAuth('signup')"><span class="btn-content">Créer mon compte <span>→</span></span></button>
-                    <p style="text-align: center; font-size: 12px; color: var(--text-secondary); margin-top: 12px;">Inscris-toi pour les recettes et la liste de courses !</p>
+                
+                <div class="premium-lock">
+                    <div class="premium-lock-icon">🔒</div>
+                    <div class="premium-lock-title">Recettes & Liste de courses</div>
+                    <div class="premium-lock-desc">Inscris-toi gratuitement pour personnaliser ton menu, voir les recettes et générer ta liste de courses organisée par rayon !</div>
+                    <button class="btn btn-primary" onclick="navigateTo('menuSelect')" style="margin-bottom:10px"><span class="btn-content">Personnaliser mon menu →</span></button>
+                </div>
+                
+                <div class="results-cta">
+                    <button class="btn btn-secondary" onclick="shareProfile()">📤 Partager mon profil</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MENU SELECTION -->
+        <div class="page setup-page" id="menuSelectPage">
+            <div class="page-content">
+                <div class="setup-header">
+                    <h1 class="setup-title">Personnalise ton menu</h1>
+                    <p class="setup-subtitle">Choisis parmi les plats adaptés à tes goûts</p>
+                </div>
+                
+                <div class="menu-section" id="startersSection">
+                    <div class="menu-section-title">🥗 Entrée</div>
+                    <div class="menu-options" id="startersOptions"></div>
+                </div>
+                
+                <div class="menu-section">
+                    <div class="menu-section-title">🍽️ Plat principal</div>
+                    <div class="menu-options" id="mainsOptions"></div>
+                </div>
+                
+                <div class="menu-section" id="dessertsSection">
+                    <div class="menu-section-title">🍰 Dessert</div>
+                    <div class="menu-options" id="dessertsOptions"></div>
+                </div>
+                
+                <div class="menu-section" id="cheesesSection" style="display:none">
+                    <div class="menu-section-title">🧀 Plateau fromage</div>
+                    <div class="menu-options" id="cheesesOptions"></div>
+                </div>
+                
+                <div class="setup-actions">
+                    <button class="btn btn-primary" onclick="navigateTo('auth')"><span class="btn-content">Voir recettes & courses →</span></button>
+                    <div class="back-link" onclick="navigateTo('results')">← Retour</div>
                 </div>
             </div>
         </div>
@@ -208,27 +247,41 @@
         <div class="page auth-page" id="authPage">
             <div class="page-content">
                 <div class="auth-header">
-                    <div class="auth-logo">FIM</div>
+                    <div class="auth-logo">FoodMatchs</div>
                     <h1 class="auth-title">Crée ton compte</h1>
-                    <p class="auth-subtitle">Pour sauvegarder ton profil</p>
+                    <p class="auth-subtitle">Pour accéder aux recettes et à la liste de courses</p>
                 </div>
                 <div class="auth-form">
-                    <div class="input-group"><label class="input-label">Email</label><input type="email" class="input-field" placeholder="ton@email.com"></div>
-                    <div class="input-group"><label class="input-label">Mot de passe</label><input type="password" class="input-field" placeholder="••••••••"></div>
-                    <button class="btn btn-primary" onclick="showToast('Bientôt disponible !')"><span class="btn-content">S'inscrire <span>→</span></span></button>
+                    <div class="input-group"><label class="input-label">Email</label><input type="email" class="input-field" placeholder="ton@email.com" id="authEmail"></div>
+                    <div class="input-group"><label class="input-label">Mot de passe</label><input type="password" class="input-field" placeholder="••••••••" id="authPassword"></div>
+                    <button class="btn btn-primary" onclick="handleSignup()"><span class="btn-content">S'inscrire →</span></button>
                     <div class="auth-divider"><span>ou</span></div>
                     <div class="social-buttons">
                         <button class="btn btn-social" onclick="showToast('Bientôt disponible !')">G</button>
                         <button class="btn btn-social" onclick="showToast('Bientôt disponible !')">🍎</button>
                     </div>
                 </div>
-                <div class="back-link" onclick="navigateTo('results')" style="margin-top: 30px;">← Retour</div>
+                <div class="back-link" onclick="navigateTo('menuSelect')" style="margin-top: 30px;">← Retour</div>
+            </div>
+        </div>
+
+        <!-- SHOPPING LIST -->
+        <div class="page setup-page" id="shoppingPage">
+            <div class="page-content">
+                <div class="setup-header">
+                    <h1 class="setup-title">🛒 Liste de courses</h1>
+                    <p class="setup-subtitle">Organisée par rayon pour faire tes courses facilement</p>
+                </div>
+                <div id="shoppingListContent"></div>
+                <div class="setup-actions">
+                    <button class="btn btn-secondary" onclick="showToast('Copié !')">📋 Copier la liste</button>
+                    <div class="back-link" onclick="navigateTo('results')">← Retour au profil</div>
+                </div>
             </div>
         </div>
     </div>
-    <script src="js/questions.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/swipe.js"></script>
+
+    <script src="js/data.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>
