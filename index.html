@@ -2,272 +2,474 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#0a0a0b">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>FoodMatchs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FoodMatchs - Ton menu personnalisé</title>
+    <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="app">
-        <div class="ambient-bg"><div class="orb orb-1"></div><div class="orb orb-2"></div></div>
-        <div class="toast" id="toast"></div>
-        <div class="confetti-container" id="confettiContainer"></div>
-
-        <!-- HOME -->
-        <div class="page home-page active" id="homePage">
-            <div class="page-content">
-                <div class="logo-section animate-in">
-                    <div class="logo">FoodMatchs</div>
-                    <div class="tagline">Trouve ton menu parfait</div>
-                </div>
-                <div class="hero-visual animate-in delay-1">
-                    <div class="floating-cards">
-                        <div class="preview-card"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop" class="preview-card-img" alt=""><div class="preview-card-content"><div class="preview-card-emoji">🍝</div><div class="preview-card-question">Pâtes ?</div></div></div>
-                        <div class="preview-card"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop" class="preview-card-img" alt=""><div class="preview-card-content"><div class="preview-card-emoji">🍕</div><div class="preview-card-question">Pizza ?</div></div></div>
-                        <div class="preview-card"><img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop" class="preview-card-img" alt=""><div class="preview-card-content"><div class="preview-card-emoji">🥗</div><div class="preview-card-question">Salade ?</div></div></div>
-                    </div>
-                </div>
-                <div class="cta-section animate-in delay-2">
-                    <button class="btn btn-primary" onclick="navigateTo('allergens')">Découvrir mes goûts →</button>
-                    <div class="login-link">Déjà membre ? <span class="link" onclick="navigateTo('auth')">Se connecter</span></div>
-                    <div class="feature-grid">
-                        <div class="feature-item"><div class="feature-icon">🎯</div><div class="feature-label">Menu Perso</div></div>
-                        <div class="feature-item"><div class="feature-icon">🍷</div><div class="feature-label">Vins</div></div>
-                        <div class="feature-item"><div class="feature-icon">🛒</div><div class="feature-label">Courses</div></div>
-                    </div>
-                </div>
+    <div id="app">
+        <!-- SPLASH SCREEN -->
+        <div id="splash-screen" class="screen active">
+            <div class="splash-content">
+                <div class="splash-logo">🍽️</div>
+                <h1>FoodMatchs</h1>
+                <p>Trouve ton menu idéal</p>
+                <div class="splash-loader"></div>
             </div>
         </div>
 
-        <!-- ALLERGENS -->
-        <div class="page setup-page" id="allergensPage">
-            <div class="page-content">
-                <div class="setup-header">
-                    <div class="setup-step">Étape 1/4</div>
-                    <div class="setup-title">Allergies ?</div>
-                    <div class="setup-subtitle">Sélectionne tes allergènes</div>
-                </div>
-                <div class="setup-grid" id="allergensGrid">
-                    <div class="option-card multi" data-value="gluten"><div class="option-card-left"><span class="option-card-icon">🌾</span><span class="option-card-label">Gluten</span></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" data-value="lactose"><div class="option-card-left"><span class="option-card-icon">🥛</span><span class="option-card-label">Lactose</span></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" data-value="nuts"><div class="option-card-left"><span class="option-card-icon">🥜</span><span class="option-card-label">Fruits à coque</span></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" data-value="eggs"><div class="option-card-left"><span class="option-card-icon">🥚</span><span class="option-card-label">Œufs</span></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" data-value="fish"><div class="option-card-left"><span class="option-card-icon">🐟</span><span class="option-card-label">Poisson</span></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" data-value="shellfish"><div class="option-card-left"><span class="option-card-icon">🦐</span><span class="option-card-label">Crustacés</span></div><div class="option-card-check"></div></div>
-                </div>
-                <div class="setup-actions">
-                    <button class="btn btn-primary" onclick="navigateTo('diet')">Continuer →</button>
-                    <div class="skip-link" onclick="navigateTo('diet')">Pas d'allergie</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- DIET -->
-        <div class="page setup-page" id="dietPage">
-            <div class="page-content">
-                <div class="setup-header">
-                    <div class="setup-step">Étape 2/4</div>
-                    <div class="setup-title">Régime ?</div>
-                    <div class="setup-subtitle">Ton mode d'alimentation</div>
-                </div>
-                <div class="setup-options" id="dietOptions">
-                    <div class="option-card selected" data-value="omnivore"><div class="option-card-left"><span class="option-card-icon">🍖</span><div><span class="option-card-label">Omnivore</span><div class="option-card-desc">Je mange de tout</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card" data-value="vegetarian"><div class="option-card-left"><span class="option-card-icon">🥬</span><div><span class="option-card-label">Végétarien</span><div class="option-card-desc">Pas de viande ni poisson</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card" data-value="vegan"><div class="option-card-left"><span class="option-card-icon">🌱</span><div><span class="option-card-label">Végan</span><div class="option-card-desc">100% végétal</div></div></div><div class="option-card-check"></div></div>
-                </div>
-                <div class="option-card selected" id="alcoholOption" style="margin-top:20px"><div class="option-card-left"><span class="option-card-icon">🍷</span><div><span class="option-card-label">Alcool</span><div class="option-card-desc">Suggestions de vins</div></div></div><div class="option-card-check"></div></div>
-                <div class="setup-actions">
-                    <button class="btn btn-primary" onclick="navigateTo('menuType')">Continuer →</button>
-                    <div class="back-link" onclick="navigateTo('allergens')">← Retour</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- MENU TYPE -->
-        <div class="page setup-page" id="menuTypePage">
-            <div class="page-content">
-                <div class="setup-header">
-                    <div class="setup-step">Étape 3/4</div>
-                    <div class="setup-title">Type de menu ?</div>
-                    <div class="setup-subtitle">Combien de plats ?</div>
-                </div>
-                <div class="setup-options" id="menuTypeOptions">
-                    <div class="option-card selected" data-value="full"><div class="option-card-left"><span class="option-card-icon">🍽️</span><div><span class="option-card-label">Menu complet</span><div class="option-card-desc">Entrée + Plat + Dessert</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card" data-value="starter_main"><div class="option-card-left"><span class="option-card-icon">🥗</span><div><span class="option-card-label">Entrée + Plat</span><div class="option-card-desc">Sans dessert</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card" data-value="main_dessert"><div class="option-card-left"><span class="option-card-icon">🍰</span><div><span class="option-card-label">Plat + Dessert</span><div class="option-card-desc">Sans entrée</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card" data-value="main_only"><div class="option-card-left"><span class="option-card-icon">🍝</span><div><span class="option-card-label">Plat seul</span><div class="option-card-desc">Simple et efficace</div></div></div><div class="option-card-check"></div></div>
-                </div>
-                <div class="setup-actions">
-                    <button class="btn btn-primary" onclick="navigateTo('options')">Continuer →</button>
-                    <div class="back-link" onclick="navigateTo('diet')">← Retour</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- OPTIONS -->
-        <div class="page setup-page" id="optionsPage">
-            <div class="page-content">
-                <div class="setup-header">
-                    <div class="setup-step">Étape 4/4</div>
-                    <div class="setup-title">Options</div>
-                    <div class="setup-subtitle">Personnalise ton expérience</div>
-                </div>
-                <div class="setup-options" id="extrasOptions">
-                    <div class="option-card multi" data-value="cheese"><div class="option-card-left"><span class="option-card-icon">🧀</span><div><span class="option-card-label">Plateau fromages</span><div class="option-card-desc">Suggestions de fromages</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" data-value="wine"><div class="option-card-left"><span class="option-card-icon">🍷</span><div><span class="option-card-label">Accords vins</span><div class="option-card-desc">Vins assortis aux plats</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card multi" data-value="shopping"><div class="option-card-left"><span class="option-card-icon">🛒</span><div><span class="option-card-label">Liste de courses</span><div class="option-card-desc">Ingrédients à acheter</div></div></div><div class="option-card-check"></div></div>
-                </div>
-                <div class="card">
-                    <div class="setup-title" style="font-size:18px;margin-bottom:20px">Nombre de personnes</div>
-                    <div class="stepper">
-                        <button class="stepper-btn" onclick="changeServings(-1)">−</button>
-                        <div class="stepper-value" id="servingsValue">2</div>
-                        <button class="stepper-btn" onclick="changeServings(1)">+</button>
-                    </div>
-                    <div class="stepper-label">personnes</div>
-                </div>
-                <div class="setup-actions">
-                    <button class="btn btn-primary" onclick="navigateTo('questionCount')">Continuer →</button>
-                    <div class="back-link" onclick="navigateTo('menuType')">← Retour</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- QUESTION COUNT -->
-        <div class="page setup-page" id="questionCountPage">
-            <div class="page-content">
-                <div class="setup-header">
-                    <div class="setup-title">Combien de questions ?</div>
-                    <div class="setup-subtitle">Plus de questions = profil plus précis</div>
-                </div>
-                <div class="setup-options" id="questionCountOptions">
-                    <div class="option-card" data-value="10"><div class="option-card-left"><span class="option-card-number">10</span><div><span class="option-card-label">Express</span><div class="option-card-desc">~2 minutes</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card selected" data-value="30"><div class="option-card-left"><span class="option-card-number">30</span><div><span class="option-card-label">Standard</span><div class="option-card-desc">~5 minutes</div></div></div><div class="option-card-check"></div></div>
-                    <div class="option-card" data-value="50"><div class="option-card-left"><span class="option-card-number">50</span><div><span class="option-card-label">Complet</span><div class="option-card-desc">~8 minutes</div></div></div><div class="option-card-check"></div></div>
-                </div>
-                <div class="setup-actions">
-                    <button class="btn btn-primary" onclick="startQuiz()">Commencer 🚀</button>
-                    <div class="back-link" onclick="navigateTo('options')">← Retour</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SWIPE -->
-        <div class="page swipe-page" id="swipePage">
-            <div class="page-content">
-                <div class="swipe-header">
-                    <button class="btn btn-icon" onclick="navigateTo('questionCount')">✕</button>
-                    <div class="progress-container">
-                        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-                        <div class="progress-text" id="progressText">0/0</div>
-                    </div>
-                    <div class="streak-badge"><span class="streak-count" id="streakCount">0</span>🔥</div>
-                </div>
-                <div class="swipe-container">
-                    <div class="card-stack" id="cardStack"></div>
-                </div>
-                <div class="swipe-buttons">
-                    <button class="btn btn-round btn-error" onclick="swipeCard('left')">✕</button>
-                    <button class="btn btn-round btn-success" onclick="swipeCard('right')">♥</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- RESULTS -->
-        <div class="page results-page" id="resultsPage">
-            <div class="page-content">
-                <div class="results-header">
-                    <div class="results-emoji" id="profileEmoji">🍽️</div>
-                    <div class="results-title">Ton profil</div>
-                    <div class="results-subtitle">Basé sur tes réponses</div>
-                </div>
-                <div class="card profile-card">
-                    <div class="profile-type">Tu es...</div>
-                    <div class="profile-name" id="profileName">Chargement...</div>
-                    <div class="profile-desc" id="profileDesc"></div>
-                    <div class="tags-container" id="profileTags"></div>
-                </div>
-                <div class="card">
-                    <div class="card-title">🍽️ Menu recommandé</div>
-                    <div class="menu-list" id="menuList"></div>
-                </div>
-                <div class="premium-lock">
-                    <div class="premium-lock-icon">🔒</div>
-                    <div class="premium-lock-title">Personnalise ton menu</div>
-                    <div class="premium-lock-desc">Crée un compte gratuit pour modifier tes plats et accéder à la liste de courses</div>
-                </div>
-                <div class="results-cta">
-                    <button class="btn btn-primary" onclick="navigateTo('menuSelect')">Personnaliser mon menu →</button>
-                    <button class="btn btn-secondary" onclick="shareProfile()">📤 Partager mon profil</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- MENU SELECT -->
-        <div class="page setup-page" id="menuSelectPage">
-            <div class="page-content">
-                <div class="setup-header">
-                    <div class="setup-title">Ton menu</div>
-                    <div class="setup-subtitle">Modifie tes plats</div>
-                </div>
-                <div id="menuSelectContent"></div>
-                <div class="setup-actions">
-                    <button class="btn btn-primary" onclick="navigateTo('auth')">Sauvegarder →</button>
-                    <div class="back-link" onclick="navigateTo('results')">← Retour</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- AUTH -->
-        <div class="page auth-page" id="authPage">
-            <div class="page-content">
+        <!-- AUTH SCREEN -->
+        <div id="auth-screen" class="screen">
+            <div class="auth-container">
                 <div class="auth-header">
-                    <div class="auth-logo">FoodMatchs</div>
-                    <div class="auth-title">Crée ton compte</div>
-                    <div class="auth-subtitle">Sauvegarde ton profil et tes menus</div>
+                    <div class="auth-logo">🍽️</div>
+                    <h1>FoodMatchs</h1>
+                    <p>Swipe, découvre, cuisine !</p>
                 </div>
-                <div class="auth-form">
+
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form active">
                     <div class="input-group">
-                        <label class="input-label">Email</label>
-                        <input type="email" class="input-field" id="authEmail" placeholder="ton@email.com">
+                        <span class="input-icon">📧</span>
+                        <input type="email" id="login-email" placeholder="Email" required>
                     </div>
                     <div class="input-group">
-                        <label class="input-label">Mot de passe</label>
-                        <input type="password" class="input-field" id="authPassword" placeholder="••••••••">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="login-password" placeholder="Mot de passe" required>
                     </div>
-                    <button class="btn btn-primary" onclick="handleSignup()">Créer mon compte</button>
-                    <div class="auth-divider"><span>ou</span></div>
-                    <div class="social-buttons">
-                        <button class="btn-social">G</button>
-                        <button class="btn-social">🍎</button>
+                    <button type="submit" class="btn btn-primary btn-full">Se connecter</button>
+                    <p class="auth-switch">Pas de compte ? <a href="#" id="show-register">Créer un compte</a></p>
+                </form>
+
+                <!-- Register Form -->
+                <form id="register-form" class="auth-form">
+                    <div class="input-group">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="register-username" placeholder="Pseudo" required minlength="3" maxlength="20">
                     </div>
-                </div>
-                <div class="back-link" onclick="navigateTo('menuSelect')" style="margin-top:30px">← Retour</div>
+                    <div class="input-group">
+                        <span class="input-icon">📧</span>
+                        <input type="email" id="register-email" placeholder="Email" required>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="register-password" placeholder="Mot de passe (6+ caractères)" required minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">Créer mon compte</button>
+                    <p class="auth-switch">Déjà un compte ? <a href="#" id="show-login">Se connecter</a></p>
+                </form>
+
+                <div id="auth-error" class="error-message"></div>
             </div>
         </div>
 
-        <!-- SHOPPING -->
-        <div class="page setup-page" id="shoppingPage">
-            <div class="page-content">
-                <div class="setup-header">
-                    <div class="setup-title">🛒 Liste de courses</div>
-                    <div class="setup-subtitle">Pour <span id="shoppingServings">2</span> personnes</div>
+        <!-- ONBOARDING / QUIZ SCREEN -->
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <div class="quiz-progress">
+                    <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
                 </div>
-                <div id="shoppingListContent"></div>
-                <div class="setup-actions">
-                    <button class="btn btn-primary" onclick="navigateTo('home')">Terminer</button>
-                    <div class="back-link" onclick="navigateTo('results')">← Retour au profil</div>
+                <span class="quiz-counter" id="quiz-counter">1/15</span>
+            </div>
+
+            <div class="quiz-card-container">
+                <div class="quiz-card" id="quiz-card">
+                    <div class="quiz-card-image" id="quiz-card-image"></div>
+                    <div class="quiz-card-content">
+                        <span class="quiz-emoji" id="quiz-emoji">🍕</span>
+                        <h2 class="quiz-question" id="quiz-question">Tu aimes les pizzas ?</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quiz-actions">
+                <button class="quiz-btn quiz-btn-no" id="quiz-no">
+                    <span>👎</span>
+                    <small>Bof</small>
+                </button>
+                <button class="quiz-btn quiz-btn-yes" id="quiz-yes">
+                    <span>👍</span>
+                    <small>J'adore</small>
+                </button>
+            </div>
+        </div>
+
+        <!-- PROFILE RESULT SCREEN -->
+        <div id="profile-result-screen" class="screen">
+            <div class="profile-result-container">
+                <div class="confetti" id="confetti"></div>
+                <h2>Ton profil culinaire</h2>
+                <div class="profile-card" id="profile-card">
+                    <span class="profile-emoji" id="profile-emoji">🍳</span>
+                    <h3 id="profile-name">Le Gourmet</h3>
+                    <p id="profile-description">Tu apprécies les bonnes choses...</p>
+                    <div class="profile-traits" id="profile-traits"></div>
+                </div>
+                <div class="xp-gain">
+                    <span>+50 XP</span> Quiz complété !
+                </div>
+                <button class="btn btn-primary btn-full" id="start-app">Découvrir mon menu 🍽️</button>
+            </div>
+        </div>
+
+        <!-- MAIN APP -->
+        <div id="main-app" class="screen">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <span class="header-logo">🍽️</span>
+                    <span class="header-title">FoodMatchs</span>
+                </div>
+                <div class="header-right">
+                    <div class="streak-badge" id="streak-badge">
+                        <span class="streak-fire">🔥</span>
+                        <span class="streak-count" id="streak-count">0</span>
+                    </div>
+                    <button class="header-btn" id="notifications-btn">
+                        🔔
+                        <span class="notif-dot" id="notif-dot"></span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="app-content" id="app-content">
+                <!-- HOME TAB -->
+                <div class="tab-content active" id="tab-home">
+                    <div class="home-greeting">
+                        <h2>Bonjour <span id="user-name">Chef</span> ! 👋</h2>
+                        <p>Qu'est-ce qu'on mange aujourd'hui ?</p>
+                    </div>
+
+                    <!-- Daily Quiz Card -->
+                    <div class="daily-card" id="daily-quiz-card">
+                        <div class="daily-card-header">
+                            <span class="daily-icon">📋</span>
+                            <div>
+                                <h3>Menu du jour</h3>
+                                <p id="daily-status">Génère ton menu personnalisé</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="start-daily-btn">Générer mon menu</button>
+                    </div>
+
+                    <!-- Today's Menu (after generation) -->
+                    <div class="today-menu hidden" id="today-menu">
+                        <h3>🍽️ Ton menu du jour</h3>
+                        <div class="menu-courses" id="menu-courses">
+                            <!-- Generated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <span class="stat-icon">⭐</span>
+                            <span class="stat-value" id="user-level">1</span>
+                            <span class="stat-label">Niveau</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">✨</span>
+                            <span class="stat-value" id="user-xp">0</span>
+                            <span class="stat-label">XP</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-icon">🏆</span>
+                            <span class="stat-value" id="user-achievements">0</span>
+                            <span class="stat-label">Succès</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EXPLORE TAB -->
+                <div class="tab-content" id="tab-explore">
+                    <div class="explore-header">
+                        <h2>Explorer 🔍</h2>
+                        <div class="search-bar">
+                            <span>🔍</span>
+                            <input type="text" id="search-input" placeholder="Rechercher une recette...">
+                        </div>
+                    </div>
+
+                    <div class="filter-chips" id="filter-chips">
+                        <button class="chip active" data-filter="all">Tout</button>
+                        <button class="chip" data-filter="starter">Entrées</button>
+                        <button class="chip" data-filter="main">Plats</button>
+                        <button class="chip" data-filter="dessert">Desserts</button>
+                        <button class="chip" data-filter="vegetarian">🌱 Végé</button>
+                    </div>
+
+                    <div class="recipes-grid" id="recipes-grid">
+                        <!-- Recipes loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- SOCIAL TAB -->
+                <div class="tab-content" id="tab-social">
+                    <div class="social-header">
+                        <h2>Communauté 👥</h2>
+                    </div>
+
+                    <div class="social-tabs">
+                        <button class="social-tab active" data-social="feed">Feed</button>
+                        <button class="social-tab" data-social="trending">Tendances</button>
+                    </div>
+
+                    <div class="posts-feed" id="posts-feed">
+                        <!-- Posts loaded dynamically -->
+                        <div class="empty-state" id="feed-empty">
+                            <span>📭</span>
+                            <p>Aucun post pour le moment</p>
+                            <small>Suivez des utilisateurs pour voir leurs recettes</small>
+                        </div>
+                    </div>
+
+                    <button class="fab" id="create-post-btn">➕</button>
+                </div>
+
+                <!-- FRIDGE TAB -->
+                <div class="tab-content" id="tab-fridge">
+                    <div class="fridge-header">
+                        <h2>Mon Frigo 🧊</h2>
+                        <button class="btn btn-small" id="add-ingredient-btn">+ Ajouter</button>
+                    </div>
+
+                    <div class="fridge-items" id="fridge-items">
+                        <div class="empty-state" id="fridge-empty">
+                            <span>🧊</span>
+                            <p>Ton frigo est vide</p>
+                            <small>Ajoute des ingrédients pour des suggestions</small>
+                        </div>
+                    </div>
+
+                    <div class="fridge-suggestions hidden" id="fridge-suggestions">
+                        <h3>💡 Recettes suggérées</h3>
+                        <div class="suggestions-list" id="suggestions-list"></div>
+                    </div>
+                </div>
+
+                <!-- PROFILE TAB -->
+                <div class="tab-content" id="tab-profile">
+                    <div class="profile-header-card">
+                        <div class="profile-avatar" id="profile-avatar">👤</div>
+                        <h2 id="profile-username">@username</h2>
+                        <p class="profile-bio" id="profile-bio">Passionné de cuisine</p>
+                        <div class="profile-stats">
+                            <div class="profile-stat">
+                                <strong id="profile-followers">0</strong>
+                                <span>Abonnés</span>
+                            </div>
+                            <div class="profile-stat">
+                                <strong id="profile-following">0</strong>
+                                <span>Abonnements</span>
+                            </div>
+                            <div class="profile-stat">
+                                <strong id="profile-posts">0</strong>
+                                <span>Posts</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-culinary" id="profile-culinary">
+                        <!-- Culinary profile shown here -->
+                    </div>
+
+                    <div class="profile-menu">
+                        <button class="profile-menu-item" id="edit-profile-btn">
+                            <span>✏️</span> Modifier le profil
+                        </button>
+                        <button class="profile-menu-item" id="preferences-btn">
+                            <span>⚙️</span> Préférences alimentaires
+                        </button>
+                        <button class="profile-menu-item" id="achievements-btn">
+                            <span>🏆</span> Mes succès
+                        </button>
+                        <button class="profile-menu-item" id="saved-btn">
+                            <span>❤️</span> Recettes sauvegardées
+                        </button>
+                        <button class="profile-menu-item logout" id="logout-btn">
+                            <span>🚪</span> Déconnexion
+                        </button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav">
+                <button class="nav-item active" data-tab="home">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">Accueil</span>
+                </button>
+                <button class="nav-item" data-tab="explore">
+                    <span class="nav-icon">🔍</span>
+                    <span class="nav-label">Explorer</span>
+                </button>
+                <button class="nav-item" data-tab="social">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-label">Social</span>
+                </button>
+                <button class="nav-item" data-tab="fridge">
+                    <span class="nav-icon">🧊</span>
+                    <span class="nav-label">Frigo</span>
+                </button>
+                <button class="nav-item" data-tab="profile">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-label">Profil</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- MODALS -->
+        <!-- Daily Quiz Modal -->
+        <div class="modal" id="daily-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🍽️ Ton menu du jour</h3>
+                    <button class="modal-close" data-close="daily-modal">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="daily-options">
+                        <div class="option-group">
+                            <label>Budget</label>
+                            <div class="option-buttons">
+                                <button class="option-btn active" data-budget="low">€</button>
+                                <button class="option-btn" data-budget="medium">€€</button>
+                                <button class="option-btn" data-budget="high">€€€</button>
+                            </div>
+                        </div>
+                        <div class="option-group">
+                            <label>Portions</label>
+                            <div class="servings-picker">
+                                <button class="servings-btn" data-delta="-1">−</button>
+                                <span id="servings-value">2</span>
+                                <button class="servings-btn" data-delta="1">+</button>
+                            </div>
+                        </div>
+                        <div class="option-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="include-cheese">
+                                <span>🧀 Inclure fromage</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="include-wine">
+                                <span>🍷 Suggérer un vin</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary btn-full" id="generate-menu-btn">Générer mon menu ✨</button>
                 </div>
             </div>
         </div>
+
+        <!-- Recipe Detail Modal -->
+        <div class="modal" id="recipe-modal">
+            <div class="modal-content modal-full">
+                <div class="recipe-detail">
+                    <div class="recipe-hero" id="recipe-hero">
+                        <button class="modal-back" data-close="recipe-modal">←</button>
+                        <button class="recipe-save" id="recipe-save-btn">🤍</button>
+                    </div>
+                    <div class="recipe-info">
+                        <span class="recipe-type-badge" id="recipe-type-badge">Plat</span>
+                        <h2 id="recipe-title">Titre recette</h2>
+                        <p id="recipe-description">Description</p>
+                        
+                        <div class="recipe-meta">
+                            <div class="meta-item">
+                                <span>⏱️</span>
+                                <span id="recipe-time">30 min</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>👨‍🍳</span>
+                                <span id="recipe-difficulty">Facile</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>💰</span>
+                                <span id="recipe-budget">€€</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>🔥</span>
+                                <span id="recipe-calories">350 kcal</span>
+                            </div>
+                        </div>
+
+                        <div class="recipe-section">
+                            <h3>🥕 Ingrédients</h3>
+                            <ul class="ingredients-list" id="ingredients-list"></ul>
+                        </div>
+
+                        <div class="recipe-section">
+                            <h3>👨‍🍳 Préparation</h3>
+                            <ol class="steps-list" id="steps-list"></ol>
+                        </div>
+
+                        <div class="recipe-section" id="wine-pairing-section">
+                            <h3>🍷 Accord vin</h3>
+                            <p id="wine-pairing"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Ingredient Modal -->
+        <div class="modal" id="ingredient-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>🥕 Ajouter un ingrédient</h3>
+                    <button class="modal-close" data-close="ingredient-modal">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <input type="text" id="ingredient-name" placeholder="Nom de l'ingrédient">
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <input type="number" id="ingredient-qty" placeholder="Quantité" value="1">
+                        </div>
+                        <div class="input-group">
+                            <select id="ingredient-unit">
+                                <option value="unité">unité</option>
+                                <option value="g">g</option>
+                                <option value="kg">kg</option>
+                                <option value="ml">ml</option>
+                                <option value="L">L</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Date de péremption</label>
+                        <input type="date" id="ingredient-expiry">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary btn-full" id="save-ingredient-btn">Ajouter</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements Modal -->
+        <div class="modal" id="achievements-modal">
+            <div class="modal-content modal-full">
+                <div class="modal-header">
+                    <button class="modal-back" data-close="achievements-modal">←</button>
+                    <h3>🏆 Mes Succès</h3>
+                    <span></span>
+                </div>
+                <div class="modal-body">
+                    <div class="achievements-grid" id="achievements-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div class="toast-container" id="toast-container"></div>
     </div>
 
-    <script src="js/data.js"></script>
-    <script src="js/app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
