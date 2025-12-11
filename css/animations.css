@@ -1,0 +1,282 @@
+/* ===== ORB ANIMATIONS ===== */
+@keyframes orbDrift1 {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    33% { transform: translate3d(40px, 25px, 0) scale(1.08); }
+    66% { transform: translate3d(-25px, 40px, 0) scale(0.95); }
+}
+
+@keyframes orbDrift2 {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    33% { transform: translate3d(-35px, -25px, 0) scale(0.92); }
+    66% { transform: translate3d(25px, -15px, 0) scale(1.05); }
+}
+
+/* ===== ENTRANCE ANIMATIONS ===== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes slideDown {
+    from { 
+        opacity: 0; 
+        transform: translateY(-30px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes scaleIn {
+    from { 
+        opacity: 0; 
+        transform: scale(0.9); 
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+}
+
+@keyframes logoReveal {
+    0% { 
+        opacity: 0; 
+        transform: translateY(-40px) scale(0.85); 
+        filter: blur(15px); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+        filter: blur(0); 
+    }
+}
+
+@keyframes heroFadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px) scale(0.92); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+@keyframes ctaReveal {
+    from { 
+        opacity: 0; 
+        transform: translateY(40px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes cardReveal {
+    from { 
+        opacity: 0; 
+        transform: translateY(40px) scale(0.96); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+/* ===== SPECIAL ANIMATIONS ===== */
+@keyframes emojiExplode {
+    0% { 
+        transform: scale(0) rotate(-25deg); 
+        opacity: 0; 
+    }
+    50% { 
+        transform: scale(1.25) rotate(12deg); 
+        opacity: 1; 
+    }
+    75% { 
+        transform: scale(0.92) rotate(-4deg); 
+    }
+    100% { 
+        transform: scale(1) rotate(0deg); 
+        opacity: 1; 
+    }
+}
+
+@keyframes fireWiggle {
+    from { 
+        transform: rotate(-8deg) scale(1); 
+    }
+    to { 
+        transform: rotate(8deg) scale(1.1); 
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { 
+        opacity: 1; 
+        transform: scale(1); 
+    }
+    50% { 
+        opacity: 0.7; 
+        transform: scale(0.95); 
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+@keyframes confettiFall {
+    0% { 
+        opacity: 1; 
+        transform: translateY(-100%) rotate(0deg); 
+    }
+    100% { 
+        opacity: 0; 
+        transform: translateY(100vh) rotate(720deg); 
+    }
+}
+
+@keyframes bounce {
+    0%, 100% { 
+        transform: translateY(0); 
+    }
+    50% { 
+        transform: translateY(-10px); 
+    }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ===== ANIMATION CLASSES ===== */
+.animate-fade-in {
+    animation: fadeIn 0.5s var(--ease-smooth) both;
+}
+
+.animate-slide-up {
+    animation: slideUp 0.6s var(--ease-smooth) both;
+}
+
+.animate-slide-down {
+    animation: slideDown 0.6s var(--ease-smooth) both;
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.5s var(--ease-bounce) both;
+}
+
+.animate-logo {
+    animation: logoReveal 1.2s var(--ease-smooth) 0.1s both;
+}
+
+.animate-hero {
+    animation: heroFadeIn 1s var(--ease-smooth) 0.4s both;
+}
+
+.animate-cta {
+    animation: ctaReveal 0.9s var(--ease-smooth) 0.7s both;
+}
+
+.animate-card {
+    animation: cardReveal 0.7s var(--ease-smooth) both;
+}
+
+.animate-emoji {
+    animation: emojiExplode 0.7s var(--ease-bounce) 0.2s both;
+}
+
+.animate-fire {
+    animation: fireWiggle 0.4s ease-in-out infinite alternate;
+}
+
+.animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-shake {
+    animation: shake 0.4s ease-in-out;
+}
+
+.animate-bounce {
+    animation: bounce 1s ease-in-out infinite;
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* ===== DELAY UTILITIES ===== */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-600 { animation-delay: 0.6s; }
+.delay-700 { animation-delay: 0.7s; }
+.delay-800 { animation-delay: 0.8s; }
+.delay-900 { animation-delay: 0.9s; }
+.delay-1000 { animation-delay: 1s; }
+
+/* ===== CONFETTI CONTAINER ===== */
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.confetti {
+    position: absolute;
+    opacity: 0;
+}
+
+/* ===== LOADING STATES ===== */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bg-card) 25%,
+        rgba(255, 255, 255, 0.05) 50%,
+        var(--bg-card) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ===== STAGGER CHILDREN ===== */
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-children > *:nth-child(9) { animation-delay: 0.45s; }
+.stagger-children > *:nth-child(10) { animation-delay: 0.5s; }
