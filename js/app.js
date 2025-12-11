@@ -9,13 +9,7 @@ const userData = {
     questionCount: 30,
     answers: [],
     profile: null,
-    selectedMenu: {
-        starter: null,
-        main: null,
-        dessert: null,
-        cheeses: [],
-        wines: []
-    }
+    selectedMenu: { starter: null, main: null, dessert: null, cheeses: [] }
 };
 
 // ===== STATE =====
@@ -62,61 +56,32 @@ function navigateTo(page) {
     }, 50);
 }
 
-// ===== OPTIONS HANDLING =====
-function toggleOption(el, type, value) {
-    haptic('light');
-    el.classList.toggle('selected');
-    
-    if (type === 'allergen') {
-        const idx = userData.allergens.indexOf(value);
-        if (idx > -1) userData.allergens.splice(idx, 1);
-        else userData.allergens.push(value);
-    } else if (type === 'extra') {
-        const idx = userData.extras.indexOf(value);
-        if (idx > -1) userData.extras.splice(idx, 1);
-        else userData.extras.push(value);
-    } else if (type === 'alcohol') {
-        userData.alcohol = el.classList.contains('selected');
-    }
-    saveToLocal();
-}
-
-function selectSingle(el, type, value) {
-    haptic('light');
-    const parent = el.parentElement;
-    parent.querySelectorAll('.option-card:not(.multi)').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-    userData[type] = value;
-    saveToLocal();
-}
-
+// ===== SERVINGS STEPPER =====
 function changeServings(delta) {
     haptic('light');
     userData.servings = Math.max(1, Math.min(12, userData.servings + delta));
     document.getElementById('servingsValue').textContent = userData.servings;
-    saveToLocal();
 }
 
-// ===== QUIZ LOGIC =====
+// ===== QUIZ =====
 function startQuiz() {
-    haptic('medium');
-    
+    // Filter questions based on user preferences
     currentQuestions = QUESTIONS.filter(q => {
-        for (const tag of q.tags) {
-            if (userData.allergens.includes(tag)) return false;
-            if (tag === 'meat' && (userData.diet === 'vegetarian' || userData.diet === 'vegan')) return false;
-            if (tag === 'fish' && userData.diet === 'vegan') return false;
-            if (tag === 'seafood' && userData.diet === 'vegan') return false;
-            if (tag === 'lactose' && userData.diet === 'vegan') return false;
-            if (tag === 'eggs' && userData.diet === 'vegan') return false;
-            if (tag === 'alcohol' && !userData.alcohol) return false;
+        // Check alcohol requirement
+        if (q.requires?.alcohol && !userData.alcohol) return false;
+        // Check extras requirements
+        if (q.requires?.extras) {
+            for (const extra of q.requires.extras) {
+                if (!userData.extras.includes(extra)) return false;
+            }
         }
-        if (q.cat === 'Fromage' && !userData.extras.includes('cheese')) return false;
-        if (q.cat === 'Vin' && !userData.extras.includes('wine')) return false;
+        // Check diet exclusions
+        if (q.excludeDiet && q.excludeDiet.includes(userData.diet)) return false;
         return true;
     });
     
-    currentQuestions = currentQuestions.sort(() => Math.random() - 0.5).slice(0, parseInt(userData.questionCount));
+    // Shuffle and take questionCount
+    currentQuestions = currentQuestions.sort(() => Math.random() - 0.5).slice(0, userData.questionCount);
     currentIndex = 0;
     streak = 0;
     userData.answers = [];
@@ -127,282 +92,306 @@ function startQuiz() {
 function initSwipe() {
     renderCards();
     updateProgress();
-    document.getElementById('streakCount').textContent = '0';
 }
 
 function renderCards() {
     const stack = document.getElementById('cardStack');
+    if (!stack) return;
     stack.innerHTML = '';
     
-    for (let i = Math.min(currentIndex + 2, currentQuestions.length - 1); i >= currentIndex; i--) {
-        if (i >= currentQuestions.length) continue;
-        const q = currentQuestions[i];
+    for (let i = Math.min(2, currentQuestions.length - currentIndex - 1); i >= 0; i--) {
+        const q = currentQuestions[currentIndex + i];
+        if (!q) continue;
+        
         const card = document.createElement('div');
-        card.className = 'swipe-card' + (i === currentIndex ? ' active-card' : i === currentIndex + 1 ? ' behind-1' : ' behind-2');
+        card.className = 'swipe-card' + (i > 0 ? ` behind-${i}` : '');
         card.innerHTML = `
             <div class="card-image-container">
-                <img src="${q.img}" class="card-image" draggable="false">
+                <img src="${q.image}" class="card-image" alt="">
                 <div class="card-image-overlay"></div>
             </div>
             <div class="card-content">
-                <div class="badge"><span class="badge-dot"></span>${q.cat}</div>
-                <h2 class="card-question">${q.q}</h2>
+                <div class="badge"><span class="badge-dot"></span>${q.tags[0]}</div>
+                <div class="card-question">${q.emoji} ${q.question}</div>
             </div>
-            <div class="swipe-indicator like">OUI</div>
-            <div class="swipe-indicator nope">NON</div>
+            <div class="swipe-indicator like">J'AIME</div>
+            <div class="swipe-indicator nope">BEURK</div>
         `;
-        if (i === currentIndex) setupSwipe(card);
+        
+        if (i === 0) setupSwipe(card);
         stack.appendChild(card);
     }
 }
 
 function setupSwipe(card) {
-    let startX = 0, currentX = 0, isDragging = false;
+    let startX = 0, startY = 0, currentX = 0, isDragging = false;
     
-    const onStart = e => {
+    const onStart = (e) => {
         isDragging = true;
         startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        startY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
         card.style.transition = 'none';
     };
     
-    const onMove = e => {
+    const onMove = (e) => {
         if (!isDragging) return;
-        currentX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
-        const diff = currentX - startX;
-        card.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
+        const x = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+        currentX = x - startX;
+        const rotate = currentX * 0.1;
+        card.style.transform = `translateX(${currentX}px) rotate(${rotate}deg)`;
         
-        const like = card.querySelector('.like'), nope = card.querySelector('.nope');
-        if (diff > 50) { like.classList.add('visible'); nope.classList.remove('visible'); }
-        else if (diff < -50) { nope.classList.add('visible'); like.classList.remove('visible'); }
-        else { like.classList.remove('visible'); nope.classList.remove('visible'); }
+        const like = card.querySelector('.swipe-indicator.like');
+        const nope = card.querySelector('.swipe-indicator.nope');
+        const threshold = 50;
+        
+        if (currentX > threshold) {
+            like.classList.add('visible');
+            nope.classList.remove('visible');
+        } else if (currentX < -threshold) {
+            nope.classList.add('visible');
+            like.classList.remove('visible');
+        } else {
+            like.classList.remove('visible');
+            nope.classList.remove('visible');
+        }
     };
     
     const onEnd = () => {
         if (!isDragging) return;
         isDragging = false;
-        const diff = currentX - startX;
-        card.style.transition = 'transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s';
+        card.style.transition = 'transform 0.3s ease';
         
-        if (diff > 100) completeSwipe('right');
-        else if (diff < -100) completeSwipe('left');
-        else {
+        if (Math.abs(currentX) > 100) {
+            completeSwipe(currentX > 0 ? 'right' : 'left');
+        } else {
             card.style.transform = '';
-            card.querySelector('.like').classList.remove('visible');
-            card.querySelector('.nope').classList.remove('visible');
+            card.querySelector('.swipe-indicator.like').classList.remove('visible');
+            card.querySelector('.swipe-indicator.nope').classList.remove('visible');
         }
     };
     
-    card.addEventListener('touchstart', onStart, { passive: true });
     card.addEventListener('mousedown', onStart);
-    document.addEventListener('touchmove', onMove, { passive: true });
+    card.addEventListener('touchstart', onStart, { passive: true });
     document.addEventListener('mousemove', onMove);
-    document.addEventListener('touchend', onEnd);
+    document.addEventListener('touchmove', onMove, { passive: true });
     document.addEventListener('mouseup', onEnd);
+    document.addEventListener('touchend', onEnd);
 }
 
 function swipeCard(dir) {
-    haptic('medium');
-    const card = document.querySelector('.active-card');
+    const card = document.querySelector('.swipe-card:not(.behind-1):not(.behind-2)');
     if (!card) return;
-    const indicator = card.querySelector(dir === 'right' ? '.like' : '.nope');
-    indicator.classList.add('visible');
-    setTimeout(() => completeSwipe(dir), 150);
+    
+    haptic('light');
+    card.style.transition = 'transform 0.4s ease';
+    card.style.transform = `translateX(${dir === 'right' ? 400 : -400}px) rotate(${dir === 'right' ? 30 : -30}deg)`;
+    
+    const indicator = card.querySelector(`.swipe-indicator.${dir === 'right' ? 'like' : 'nope'}`);
+    if (indicator) indicator.classList.add('visible');
+    
+    setTimeout(() => completeSwipe(dir), 200);
 }
 
 function completeSwipe(dir) {
-    haptic(dir === 'right' ? 'success' : 'light');
-    const card = document.querySelector('.active-card');
     const q = currentQuestions[currentIndex];
-    
-    userData.answers.push({ id: q.id, answer: dir === 'right' });
-    
-    if (dir === 'right') {
-        streak++;
-        document.getElementById('streakCount').textContent = streak;
+    if (q) {
+        userData.answers.push({ id: q.id, answer: dir === 'right' });
+        if (dir === 'right') {
+            streak++;
+            if (streak >= 3) {
+                document.querySelector('.streak-count')?.classList.add('animate-fire');
+            }
+        } else {
+            streak = 0;
+            document.querySelector('.streak-count')?.classList.remove('animate-fire');
+        }
     }
     
-    card.style.transform = `translateX(${dir === 'right' ? 150 : -150}%) rotate(${dir === 'right' ? 30 : -30}deg)`;
-    card.style.opacity = '0';
-    
     currentIndex++;
-    saveToLocal();
+    updateProgress();
     
-    setTimeout(() => {
-        if (currentIndex >= currentQuestions.length) {
-            navigateTo('results');
-            triggerConfetti();
-        } else {
-            renderCards();
-            updateProgress();
-        }
-    }, 300);
+    if (currentIndex >= currentQuestions.length) {
+        triggerConfetti();
+        setTimeout(() => navigateTo('results'), 500);
+    } else {
+        renderCards();
+    }
 }
 
 function updateProgress() {
-    const pct = ((currentIndex + 1) / currentQuestions.length) * 100;
-    document.getElementById('progressFill').style.width = pct + '%';
-    document.getElementById('progressText').textContent = `${currentIndex + 1} / ${currentQuestions.length}`;
+    const fill = document.getElementById('progressFill');
+    const text = document.getElementById('progressText');
+    const streakEl = document.getElementById('streakCount');
+    
+    if (fill) fill.style.width = `${(currentIndex / currentQuestions.length) * 100}%`;
+    if (text) text.textContent = `${currentIndex}/${currentQuestions.length}`;
+    if (streakEl) streakEl.textContent = streak;
 }
 
 // ===== RESULTS =====
 function showResults() {
-    const likes = userData.answers.filter(a => a.answer).map(a => a.id);
+    // Calculate profile based on answers
+    const likes = userData.answers.filter(a => a.answer).map(a => {
+        const q = QUESTIONS.find(q => q.id === a.id);
+        return q ? q.tags : [];
+    }).flat();
     
-    let bestProfile = PROFILES[0], bestScore = 0;
-    PROFILES.forEach(p => {
-        const score = p.traits.filter(t => likes.includes(t)).length;
-        if (score > bestScore) { bestScore = score; bestProfile = p; }
+    // Score each profile
+    let bestProfile = PROFILES[0];
+    let bestScore = 0;
+    
+    PROFILES.forEach(profile => {
+        const score = profile.tags.filter(tag => likes.includes(tag)).length;
+        if (score > bestScore) {
+            bestScore = score;
+            bestProfile = profile;
+        }
     });
+    
     userData.profile = bestProfile;
     
+    // Update UI
+    document.getElementById('profileEmoji').textContent = bestProfile.emoji;
     document.getElementById('profileName').textContent = bestProfile.name;
     document.getElementById('profileDesc').textContent = bestProfile.desc;
-    document.getElementById('profileTags').innerHTML = bestProfile.tags.map(t => `<span class="tag">${t}</span>`).join('');
     
-    generateRecommendedMenu(likes);
-    saveToLocal();
+    const tagsContainer = document.getElementById('profileTags');
+    if (tagsContainer) {
+        tagsContainer.innerHTML = bestProfile.traits.map(t => `<span class="tag">${t}</span>`).join('');
+    }
+    
+    // Generate menu
+    generateMenu(likes);
 }
 
-function generateRecommendedMenu(likes) {
-    const menuList = document.getElementById('menuList');
-    const menu = [];
-    
-    const filterMeal = (meal) => {
-        for (const allergen of meal.allergens || []) {
-            if (userData.allergens.includes(allergen)) return false;
-        }
-        if (meal.tags.includes('meat') && (userData.diet === 'vegetarian' || userData.diet === 'vegan')) return false;
-        if (meal.tags.includes('fish') && userData.diet === 'vegan') return false;
-        return true;
+function generateMenu(likes) {
+    const filterMeals = (meals) => {
+        return meals.filter(m => {
+            if (userData.diet === 'vegan' && !m.vegan) return false;
+            if (userData.diet === 'vegetarian' && !m.vegetarian && !m.vegan) return false;
+            return true;
+        }).map(m => ({
+            ...m,
+            score: m.tags.filter(t => likes.includes(t)).length
+        })).sort((a, b) => b.score - a.score);
     };
     
-    const scoreMeal = (meal) => meal.tags.filter(t => likes.includes(t)).length;
+    const starters = filterMeals(MEALS.starters);
+    const mains = filterMeals(MEALS.mains);
+    const desserts = filterMeals(MEALS.desserts);
     
-    if (userData.menuType === 'full' || userData.menuType === 'starter_main') {
-        const starters = MEALS.starters.filter(filterMeal).sort((a, b) => scoreMeal(b) - scoreMeal(a));
-        if (starters.length > 0) { userData.selectedMenu.starter = starters[0]; menu.push({ ...starters[0], type: 'Entrée' }); }
+    userData.selectedMenu.starter = starters[0] || null;
+    userData.selectedMenu.main = mains[0] || null;
+    userData.selectedMenu.dessert = desserts[0] || null;
+    
+    // Update menu display
+    const menuList = document.getElementById('menuList');
+    if (menuList) {
+        let html = '';
+        if (userData.menuType === 'full' || userData.menuType === 'starter_main') {
+            if (userData.selectedMenu.starter) {
+                html += `<div class="menu-item"><span class="menu-item-emoji">${userData.selectedMenu.starter.emoji}</span><div><div class="menu-item-name">${userData.selectedMenu.starter.name}</div><div class="menu-item-desc">${userData.selectedMenu.starter.desc}</div></div></div>`;
+            }
+        }
+        if (userData.selectedMenu.main) {
+            html += `<div class="menu-item"><span class="menu-item-emoji">${userData.selectedMenu.main.emoji}</span><div><div class="menu-item-name">${userData.selectedMenu.main.name}</div><div class="menu-item-desc">${userData.selectedMenu.main.desc}</div></div></div>`;
+        }
+        if (userData.menuType === 'full' || userData.menuType === 'main_dessert') {
+            if (userData.selectedMenu.dessert) {
+                html += `<div class="menu-item"><span class="menu-item-emoji">${userData.selectedMenu.dessert.emoji}</span><div><div class="menu-item-name">${userData.selectedMenu.dessert.name}</div><div class="menu-item-desc">${userData.selectedMenu.dessert.desc}</div></div></div>`;
+            }
+        }
+        menuList.innerHTML = html;
     }
-    
-    const mains = MEALS.mains.filter(filterMeal).sort((a, b) => scoreMeal(b) - scoreMeal(a));
-    if (mains.length > 0) { userData.selectedMenu.main = mains[0]; menu.push({ ...mains[0], type: 'Plat' }); }
-    
-    if (userData.menuType === 'full' || userData.menuType === 'main_dessert') {
-        const desserts = MEALS.desserts.filter(filterMeal).sort((a, b) => scoreMeal(b) - scoreMeal(a));
-        if (desserts.length > 0) { userData.selectedMenu.dessert = desserts[0]; menu.push({ ...desserts[0], type: 'Dessert' }); }
-    }
-    
-    menuList.innerHTML = menu.map(m => `
-        <div class="menu-item">
-            <span class="menu-item-emoji">${m.emoji}</span>
-            <div>
-                <div class="menu-item-name">${m.name}</div>
-                <div class="menu-item-desc">${m.desc}</div>
-                ${userData.extras.includes('wine') && m.wine ? `<div class="menu-item-wine">🍷 ${m.wine}</div>` : ''}
-            </div>
-        </div>
-    `).join('');
 }
 
 // ===== MENU SELECTION =====
 function initMenuSelection() {
-    const likes = userData.answers.filter(a => a.answer).map(a => a.id);
+    const container = document.getElementById('menuSelectContent');
+    if (!container) return;
     
-    const filterMeal = (meal) => {
-        for (const allergen of meal.allergens || []) {
-            if (userData.allergens.includes(allergen)) return false;
-        }
-        if (meal.tags.includes('meat') && (userData.diet === 'vegetarian' || userData.diet === 'vegan')) return false;
-        return true;
+    const likes = userData.answers.filter(a => a.answer).map(a => {
+        const q = QUESTIONS.find(q => q.id === a.id);
+        return q ? q.tags : [];
+    }).flat();
+    
+    const filterMeals = (meals) => {
+        return meals.filter(m => {
+            if (userData.diet === 'vegan' && !m.vegan) return false;
+            if (userData.diet === 'vegetarian' && !m.vegetarian && !m.vegan) return false;
+            return true;
+        }).sort((a, b) => {
+            const scoreA = a.tags.filter(t => likes.includes(t)).length;
+            const scoreB = b.tags.filter(t => likes.includes(t)).length;
+            return scoreB - scoreA;
+        });
     };
     
-    const scoreMeal = (meal) => meal.tags.filter(t => likes.includes(t)).length;
+    let html = '';
     
     // Starters
-    const startersContainer = document.getElementById('startersOptions');
-    const startersSection = document.getElementById('startersSection');
-    if (startersContainer && (userData.menuType === 'full' || userData.menuType === 'starter_main')) {
-        if (startersSection) startersSection.style.display = 'block';
-        const starters = MEALS.starters.filter(filterMeal).sort((a, b) => scoreMeal(b) - scoreMeal(a)).slice(0, 4);
-        startersContainer.innerHTML = starters.map((s, i) => `
-            <div class="menu-option ${i === 0 ? 'selected' : ''}" onclick="selectMenuItem(this, 'starter', '${s.id}')">
-                <div class="menu-option-left"><span class="menu-option-emoji">${s.emoji}</span><div><div class="menu-option-name">${s.name}</div><div class="menu-option-desc">${s.desc}</div></div></div>
-                <div class="menu-option-check"></div>
-            </div>
-        `).join('');
-        if (starters.length > 0) userData.selectedMenu.starter = starters[0];
-    } else if (startersSection) {
-        startersSection.style.display = 'none';
+    if (userData.menuType === 'full' || userData.menuType === 'starter_main') {
+        html += `<div class="menu-section"><div class="menu-section-title">🥗 Entrée</div><div class="menu-options" id="starterOptions">`;
+        filterMeals(MEALS.starters).forEach(m => {
+            const selected = userData.selectedMenu.starter?.id === m.id ? 'selected' : '';
+            html += `<div class="menu-option ${selected}" data-type="starter" data-id="${m.id}"><div class="menu-option-left"><span class="menu-option-emoji">${m.emoji}</span><div><div class="menu-option-name">${m.name}</div><div class="menu-option-desc">${m.desc}</div></div></div><div class="menu-option-check"></div></div>`;
+        });
+        html += `</div></div>`;
     }
     
     // Mains
-    const mainsContainer = document.getElementById('mainsOptions');
-    if (mainsContainer) {
-        const mains = MEALS.mains.filter(filterMeal).sort((a, b) => scoreMeal(b) - scoreMeal(a)).slice(0, 4);
-        mainsContainer.innerHTML = mains.map((m, i) => `
-            <div class="menu-option ${i === 0 ? 'selected' : ''}" onclick="selectMenuItem(this, 'main', '${m.id}')">
-                <div class="menu-option-left"><span class="menu-option-emoji">${m.emoji}</span><div><div class="menu-option-name">${m.name}</div><div class="menu-option-desc">${m.desc}</div></div></div>
-                <div class="menu-option-check"></div>
-            </div>
-        `).join('');
-        if (mains.length > 0) userData.selectedMenu.main = mains[0];
-    }
+    html += `<div class="menu-section"><div class="menu-section-title">🍽️ Plat</div><div class="menu-options" id="mainOptions">`;
+    filterMeals(MEALS.mains).forEach(m => {
+        const selected = userData.selectedMenu.main?.id === m.id ? 'selected' : '';
+        html += `<div class="menu-option ${selected}" data-type="main" data-id="${m.id}"><div class="menu-option-left"><span class="menu-option-emoji">${m.emoji}</span><div><div class="menu-option-name">${m.name}</div><div class="menu-option-desc">${m.desc}</div></div></div><div class="menu-option-check"></div></div>`;
+    });
+    html += `</div></div>`;
     
     // Desserts
-    const dessertsContainer = document.getElementById('dessertsOptions');
-    const dessertsSection = document.getElementById('dessertsSection');
-    if (dessertsContainer && (userData.menuType === 'full' || userData.menuType === 'main_dessert')) {
-        if (dessertsSection) dessertsSection.style.display = 'block';
-        const desserts = MEALS.desserts.filter(filterMeal).sort((a, b) => scoreMeal(b) - scoreMeal(a)).slice(0, 4);
-        dessertsContainer.innerHTML = desserts.map((d, i) => `
-            <div class="menu-option ${i === 0 ? 'selected' : ''}" onclick="selectMenuItem(this, 'dessert', '${d.id}')">
-                <div class="menu-option-left"><span class="menu-option-emoji">${d.emoji}</span><div><div class="menu-option-name">${d.name}</div><div class="menu-option-desc">${d.desc}</div></div></div>
-                <div class="menu-option-check"></div>
-            </div>
-        `).join('');
-        if (desserts.length > 0) userData.selectedMenu.dessert = desserts[0];
-    } else if (dessertsSection) {
-        dessertsSection.style.display = 'none';
+    if (userData.menuType === 'full' || userData.menuType === 'main_dessert') {
+        html += `<div class="menu-section"><div class="menu-section-title">🍰 Dessert</div><div class="menu-options" id="dessertOptions">`;
+        filterMeals(MEALS.desserts).forEach(m => {
+            const selected = userData.selectedMenu.dessert?.id === m.id ? 'selected' : '';
+            html += `<div class="menu-option ${selected}" data-type="dessert" data-id="${m.id}"><div class="menu-option-left"><span class="menu-option-emoji">${m.emoji}</span><div><div class="menu-option-name">${m.name}</div><div class="menu-option-desc">${m.desc}</div></div></div><div class="menu-option-check"></div></div>`;
+        });
+        html += `</div></div>`;
     }
     
     // Cheeses
-    const cheesesSection = document.getElementById('cheesesSection');
-    if (cheesesSection) {
-        if (userData.extras.includes('cheese') && !userData.allergens.includes('lactose')) {
-            cheesesSection.style.display = 'block';
-            const cheesesContainer = document.getElementById('cheesesOptions');
-            cheesesContainer.innerHTML = MEALS.cheeses.map(c => `
-                <div class="menu-option multi" onclick="toggleCheeseSelection(this, '${c.id}')">
-                    <div class="menu-option-left"><span class="menu-option-emoji">${c.emoji}</span><div><div class="menu-option-name">${c.name}</div><div class="menu-option-desc">${c.type}</div></div></div>
-                    <div class="menu-option-check"></div>
-                </div>
-            `).join('');
-        } else {
-            cheesesSection.style.display = 'none';
-        }
+    if (userData.extras.includes('cheese')) {
+        html += `<div class="menu-section"><div class="menu-section-title">🧀 Fromages</div><div class="menu-options" id="cheeseOptions">`;
+        MEALS.cheeses.forEach(m => {
+            const selected = userData.selectedMenu.cheeses.find(c => c.id === m.id) ? 'selected' : '';
+            html += `<div class="menu-option ${selected}" data-type="cheese" data-id="${m.id}"><div class="menu-option-left"><span class="menu-option-emoji">${m.emoji}</span><div><div class="menu-option-name">${m.name}</div><div class="menu-option-desc">${m.desc}</div></div></div><div class="menu-option-check"></div></div>`;
+        });
+        html += `</div></div>`;
     }
-}
-
-function selectMenuItem(el, type, id) {
-    haptic('light');
-    el.parentElement.querySelectorAll('.menu-option:not(.multi)').forEach(o => o.classList.remove('selected'));
-    el.classList.add('selected');
     
-    const allMeals = [...MEALS.starters, ...MEALS.mains, ...MEALS.desserts];
-    const meal = allMeals.find(m => m.id === id);
-    if (meal) userData.selectedMenu[type] = meal;
-    saveToLocal();
-}
-
-function toggleCheeseSelection(el, id) {
-    haptic('light');
-    el.classList.toggle('selected');
-    const cheese = MEALS.cheeses.find(c => c.id === id);
-    if (!cheese) return;
+    container.innerHTML = html;
     
-    const idx = userData.selectedMenu.cheeses.findIndex(c => c.id === id);
-    if (idx > -1) userData.selectedMenu.cheeses.splice(idx, 1);
-    else userData.selectedMenu.cheeses.push(cheese);
-    saveToLocal();
+    // Attach event listeners for menu options
+    container.querySelectorAll('.menu-option').forEach(option => {
+        option.addEventListener('click', () => {
+            haptic('light');
+            const type = option.dataset.type;
+            const id = option.dataset.id;
+            const allMeals = [...MEALS.starters, ...MEALS.mains, ...MEALS.desserts, ...MEALS.cheeses];
+            const meal = allMeals.find(m => m.id === id);
+            
+            if (type === 'cheese') {
+                option.classList.toggle('selected');
+                if (option.classList.contains('selected')) {
+                    userData.selectedMenu.cheeses.push(meal);
+                } else {
+                    userData.selectedMenu.cheeses = userData.selectedMenu.cheeses.filter(c => c.id !== id);
+                }
+            } else {
+                option.parentElement.querySelectorAll('.menu-option').forEach(o => o.classList.remove('selected'));
+                option.classList.add('selected');
+                userData.selectedMenu[type] = meal;
+            }
+        });
+    });
 }
 
 // ===== SHOPPING LIST =====
@@ -418,18 +407,17 @@ function initShoppingList() {
         'fruits': { icon: '🍎', name: 'Fruits' },
         'fromage': { icon: '🧀', name: 'Fromagerie' },
         'crémerie': { icon: '🥛', name: 'Crémerie' },
-        'boulangerie': { icon: '🥖', name: 'Boulangerie' },
-        'épicerie': { icon: '🏪', name: 'Épicerie' },
-        'surgelés': { icon: '❄️', name: 'Surgelés' }
+        'épicerie': { icon: '🏪', name: 'Épicerie' }
     };
     
     const addIngredients = (meal) => {
-        if (!meal || !meal.ingredients) return;
+        if (!meal?.ingredients) return;
         meal.ingredients.forEach(ing => {
             const cat = ing.cat || 'épicerie';
             if (!ingredients[cat]) ingredients[cat] = [];
-            const existing = ingredients[cat].find(i => i.name === ing.name);
-            if (!existing) ingredients[cat].push({ ...ing, checked: false });
+            if (!ingredients[cat].find(i => i.name === ing.name)) {
+                ingredients[cat].push({ ...ing });
+            }
         });
     };
     
@@ -440,40 +428,32 @@ function initShoppingList() {
     if (userData.selectedMenu.cheeses.length > 0) {
         if (!ingredients['fromage']) ingredients['fromage'] = [];
         userData.selectedMenu.cheeses.forEach(c => {
-            ingredients['fromage'].push({ name: c.name, qty: '150g', checked: false });
+            ingredients['fromage'].push({ name: c.name, qty: '150g' });
         });
     }
     
-    let html = `<p style="margin-bottom:16px;color:var(--text-secondary);font-size:14px;">Pour <strong style="color:var(--accent-primary)">${userData.servings} personnes</strong></p>`;
-    
+    let html = '';
     Object.keys(categories).forEach(catKey => {
-        if (ingredients[catKey] && ingredients[catKey].length > 0) {
+        if (ingredients[catKey]?.length > 0) {
             const cat = categories[catKey];
-            html += `
-                <div class="shopping-section">
-                    <div class="shopping-section-header">
-                        <span class="shopping-section-icon">${cat.icon}</span>
-                        <span class="shopping-section-title">${cat.name}</span>
-                    </div>
-                    ${ingredients[catKey].map(ing => `
-                        <div class="shopping-item" onclick="toggleShoppingItem(this)">
-                            <div class="shopping-checkbox"></div>
-                            <span class="shopping-item-name">${ing.name}</span>
-                            <span class="shopping-item-qty">${ing.qty}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+            html += `<div class="shopping-section"><div class="shopping-section-header"><span class="shopping-section-icon">${cat.icon}</span><span class="shopping-section-title">${cat.name}</span></div>`;
+            ingredients[catKey].forEach(ing => {
+                html += `<div class="shopping-item"><div class="shopping-checkbox"></div><span class="shopping-item-name">${ing.name}</span><span class="shopping-item-qty">${ing.qty}</span></div>`;
+            });
+            html += `</div>`;
         }
     });
     
     container.innerHTML = html || '<p style="text-align:center;color:var(--text-secondary)">Sélectionne d\'abord ton menu</p>';
-}
-
-function toggleShoppingItem(el) {
-    haptic('light');
-    el.classList.toggle('checked');
-    el.querySelector('.shopping-checkbox').classList.toggle('checked');
+    
+    // Attach event listeners for shopping items
+    container.querySelectorAll('.shopping-item').forEach(item => {
+        item.addEventListener('click', () => {
+            haptic('light');
+            item.classList.toggle('checked');
+            item.querySelector('.shopping-checkbox').classList.toggle('checked');
+        });
+    });
 }
 
 // ===== AUTH =====
@@ -483,42 +463,98 @@ function handleSignup() {
     
     if (!email || !pwd) { showToast('Remplis tous les champs !'); return; }
     if (!email.includes('@')) { showToast('Email invalide !'); return; }
-    if (pwd.length < 6) { showToast('Min 6 caractères'); return; }
+    if (pwd.length < 6) { showToast('Mot de passe trop court !'); return; }
     
     const users = JSON.parse(localStorage.getItem('foodmatchs_users') || '[]');
     if (users.find(u => u.email === email)) { showToast('Email déjà utilisé !'); return; }
     
-    users.push({
-        email, password: pwd,
-        profile: userData.profile,
-        answers: userData.answers,
-        allergens: userData.allergens,
-        diet: userData.diet,
-        extras: userData.extras,
-        selectedMenu: userData.selectedMenu,
-        createdAt: new Date().toISOString()
-    });
-    
+    users.push({ email, password: pwd, ...userData, createdAt: new Date().toISOString() });
     localStorage.setItem('foodmatchs_users', JSON.stringify(users));
+    
     showToast('Compte créé ! 🎉');
     haptic('success');
-    setTimeout(() => navigateTo('shopping'), 1000);
+    setTimeout(() => navigateTo('shopping'), 1500);
 }
 
 // ===== SHARE =====
 function shareProfile() {
     haptic('medium');
-    const text = `Je suis "${userData.profile?.name || 'un gourmet'}" sur FoodMatchs ! 🍽️`;
-    if (navigator.share) navigator.share({ title: 'Mon profil FoodMatchs', text, url: location.href });
-    else { navigator.clipboard.writeText(text + ' ' + location.href); showToast('Copié !'); }
+    const text = `Je suis "${userData.profile?.name}" sur FoodMatchs ! 🍽️ Découvre ton profil culinaire !`;
+    if (navigator.share) {
+        navigator.share({ title: 'Mon profil FoodMatchs', text, url: window.location.href });
+    } else {
+        navigator.clipboard.writeText(text + ' ' + window.location.href);
+        showToast('Copié !');
+    }
 }
 
-// ===== STORAGE =====
-function saveToLocal() { localStorage.setItem('foodmatchs_session', JSON.stringify(userData)); }
-function loadFromLocal() {
-    const saved = localStorage.getItem('foodmatchs_session');
-    if (saved) Object.assign(userData, JSON.parse(saved));
-}
-
-// ===== INIT =====
-document.addEventListener('DOMContentLoaded', () => loadFromLocal());
+// =====================================================
+// FIX: Event listeners attachés après chargement du DOM
+// =====================================================
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // ----- ALLERGENS PAGE (multi-select) -----
+    document.querySelectorAll('#allergensGrid .option-card').forEach(card => {
+        card.addEventListener('click', () => {
+            haptic('light');
+            card.classList.toggle('selected');
+            const val = card.dataset.value;
+            const idx = userData.allergens.indexOf(val);
+            if (idx > -1) userData.allergens.splice(idx, 1);
+            else userData.allergens.push(val);
+        });
+    });
+    
+    // ----- DIET PAGE (single-select) -----
+    document.querySelectorAll('#dietOptions .option-card').forEach(card => {
+        card.addEventListener('click', () => {
+            haptic('light');
+            document.querySelectorAll('#dietOptions .option-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            userData.diet = card.dataset.value;
+        });
+    });
+    
+    // ----- ALCOHOL TOGGLE -----
+    const alcoholOption = document.getElementById('alcoholOption');
+    if (alcoholOption) {
+        alcoholOption.addEventListener('click', function() {
+            haptic('light');
+            this.classList.toggle('selected');
+            userData.alcohol = this.classList.contains('selected');
+        });
+    }
+    
+    // ----- MENU TYPE PAGE (single-select) -----
+    document.querySelectorAll('#menuTypeOptions .option-card').forEach(card => {
+        card.addEventListener('click', () => {
+            haptic('light');
+            document.querySelectorAll('#menuTypeOptions .option-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            userData.menuType = card.dataset.value;
+        });
+    });
+    
+    // ----- EXTRAS PAGE (multi-select) -----
+    document.querySelectorAll('#extrasOptions .option-card').forEach(card => {
+        card.addEventListener('click', () => {
+            haptic('light');
+            card.classList.toggle('selected');
+            const val = card.dataset.value;
+            const idx = userData.extras.indexOf(val);
+            if (idx > -1) userData.extras.splice(idx, 1);
+            else userData.extras.push(val);
+        });
+    });
+    
+    // ----- QUESTION COUNT PAGE (single-select) -----
+    document.querySelectorAll('#questionCountOptions .option-card').forEach(card => {
+        card.addEventListener('click', () => {
+            haptic('light');
+            document.querySelectorAll('#questionCountOptions .option-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            userData.questionCount = parseInt(card.dataset.value);
+        });
+    });
+    
+});
