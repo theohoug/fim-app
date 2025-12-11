@@ -1,0 +1,182 @@
+/* ===== VARIABLES ===== */
+:root {
+    /* Colors */
+    --bg-deep: #030303;
+    --bg-card: rgba(15, 15, 18, 0.92);
+    --bg-glass: rgba(255, 255, 255, 0.02);
+    --accent-gold: #C9A962;
+    --accent-copper: #D4A574;
+    --accent-cream: #F5E6D3;
+    --accent-glow: #E8B866;
+    --text-primary: #FAFAFA;
+    --text-secondary: rgba(255, 255, 255, 0.45);
+    --success: #34C759;
+    --error: #FF453A;
+    
+    /* Gradients */
+    --gradient-luxury: linear-gradient(135deg, #E8B866 0%, #C9A962 50%, #A68B4B 100%);
+    --gradient-success: linear-gradient(135deg, #34C759 0%, #2DB550 100%);
+    --gradient-error: linear-gradient(135deg, #FF453A 0%, #E63B30 100%);
+    --glass-border: rgba(255, 255, 255, 0.06);
+    
+    /* Easings */
+    --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+    
+    /* Safe areas */
+    --safe-top: env(safe-area-inset-top);
+    --safe-bottom: env(safe-area-inset-bottom);
+    
+    /* Spacing */
+    --spacing-xs: 8px;
+    --spacing-sm: 12px;
+    --spacing-md: 20px;
+    --spacing-lg: 28px;
+    --spacing-xl: 40px;
+    
+    /* Border radius */
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 30px;
+}
+
+/* ===== RESET ===== */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+/* ===== BASE ===== */
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: fixed;
+    overscroll-behavior: none;
+}
+
+.app {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ===== TYPOGRAPHY ===== */
+.font-serif {
+    font-family: 'Cormorant Garamond', serif;
+}
+
+.text-gradient {
+    background: var(--gradient-luxury);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ===== AMBIENT BACKGROUND ===== */
+.ambient-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    will-change: transform;
+}
+
+.orb-1 {
+    width: 70vmax;
+    height: 70vmax;
+    background: radial-gradient(circle, rgba(201, 169, 98, 0.22) 0%, transparent 70%);
+    top: -30vmax;
+    left: -25vmax;
+    animation: orbDrift1 30s ease-in-out infinite;
+}
+
+.orb-2 {
+    width: 60vmax;
+    height: 60vmax;
+    background: radial-gradient(circle, rgba(212, 165, 116, 0.18) 0%, transparent 70%);
+    bottom: -25vmax;
+    right: -20vmax;
+    animation: orbDrift2 35s ease-in-out infinite;
+}
+
+/* ===== PAGE SYSTEM ===== */
+.page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s var(--ease-smooth);
+    z-index: 10;
+    transform: scale(0.96);
+    padding: var(--safe-top) 0 var(--safe-bottom) 0;
+}
+
+.page.active {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
+}
+
+/* ===== SCROLLABLE CONTENT ===== */
+.page-content {
+    width: 100%;
+    max-width: 500px;
+    padding: var(--spacing-xl) var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.page-content::-webkit-scrollbar {
+    display: none;
+}
+
+/* ===== UTILITIES ===== */
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
