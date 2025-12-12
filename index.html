@@ -26,12 +26,14 @@
         </div>
 
         <div class="screen" id="onboarding">
-            <div class="onboarding-slider" id="ob-slider">
+            <div class="onboarding-content">
+                <div class="onboarding-slider" id="ob-slider">
+                    </div>
+                <div class="onboarding-footer">
+                    <div class="ob-dots" id="ob-dots"></div>
+                    <button class="btn btn-primary btn-full bounce-click" id="ob-next">Continuer</button>
+                    <button class="btn btn-text bounce-click" id="ob-skip">J'ai déjà un compte</button>
                 </div>
-            <div class="onboarding-footer">
-                <div class="ob-dots" id="ob-dots"></div>
-                <button class="btn btn-primary btn-full bounce-click" id="ob-next">Continuer</button>
-                <button class="btn btn-text bounce-click" id="ob-skip">J'ai déjà un compte</button>
             </div>
         </div>
 
@@ -41,8 +43,7 @@
                 <div class="progress-pill">
                     <div class="progress-fill" id="quiz-progress"></div>
                 </div>
-                <div style="width: 40px;"></div>
-            </div>
+                <div style="width: 40px;"></div> </div>
             <div class="quiz-container">
                 <div class="quiz-stack" id="quiz-stack">
                     </div>
@@ -50,6 +51,7 @@
                     <button class="quiz-action-btn nope bounce-click" id="quiz-nope">✕</button>
                     <button class="quiz-action-btn love bounce-click" id="quiz-love">♥</button>
                 </div>
+                <p style="margin-top: 20px; opacity: 0.5; font-size: 12px;">Swipe pour choisir</p>
             </div>
         </div>
 
@@ -63,7 +65,7 @@
                 <form id="auth-form" class="glass-form">
                     <div class="input-group" id="group-username">
                         <label>Pseudo</label>
-                        <input type="text" id="input-username" placeholder="ChefGordon">
+                        <input type="text" id="input-username" placeholder="ChefGordon" autocomplete="off">
                     </div>
                     <div class="input-group">
                         <label>Email</label>
@@ -98,7 +100,7 @@
 
             <div class="content-scroll scroll-y">
                 <div class="section-hero">
-                    <h1 id="greeting">À table, Chef !</h1>
+                    <h1 id="greeting" style="margin-bottom: 16px;">À table, Chef !</h1>
                     <div class="hero-card bounce-click" id="hero-card">
                         <div class="hero-bg" id="hero-img"></div>
                         <div class="hero-overlay">
@@ -128,7 +130,7 @@
                 </div>
 
                 <div class="section-feed">
-                    <h3>Pour toi</h3>
+                    <h3 style="margin-bottom: 16px;">Pour toi</h3>
                     <div id="feed-list"></div>
                 </div>
                 
@@ -163,6 +165,7 @@
                         <h2 id="league-name">Ligue Bronze</h2>
                         <p class="league-timer">Fin dans 2j 14h</p>
                     </div>
+                    <h3 style="margin: 20px 0 10px;">Classement</h3>
                     <div class="leaderboard glass-card" id="leaderboard-list"></div>
                 </div>
                 <div style="height: 100px;"></div>
@@ -237,13 +240,6 @@
             <div class="cooking-footer">
                 <button class="btn btn-secondary bounce-click" id="step-prev">Précédent</button>
                 <button class="btn btn-primary bounce-click" id="step-next">Suivant</button>
-            </div>
-        </div>
-
-        <div class="modal-overlay" id="modal-overlay">
-            <div class="modal-sheet" id="modal-sheet">
-                <div class="modal-handle"></div>
-                <div class="modal-body" id="modal-content"></div>
             </div>
         </div>
 
