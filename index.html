@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Yumr Premium</title>
+    <title>Yumr - Cuisine. Joue. Progresse.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="app">
+        <!-- FX Layer -->
         <div class="fx-layer">
             <div class="ambient-glow glow-1"></div>
             <div class="ambient-glow glow-2"></div>
             <div id="particles-container"></div>
         </div>
 
+        <!-- ==================== SPLASH ==================== -->
         <div class="screen active" id="splash">
             <div class="splash-center">
                 <div class="logo-emoji float-anim">🍳</div>
@@ -25,10 +27,10 @@
             </div>
         </div>
 
+        <!-- ==================== ONBOARDING ==================== -->
         <div class="screen" id="onboarding">
             <div class="onboarding-content">
-                <div class="onboarding-slider" id="ob-slider">
-                    </div>
+                <div class="onboarding-slider" id="ob-slider"></div>
                 <div class="onboarding-footer">
                     <div class="ob-dots" id="ob-dots"></div>
                     <button class="btn btn-primary btn-full bounce-click" id="ob-next">Continuer</button>
@@ -37,30 +39,142 @@
             </div>
         </div>
 
+        <!-- ==================== QUIZ CHOICE ==================== -->
+        <div class="screen" id="quiz-choice">
+            <div class="quiz-choice-content scroll-y">
+                <div class="quiz-choice-header">
+                    <span class="badge-new">NOUVEAU</span>
+                    <h1>Découvre ton profil culinaire</h1>
+                    <p>Swipe sur des plats pour qu'on apprenne tes goûts</p>
+                </div>
+                <div class="quiz-choice-options">
+                    <button class="quiz-choice-card bounce-click" data-count="10">
+                        <span class="qcc-emoji">⚡</span>
+                        <span class="qcc-title">Express</span>
+                        <span class="qcc-desc">10 plats • 2 min</span>
+                    </button>
+                    <button class="quiz-choice-card selected bounce-click" data-count="20">
+                        <span class="qcc-emoji">🎯</span>
+                        <span class="qcc-title">Recommandé</span>
+                        <span class="qcc-desc">20 plats • 4 min</span>
+                        <span class="qcc-badge">MEILLEUR</span>
+                    </button>
+                    <button class="quiz-choice-card bounce-click" data-count="30">
+                        <span class="qcc-emoji">🏆</span>
+                        <span class="qcc-title">Complet</span>
+                        <span class="qcc-desc">30 plats • 6 min</span>
+                    </button>
+                </div>
+                <button class="btn btn-primary btn-full bounce-click" id="quiz-start">C'est parti !</button>
+            </div>
+        </div>
+
+        <!-- ==================== QUIZ SWIPE ==================== -->
         <div class="screen" id="quiz">
             <div class="header-transparent">
                 <button class="btn-icon bounce-click" id="quiz-back">←</button>
                 <div class="progress-pill">
                     <div class="progress-fill" id="quiz-progress"></div>
                 </div>
-                <div style="width: 40px;"></div> </div>
+                <span class="quiz-counter" id="quiz-counter">1/20</span>
+            </div>
             <div class="quiz-container">
-                <div class="quiz-stack" id="quiz-stack">
-                    </div>
+                <div class="quiz-stack" id="quiz-stack"></div>
                 <div class="quiz-controls">
                     <button class="quiz-action-btn nope bounce-click" id="quiz-nope">✕</button>
                     <button class="quiz-action-btn love bounce-click" id="quiz-love">♥</button>
                 </div>
-                <p style="margin-top: 20px; opacity: 0.5; font-size: 12px;">Swipe pour choisir</p>
+                <p class="quiz-hint">Swipe ou utilise les boutons</p>
             </div>
         </div>
 
+        <!-- ==================== QUIZ PREFERENCES ==================== -->
+        <div class="screen" id="quiz-prefs">
+            <div class="prefs-content scroll-y">
+                <div class="prefs-header">
+                    <span class="badge-new">PRESQUE FINI</span>
+                    <h1>Tes préférences</h1>
+                    <p>Pour personnaliser tes menus</p>
+                </div>
+
+                <div class="prefs-section">
+                    <h3>🍽️ Régime alimentaire</h3>
+                    <div class="prefs-grid">
+                        <label class="pref-option">
+                            <input type="radio" name="diet" value="omnivore" checked>
+                            <span class="pref-card"><span>🥩</span><span>Omnivore</span></span>
+                        </label>
+                        <label class="pref-option">
+                            <input type="radio" name="diet" value="vegetarian">
+                            <span class="pref-card"><span>🥗</span><span>Végétarien</span></span>
+                        </label>
+                        <label class="pref-option">
+                            <input type="radio" name="diet" value="vegan">
+                            <span class="pref-card"><span>🌱</span><span>Végan</span></span>
+                        </label>
+                        <label class="pref-option">
+                            <input type="radio" name="diet" value="flexitarian">
+                            <span class="pref-card"><span>🐟</span><span>Flexitarien</span></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="prefs-section">
+                    <h3>⚠️ Allergies & Intolérances</h3>
+                    <div class="prefs-chips">
+                        <label class="pref-chip"><input type="checkbox" name="allergy" value="gluten"><span>Gluten</span></label>
+                        <label class="pref-chip"><input type="checkbox" name="allergy" value="lactose"><span>Lactose</span></label>
+                        <label class="pref-chip"><input type="checkbox" name="allergy" value="nuts"><span>Fruits à coque</span></label>
+                        <label class="pref-chip"><input type="checkbox" name="allergy" value="eggs"><span>Œufs</span></label>
+                        <label class="pref-chip"><input type="checkbox" name="allergy" value="seafood"><span>Fruits de mer</span></label>
+                        <label class="pref-chip"><input type="checkbox" name="allergy" value="soy"><span>Soja</span></label>
+                    </div>
+                </div>
+
+                <div class="prefs-section">
+                    <h3>👨‍🍳 Niveau en cuisine</h3>
+                    <div class="prefs-grid cols-3">
+                        <label class="pref-option">
+                            <input type="radio" name="level" value="beginner" checked>
+                            <span class="pref-card vertical"><span>🥄</span><span>Débutant</span></span>
+                        </label>
+                        <label class="pref-option">
+                            <input type="radio" name="level" value="intermediate">
+                            <span class="pref-card vertical"><span>🍳</span><span>Intermédiaire</span></span>
+                        </label>
+                        <label class="pref-option">
+                            <input type="radio" name="level" value="advanced">
+                            <span class="pref-card vertical"><span>👨‍🍳</span><span>Avancé</span></span>
+                        </label>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-full bounce-click" id="prefs-done">Terminer</button>
+            </div>
+        </div>
+
+        <!-- ==================== QUIZ RESULT ==================== -->
+        <div class="screen" id="quiz-result">
+            <div class="result-content">
+                <div class="result-confetti" id="result-confetti"></div>
+                <span class="badge-new">TON PROFIL</span>
+                <div class="result-profile-card glass-card">
+                    <span class="result-emoji" id="result-emoji">🍝</span>
+                    <h1 id="result-name">L'Italien</h1>
+                    <p id="result-desc">Tu craques pour les saveurs méditerranéennes</p>
+                    <div class="result-tags" id="result-tags"></div>
+                </div>
+                <button class="btn btn-primary btn-full bounce-click" id="result-continue">Créer mon compte</button>
+            </div>
+        </div>
+
+        <!-- ==================== AUTH ==================== -->
         <div class="screen" id="auth">
             <div class="auth-content scroll-y">
                 <div class="auth-header">
                     <span class="auth-icon">👋</span>
-                    <h2>Bienvenue !</h2>
-                    <p>Sauvegarde ta progression pour grimper dans les ligues.</p>
+                    <h2 id="auth-title">Crée ton compte</h2>
+                    <p>Sauvegarde ta progression et rejoins les ligues !</p>
                 </div>
                 <form id="auth-form" class="glass-form">
                     <div class="input-group" id="group-username">
@@ -75,7 +189,7 @@
                         <label>Mot de passe</label>
                         <input type="password" id="input-password" placeholder="••••••••">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-full bounce-click" id="auth-submit">C'est parti</button>
+                    <button type="submit" class="btn btn-primary btn-full bounce-click">C'est parti</button>
                 </form>
                 <p class="auth-switch">
                     <span id="auth-switch-text">Déjà un compte ?</span>
@@ -85,64 +199,88 @@
             </div>
         </div>
 
+        <!-- ==================== HOME ==================== -->
         <div class="screen" id="home">
             <header class="app-header glass-header">
                 <div class="header-brand">Yumr</div>
                 <div class="header-stats">
                     <div class="stat-pill fire" id="streak-display">
-                        <span>🔥</span> <strong id="streak-val">0</strong>
+                        <span>🔥</span><strong id="streak-val">0</strong>
                     </div>
-                    <div class="stat-pill xp" id="xp-display">
-                        <span>💎</span> <strong id="xp-val">0</strong>
+                    <div class="stat-pill xp">
+                        <span>💎</span><strong id="xp-val">0</strong>
                     </div>
                 </div>
             </header>
 
             <div class="content-scroll scroll-y">
-                <div class="section-hero">
-                    <h1 id="greeting" style="margin-bottom: 16px;">À table, Chef !</h1>
-                    <div class="hero-card bounce-click" id="hero-card">
-                        <div class="hero-bg" id="hero-img"></div>
-                        <div class="hero-overlay">
-                            <span class="tag-premium">SUGGESTION DU JOUR</span>
-                            <h2 id="hero-title">Chargement...</h2>
-                            <div class="hero-meta">
-                                <span id="hero-time">⏱️ --min</span>
-                                <span id="hero-cal">🔥 --kcal</span>
-                            </div>
+                <!-- Greeting -->
+                <h1 id="greeting" class="home-greeting">Salut, Chef !</h1>
+
+                <!-- Daily Menu Card -->
+                <div class="daily-menu-card glass-card bounce-click" id="daily-menu-card">
+                    <div class="dmc-header">
+                        <span class="tag-premium">MENU DU JOUR</span>
+                        <button class="btn-icon-sm" id="regenerate-menu">🔄</button>
+                    </div>
+                    <div class="dmc-content" id="daily-menu-preview">
+                        <div class="dmc-empty">
+                            <span>🍽️</span>
+                            <p>Génère ton menu personnalisé</p>
+                            <button class="btn btn-primary bounce-click" id="generate-menu-btn">Générer mon menu</button>
                         </div>
                     </div>
                 </div>
 
+                <!-- Quick Actions -->
                 <div class="quick-grid">
                     <button class="quick-btn bounce-click" data-action="fridge">
                         <span class="qb-icon">🧊</span>
-                        <span class="qb-label">Frigo</span>
+                        <span class="qb-label">Mon Frigo</span>
+                        <span class="qb-badge" id="fridge-count">0</span>
                     </button>
                     <button class="quick-btn bounce-click" data-action="shopping">
                         <span class="qb-icon">🛒</span>
                         <span class="qb-label">Courses</span>
+                        <span class="qb-badge" id="shopping-count">0</span>
                     </button>
-                    <button class="quick-btn bounce-click" data-action="challenge">
-                        <span class="qb-icon">🎯</span>
-                        <span class="qb-label">Défi</span>
+                    <button class="quick-btn bounce-click" data-action="favorites">
+                        <span class="qb-icon">❤️</span>
+                        <span class="qb-label">Favoris</span>
+                        <span class="qb-badge" id="favorites-count">0</span>
                     </button>
                 </div>
 
-                <div class="section-feed">
-                    <h3 style="margin-bottom: 16px;">Pour toi</h3>
-                    <div id="feed-list"></div>
+                <!-- Daily Challenge -->
+                <div class="challenge-card glass-card bounce-click" id="challenge-card">
+                    <div class="challenge-icon">🎯</div>
+                    <div class="challenge-info">
+                        <span class="challenge-label">DÉFI DU JOUR</span>
+                        <h3 id="challenge-title">Cuisine un plat végétarien</h3>
+                        <div class="challenge-reward">+50 XP</div>
+                    </div>
+                    <div class="challenge-progress">
+                        <div class="challenge-progress-fill" id="challenge-progress"></div>
+                    </div>
                 </div>
-                
-                <div style="height: 100px;"></div>
+
+                <!-- Feed Section -->
+                <div class="section-header">
+                    <h2>Pour toi</h2>
+                    <button class="btn-link">Voir tout</button>
+                </div>
+                <div id="feed-list"></div>
+
+                <div style="height: 120px;"></div>
             </div>
         </div>
 
+        <!-- ==================== EXPLORE ==================== -->
         <div class="screen" id="explore">
             <div class="header-search glass-header">
                 <div class="search-bar">
                     <span>🔍</span>
-                    <input type="text" placeholder="Recettes, ingrédients..." id="search-input">
+                    <input type="text" placeholder="Rechercher une recette..." id="search-input">
                 </div>
             </div>
             <div class="content-scroll scroll-y" style="padding-top: 80px;">
@@ -150,28 +288,52 @@
                     <button class="filter-chip active" data-filter="all">Tout</button>
                     <button class="filter-chip" data-filter="quick">⚡ Rapide</button>
                     <button class="filter-chip" data-filter="healthy">🥗 Healthy</button>
-                    <button class="filter-chip" data-filter="dessert">🍰 Sucré</button>
+                    <button class="filter-chip" data-filter="comfort">🍕 Comfort</button>
+                    <button class="filter-chip" data-filter="dessert">🍰 Dessert</button>
                 </div>
                 <div class="recipes-grid" id="recipes-grid"></div>
-                <div style="height: 100px;"></div>
+                <div style="height: 120px;"></div>
             </div>
         </div>
 
+        <!-- ==================== SOCIAL / LEAGUES ==================== -->
         <div class="screen" id="social">
+            <header class="app-header glass-header">
+                <h2>Classement</h2>
+                <div class="league-timer-small" id="league-timer-small">2j 14h</div>
+            </header>
             <div class="content-scroll scroll-y">
-                <div class="league-dashboard">
-                    <div class="league-card glass-card">
-                        <div class="league-icon-glow" id="league-icon">🏆</div>
-                        <h2 id="league-name">Ligue Bronze</h2>
-                        <p class="league-timer">Fin dans 2j 14h</p>
+                <!-- League Card -->
+                <div class="league-hero-card" id="league-hero">
+                    <div class="league-glow"></div>
+                    <div class="league-icon-big" id="league-icon-big">🥉</div>
+                    <h1 id="league-name">Ligue Bronze</h1>
+                    <p class="league-subtitle">Top 5 = Promotion 🚀</p>
+                    <div class="league-progress-bar">
+                        <div class="league-progress-fill" id="league-progress-fill"></div>
                     </div>
-                    <h3 style="margin: 20px 0 10px;">Classement</h3>
+                    <p class="league-next" id="league-next">Encore 100 XP pour l'Argent</p>
+                </div>
+
+                <!-- Leaderboard -->
+                <div class="leaderboard-section">
+                    <h3>Cette semaine</h3>
                     <div class="leaderboard glass-card" id="leaderboard-list"></div>
                 </div>
-                <div style="height: 100px;"></div>
+
+                <!-- Your Position -->
+                <div class="your-position glass-card" id="your-position">
+                    <span class="yp-rank">#45</span>
+                    <img src="https://i.pravatar.cc/40?img=12" class="yp-avatar">
+                    <span class="yp-name">Toi</span>
+                    <span class="yp-xp">0 XP</span>
+                </div>
+
+                <div style="height: 120px;"></div>
             </div>
         </div>
 
+        <!-- ==================== PROFILE ==================== -->
         <div class="screen" id="profile">
             <div class="content-scroll scroll-y">
                 <div class="profile-header">
@@ -181,16 +343,22 @@
                     </div>
                     <h2 id="profile-name">@Chef</h2>
                     <p id="profile-title">Apprenti Cuisinier</p>
+                    <div class="xp-bar-container">
+                        <div class="xp-bar">
+                            <div class="xp-bar-fill" id="profile-xp-bar"></div>
+                        </div>
+                        <span class="xp-text" id="profile-xp-text">0/100 XP</span>
+                    </div>
                 </div>
-                
+
                 <div class="stats-row">
                     <div class="stat-box glass-card">
                         <span class="sb-val" id="stat-cooked">0</span>
-                        <span class="sb-label">Plats</span>
+                        <span class="sb-label">Plats cuisinés</span>
                     </div>
                     <div class="stat-box glass-card">
                         <span class="sb-val" id="stat-streak">0</span>
-                        <span class="sb-label">Jours</span>
+                        <span class="sb-label">Jours de streak</span>
                     </div>
                     <div class="stat-box glass-card">
                         <span class="sb-val" id="stat-badges">0</span>
@@ -198,30 +366,51 @@
                     </div>
                 </div>
 
+                <!-- Badges Section -->
+                <div class="section-header">
+                    <h2>Mes badges</h2>
+                </div>
+                <div class="badges-grid" id="badges-grid"></div>
+
+                <!-- Menu List -->
                 <div class="menu-list glass-card">
-                    <button class="menu-item bounce-click">
-                        <span>⚙️</span> Paramètres
+                    <button class="menu-item bounce-click" data-action="settings">
+                        <span>⚙️</span><span>Paramètres</span><span class="menu-arrow">›</span>
                     </button>
-                    <button class="menu-item bounce-click">
-                        <span>❤️</span> Favoris
+                    <button class="menu-item bounce-click" data-action="favorites">
+                        <span>❤️</span><span>Mes favoris</span><span class="menu-arrow">›</span>
+                    </button>
+                    <button class="menu-item bounce-click" data-action="history">
+                        <span>📜</span><span>Historique</span><span class="menu-arrow">›</span>
+                    </button>
+                    <button class="menu-item bounce-click" data-action="mealprep">
+                        <span>📅</span><span>Meal Prep Semaine</span><span class="menu-arrow">›</span>
                     </button>
                     <button class="menu-item bounce-click danger" id="btn-logout">
-                        <span>🚪</span> Déconnexion
+                        <span>🚪</span><span>Déconnexion</span>
                     </button>
                 </div>
-                <div style="height: 100px;"></div>
+
+                <div style="height: 120px;"></div>
             </div>
         </div>
 
+        <!-- ==================== COOKING MODE ==================== -->
         <div class="screen" id="cooking">
             <div class="cooking-header">
                 <button class="btn-icon bounce-click" id="cooking-close">✕</button>
-                <span id="cooking-step-indicator">ÉTAPE 1</span>
-                <div style="width: 40px;"></div>
+                <span id="cooking-recipe-name">Recette</span>
+                <button class="btn-icon bounce-click" id="cooking-fav">🤍</button>
             </div>
-            
-            <div class="cooking-content">
-                <div class="timer-container">
+
+            <div class="cooking-progress-bar">
+                <div class="cooking-progress-fill" id="cooking-progress-fill"></div>
+            </div>
+
+            <div class="cooking-content scroll-y">
+                <div class="step-indicator" id="step-indicator">ÉTAPE 1/5</div>
+
+                <div class="timer-container" id="timer-container">
                     <svg class="timer-svg" viewBox="0 0 100 100">
                         <circle class="timer-bg" cx="50" cy="50" r="45"></circle>
                         <circle class="timer-progress" id="timer-ring" cx="50" cy="50" r="45"></circle>
@@ -231,18 +420,346 @@
                         <button class="btn-timer bounce-click" id="timer-toggle">▶</button>
                     </div>
                 </div>
-                
+
                 <div class="step-card glass-card">
-                    <h3 id="step-text">Préparez les ingrédients.</h3>
+                    <p id="step-text">Chargement...</p>
+                </div>
+
+                <div class="step-ingredients glass-card" id="step-ingredients">
+                    <h4>Ingrédients pour cette étape</h4>
+                    <ul id="step-ingredients-list"></ul>
                 </div>
             </div>
 
             <div class="cooking-footer">
-                <button class="btn btn-secondary bounce-click" id="step-prev">Précédent</button>
-                <button class="btn btn-primary bounce-click" id="step-next">Suivant</button>
+                <button class="btn btn-secondary bounce-click" id="step-prev" disabled>← Précédent</button>
+                <button class="btn btn-primary bounce-click" id="step-next">Suivant →</button>
             </div>
         </div>
 
+        <!-- ==================== MODALS ==================== -->
+
+        <!-- Modal: Generate Menu -->
+        <div class="modal" id="modal-menu-gen">
+            <div class="modal-backdrop" onclick="closeModal('modal-menu-gen')"></div>
+            <div class="modal-content glass-card">
+                <div class="modal-header">
+                    <h2>🍽️ Génère ton menu</h2>
+                    <button class="btn-icon" onclick="closeModal('modal-menu-gen')">✕</button>
+                </div>
+                <div class="modal-body scroll-y">
+                    <!-- Budget -->
+                    <div class="menu-gen-section">
+                        <h4>💰 Budget</h4>
+                        <div class="option-row">
+                            <label class="option-card"><input type="radio" name="budget" value="low" checked><span>€</span><small>Économique</small></label>
+                            <label class="option-card"><input type="radio" name="budget" value="medium"><span>€€</span><small>Standard</small></label>
+                            <label class="option-card"><input type="radio" name="budget" value="high"><span>€€€</span><small>Gourmet</small></label>
+                        </div>
+                    </div>
+
+                    <!-- Servings -->
+                    <div class="menu-gen-section">
+                        <h4>👥 Nombre de personnes</h4>
+                        <div class="stepper">
+                            <button class="stepper-btn" id="servings-minus">−</button>
+                            <span class="stepper-value" id="servings-value">2</span>
+                            <button class="stepper-btn" id="servings-plus">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Time -->
+                    <div class="menu-gen-section">
+                        <h4>⏱️ Temps disponible</h4>
+                        <div class="option-row">
+                            <label class="option-card"><input type="radio" name="time" value="15"><span>15min</span><small>Express</small></label>
+                            <label class="option-card"><input type="radio" name="time" value="30" checked><span>30min</span><small>Normal</small></label>
+                            <label class="option-card"><input type="radio" name="time" value="60"><span>1h</span><small>Élaboré</small></label>
+                            <label class="option-card"><input type="radio" name="time" value="999"><span>∞</span><small>Illimité</small></label>
+                        </div>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="menu-gen-section">
+                        <h4>🧀 Options</h4>
+                        <label class="toggle-option">
+                            <span>Inclure du fromage</span>
+                            <input type="checkbox" id="opt-cheese" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label class="toggle-option">
+                            <span>Suggérer un vin</span>
+                            <input type="checkbox" id="opt-wine">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label class="toggle-option">
+                            <span>Utiliser mon frigo en priorité</span>
+                            <input type="checkbox" id="opt-fridge">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Meals -->
+                    <div class="menu-gen-section">
+                        <h4>🍴 Repas à générer</h4>
+                        <div class="meals-checkboxes">
+                            <label class="meal-check"><input type="checkbox" name="meal" value="starter"><span>🥗 Entrée</span></label>
+                            <label class="meal-check"><input type="checkbox" name="meal" value="main" checked><span>🍽️ Plat</span></label>
+                            <label class="meal-check"><input type="checkbox" name="meal" value="dessert"><span>🍰 Dessert</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary btn-full bounce-click" id="btn-generate-menu">✨ Générer mon menu</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Menu Result -->
+        <div class="modal" id="modal-menu-result">
+            <div class="modal-backdrop" onclick="closeModal('modal-menu-result')"></div>
+            <div class="modal-content glass-card modal-large">
+                <div class="modal-header">
+                    <h2>🍽️ Ton menu du jour</h2>
+                    <button class="btn-icon" onclick="closeModal('modal-menu-result')">✕</button>
+                </div>
+                <div class="modal-body scroll-y" id="menu-result-content"></div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary bounce-click" onclick="openModal('modal-menu-gen')">🔄 Régénérer</button>
+                    <button class="btn btn-primary bounce-click" id="btn-start-cooking-menu">🍳 Cuisiner</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Fridge -->
+        <div class="modal" id="modal-fridge">
+            <div class="modal-backdrop" onclick="closeModal('modal-fridge')"></div>
+            <div class="modal-content glass-card">
+                <div class="modal-header">
+                    <h2>🧊 Mon Frigo</h2>
+                    <button class="btn-icon" onclick="closeModal('modal-fridge')">✕</button>
+                </div>
+                <div class="modal-body scroll-y">
+                    <div class="fridge-add">
+                        <input type="text" id="fridge-input" placeholder="Ajouter un ingrédient...">
+                        <button class="btn btn-primary" id="btn-add-fridge">+</button>
+                    </div>
+                    <div id="fridge-suggestions" class="fridge-suggestions"></div>
+                    <div id="fridge-list" class="fridge-list"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary btn-full bounce-click" id="btn-fridge-recipes">🍳 Voir les recettes possibles</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Shopping -->
+        <div class="modal" id="modal-shopping">
+            <div class="modal-backdrop" onclick="closeModal('modal-shopping')"></div>
+            <div class="modal-content glass-card">
+                <div class="modal-header">
+                    <h2>🛒 Liste de courses</h2>
+                    <button class="btn-icon" onclick="closeModal('modal-shopping')">✕</button>
+                </div>
+                <div class="modal-body scroll-y">
+                    <div class="shopping-add">
+                        <input type="text" id="shopping-input" placeholder="Ajouter un article...">
+                        <button class="btn btn-primary" id="btn-add-shopping">+</button>
+                    </div>
+                    <div id="shopping-list" class="shopping-list"></div>
+                </div>
+                <div class="modal-footer cols-2">
+                    <button class="btn btn-secondary bounce-click" id="btn-clear-shopping">🗑️ Vider</button>
+                    <button class="btn btn-primary bounce-click" id="btn-share-shopping">📤 Partager</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Favorites -->
+        <div class="modal" id="modal-favorites">
+            <div class="modal-backdrop" onclick="closeModal('modal-favorites')"></div>
+            <div class="modal-content glass-card modal-large">
+                <div class="modal-header">
+                    <h2>❤️ Mes favoris</h2>
+                    <button class="btn-icon" onclick="closeModal('modal-favorites')">✕</button>
+                </div>
+                <div class="modal-body scroll-y" id="favorites-list"></div>
+            </div>
+        </div>
+
+        <!-- Modal: Settings -->
+        <div class="modal" id="modal-settings">
+            <div class="modal-backdrop" onclick="closeModal('modal-settings')"></div>
+            <div class="modal-content glass-card modal-large">
+                <div class="modal-header">
+                    <h2>⚙️ Paramètres</h2>
+                    <button class="btn-icon" onclick="closeModal('modal-settings')">✕</button>
+                </div>
+                <div class="modal-body scroll-y">
+                    <!-- Profile Section -->
+                    <div class="settings-section">
+                        <h4>👤 Profil</h4>
+                        <div class="input-group">
+                            <label>Pseudo</label>
+                            <input type="text" id="settings-username" placeholder="Ton pseudo">
+                        </div>
+                        <div class="input-group">
+                            <label>Email</label>
+                            <input type="email" id="settings-email" placeholder="Ton email">
+                        </div>
+                    </div>
+
+                    <!-- Diet Section -->
+                    <div class="settings-section">
+                        <h4>🍽️ Régime alimentaire</h4>
+                        <select id="settings-diet" class="select-field">
+                            <option value="omnivore">Omnivore</option>
+                            <option value="vegetarian">Végétarien</option>
+                            <option value="vegan">Végan</option>
+                            <option value="flexitarian">Flexitarien</option>
+                            <option value="pescatarian">Pescétarien</option>
+                            <option value="keto">Keto</option>
+                            <option value="paleo">Paléo</option>
+                        </select>
+                    </div>
+
+                    <!-- Allergies Section -->
+                    <div class="settings-section">
+                        <h4>⚠️ Allergies</h4>
+                        <div class="settings-chips" id="settings-allergies">
+                            <label class="pref-chip"><input type="checkbox" name="settings-allergy" value="gluten"><span>Gluten</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="settings-allergy" value="lactose"><span>Lactose</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="settings-allergy" value="nuts"><span>Fruits à coque</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="settings-allergy" value="eggs"><span>Œufs</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="settings-allergy" value="seafood"><span>Fruits de mer</span></label>
+                            <label class="pref-chip"><input type="checkbox" name="settings-allergy" value="soy"><span>Soja</span></label>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="settings-section">
+                        <h4>🔔 Notifications</h4>
+                        <label class="toggle-option">
+                            <span>Rappel quotidien</span>
+                            <input type="checkbox" id="settings-notif-daily" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label class="toggle-option">
+                            <span>Rappel de streak</span>
+                            <input type="checkbox" id="settings-notif-streak" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label class="toggle-option">
+                            <span>Nouvelles recettes</span>
+                            <input type="checkbox" id="settings-notif-recipes">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- App -->
+                    <div class="settings-section">
+                        <h4>📱 Application</h4>
+                        <label class="toggle-option">
+                            <span>Mode sombre</span>
+                            <input type="checkbox" id="settings-dark-mode" checked disabled>
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <label class="toggle-option">
+                            <span>Sons</span>
+                            <input type="checkbox" id="settings-sounds">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div class="settings-section danger-zone">
+                        <h4>⚠️ Zone danger</h4>
+                        <button class="btn btn-danger btn-full" id="btn-delete-account">Supprimer mon compte</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary btn-full bounce-click" id="btn-save-settings">💾 Sauvegarder</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Recipe Detail -->
+        <div class="modal" id="modal-recipe">
+            <div class="modal-backdrop" onclick="closeModal('modal-recipe')"></div>
+            <div class="modal-content glass-card modal-fullscreen">
+                <div class="recipe-hero" id="recipe-hero">
+                    <button class="btn-icon recipe-close" onclick="closeModal('modal-recipe')">✕</button>
+                    <button class="btn-icon recipe-fav" id="recipe-fav-btn">🤍</button>
+                </div>
+                <div class="recipe-details scroll-y">
+                    <div class="recipe-header">
+                        <h1 id="recipe-title">Titre recette</h1>
+                        <div class="recipe-meta">
+                            <span id="recipe-time">⏱️ 30min</span>
+                            <span id="recipe-cal">🔥 450kcal</span>
+                            <span id="recipe-cost">💰 €€</span>
+                            <span id="recipe-difficulty">👨‍🍳 Facile</span>
+                        </div>
+                    </div>
+                    
+                    <div class="recipe-section">
+                        <h3>📝 Ingrédients</h3>
+                        <ul id="recipe-ingredients" class="ingredients-list"></ul>
+                    </div>
+
+                    <div class="recipe-section">
+                        <h3>🍳 Préparation</h3>
+                        <ol id="recipe-steps" class="steps-list"></ol>
+                    </div>
+
+                    <div class="recipe-section" id="recipe-wine-section" style="display: none;">
+                        <h3>🍷 Accord vin</h3>
+                        <p id="recipe-wine"></p>
+                    </div>
+
+                    <div class="recipe-actions">
+                        <button class="btn btn-secondary bounce-click" id="btn-add-to-shopping">🛒 Ajouter aux courses</button>
+                        <button class="btn btn-primary bounce-click" id="btn-start-recipe">🍳 Cuisiner</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal: Meal Prep -->
+        <div class="modal" id="modal-mealprep">
+            <div class="modal-backdrop" onclick="closeModal('modal-mealprep')"></div>
+            <div class="modal-content glass-card modal-large">
+                <div class="modal-header">
+                    <h2>📅 Meal Prep Semaine</h2>
+                    <button class="btn-icon" onclick="closeModal('modal-mealprep')">✕</button>
+                </div>
+                <div class="modal-body scroll-y">
+                    <div class="mealprep-options">
+                        <div class="menu-gen-section">
+                            <h4>📆 Nombre de jours</h4>
+                            <div class="option-row">
+                                <label class="option-card"><input type="radio" name="mealprep-days" value="5" checked><span>5</span><small>Semaine</small></label>
+                                <label class="option-card"><input type="radio" name="mealprep-days" value="7"><span>7</span><small>Complète</small></label>
+                            </div>
+                        </div>
+                        <div class="menu-gen-section">
+                            <h4>🍴 Repas</h4>
+                            <div class="meals-checkboxes">
+                                <label class="meal-check"><input type="checkbox" name="mealprep-meal" value="breakfast"><span>🥐 Petit-déj</span></label>
+                                <label class="meal-check"><input type="checkbox" name="mealprep-meal" value="lunch" checked><span>🍽️ Déjeuner</span></label>
+                                <label class="meal-check"><input type="checkbox" name="mealprep-meal" value="dinner" checked><span>🌙 Dîner</span></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="mealprep-result"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary btn-full bounce-click" id="btn-generate-mealprep">✨ Générer ma semaine</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level Up Overlay -->
         <div class="levelup-overlay" id="levelup-overlay">
             <div class="levelup-card">
                 <div class="levelup-anim">🎉</div>
@@ -252,12 +769,35 @@
             </div>
         </div>
 
+        <!-- XP Popup -->
+        <div class="xp-popup" id="xp-popup">
+            <span id="xp-popup-amount">+25 XP</span>
+        </div>
+
+        <!-- Toast Container -->
+        <div id="toast-container"></div>
+
+        <!-- Navigation Bar -->
         <nav class="nav-bar glass-nav" id="main-nav">
-            <button class="nav-btn active" data-target="home">🏠</button>
-            <button class="nav-btn" data-target="explore">🔍</button>
-            <button class="nav-btn fab-btn bounce-click" id="nav-cook">🍳</button>
-            <button class="nav-btn" data-target="social">🏆</button>
-            <button class="nav-btn" data-target="profile">👤</button>
+            <button class="nav-btn active" data-target="home">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Accueil</span>
+            </button>
+            <button class="nav-btn" data-target="explore">
+                <span class="nav-icon">🔍</span>
+                <span class="nav-label">Explorer</span>
+            </button>
+            <button class="nav-btn fab-btn bounce-click" id="nav-cook">
+                <span>🍳</span>
+            </button>
+            <button class="nav-btn" data-target="social">
+                <span class="nav-icon">🏆</span>
+                <span class="nav-label">Ligues</span>
+            </button>
+            <button class="nav-btn" data-target="profile">
+                <span class="nav-icon">👤</span>
+                <span class="nav-label">Profil</span>
+            </button>
         </nav>
     </div>
 
