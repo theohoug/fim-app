@@ -1,1068 +1,209 @@
-/* =====================================================
-   YUMR - Swipe. Cook. Enjoy.
-   Premium Culinary App
-   ===================================================== */
+/* YUMR - Complete App */
+const state={user:null,token:localStorage.getItem(‘yumr_token’),isRegister:false,setupStep:1,quizCount:30,diet:‘omnivore’,allergies:[],goal:‘none’,conditions:[],currentQ:0,answers:[],streak:0,xp:0,level:1,profile:null,fridge:[],favorites:JSON.parse(localStorage.getItem(‘yumr_fav’)||’[]’),shopping:[],todayMenu:null,menuOptions:{budget:‘low’,persons:2,time:30,difficulty:‘easy’}};
 
-const API_URL = 'https://foodmatchs-api-production.up.railway.app/api';
-
-// =====================================================
-// MOCK DATA
-// =====================================================
-
-const MOCK_FRIDGE = [
-    { id: '1', name: 'Œufs', quantity: '6', category: 'laitiers', icon: '🥚', expirationDate: '2024-12-15' },
-    { id: '2', name: 'Poulet', quantity: '500g', category: 'viandes', icon: '🍗', expirationDate: '2024-12-13' },
-    { id: '3', name: 'Tomates', quantity: '4', category: 'legumes', icon: '🍅', expirationDate: '2024-12-14' },
-    { id: '4', name: 'Parmesan', quantity: '150g', category: 'laitiers', icon: '🧀', expirationDate: '2024-12-20' },
-    { id: '5', name: 'Pâtes', quantity: '500g', category: 'epicerie', icon: '🍝', expirationDate: '2025-06-01' },
-    { id: '6', name: 'Crème fraîche', quantity: '20cl', category: 'laitiers', icon: '🥛', expirationDate: '2024-12-13' },
+const QUESTIONS=[
+{q:“Tu aimes les pizzas ?”,emoji:“🍕”,tags:[“italien”,“fromage”]},
+{q:“Fan de sushis ?”,emoji:“🍣”,tags:[“japonais”,“poisson”]},
+{q:“Les burgers c’est la vie ?”,emoji:“🍔”,tags:[“américain”,“viande”]},
+{q:“Tu kiffes les salades ?”,emoji:“🥗”,tags:[“healthy”,“végétarien”]},
+{q:“Pasta lover ?”,emoji:“🍝”,tags:[“italien”,“pâtes”]},
+{q:“Les tacos ça te parle ?”,emoji:“🌮”,tags:[“mexicain”,“épicé”]},
+{q:“Amateur de fruits de mer ?”,emoji:“🦐”,tags:[“poisson”,“luxe”]},
+{q:“Le fromage c’est sacré ?”,emoji:“🧀”,tags:[“fromage”,“français”]},
+{q:“Tu aimes le chocolat ?”,emoji:“🍫”,tags:[“sucré”,“dessert”]},
+{q:“Les plats épicés ça passe ?”,emoji:“🌶️”,tags:[“épicé”,“asiatique”]},
+{q:“Fan de barbecue ?”,emoji:“🍖”,tags:[“viande”,“grillé”]},
+{q:“Tu manges végétarien parfois ?”,emoji:“🥬”,tags:[“végétarien”,“healthy”]},
+{q:“Les soupes c’est ton truc ?”,emoji:“🍲”,tags:[“réconfort”,“healthy”]},
+{q:“Amateur de vin ?”,emoji:“🍷”,tags:[“alcool”,“français”]},
+{q:“Le petit-déj c’est important ?”,emoji:“🥐”,tags:[“matin”,“français”]},
+{q:“Tu aimes cuisiner toi-même ?”,emoji:“👨‍🍳”,tags:[“cuisine”,“passion”]},
+{q:“Fan de street food ?”,emoji:“🍜”,tags:[“asiatique”,“rapide”]},
+{q:“Le bio c’est important ?”,emoji:“🌱”,tags:[“bio”,“healthy”]},
+{q:“Tu aimes les desserts ?”,emoji:“🍰”,tags:[“sucré”,“gourmand”]},
+{q:“Les plats mijotés ?”,emoji:“🥘”,tags:[“réconfort”,“traditionnel”]},
+{q:“Fan de cuisine asiatique ?”,emoji:“🥡”,tags:[“asiatique”,“varié”]},
+{q:“Les brunchs du dimanche ?”,emoji:“🥞”,tags:[“weekend”,“social”]},
+{q:“Tu aimes le café ?”,emoji:“☕”,tags:[“boisson”,“énergie”]},
+{q:“La cuisine française ?”,emoji:“🇫🇷”,tags:[“français”,“traditionnel”]},
+{q:“Les plats healthy ?”,emoji:“💪”,tags:[“healthy”,“sport”]},
+{q:“Fan de glaces ?”,emoji:“🍦”,tags:[“sucré”,“été”]},
+{q:“Tu cuisines pour des amis ?”,emoji:“👥”,tags:[“social”,“partage”]},
+{q:“Les plats exotiques ?”,emoji:“🌍”,tags:[“monde”,“découverte”]},
+{q:“Le meal prep ça t’intéresse ?”,emoji:“📅”,tags:[“organisation”,“efficacité”]},
+{q:“Les cocktails ça te dit ?”,emoji:“🍹”,tags:[“alcool”,“fête”]}
 ];
 
-const MOCK_LEADERBOARD = [
-    { rank: 1, name: 'ChefPro99', points: 2847, avatar: 'https://i.pravatar.cc/100?img=1' },
-    { rank: 2, name: 'MarieFood', points: 2634, avatar: 'https://i.pravatar.cc/100?img=2' },
-    { rank: 3, name: 'CuistoMax', points: 2521, avatar: 'https://i.pravatar.cc/100?img=3' },
-    { rank: 4, name: 'GourmetLucie', points: 2398, avatar: 'https://i.pravatar.cc/100?img=4' },
-    { rank: 5, name: 'ChefThomas', points: 2256, avatar: 'https://i.pravatar.cc/100?img=5' },
-    { rank: 6, name: 'FoodieParis', points: 2134, avatar: 'https://i.pravatar.cc/100?img=6' },
-    { rank: 7, name: 'CookMaster', points: 2089, avatar: 'https://i.pravatar.cc/100?img=7' },
-    { rank: 8, name: 'ChefSophie', points: 1987, avatar: 'https://i.pravatar.cc/100?img=8' },
-    { rank: 9, name: 'GastroNico', points: 1856, avatar: 'https://i.pravatar.cc/100?img=9' },
-    { rank: 10, name: 'YumrFan', points: 1743, avatar: 'https://i.pravatar.cc/100?img=10' },
+const PROFILES=[
+{name:“Le Gourmet”,emoji:“🍳”,desc:“Tu apprécies la bonne cuisine et les saveurs authentiques.”,tags:[“Curieux”,“Épicurien”,“Traditionnel”]},
+{name:“L’Aventurier”,emoji:“🌍”,desc:“Tu adores découvrir de nouvelles saveurs du monde entier.”,tags:[“Explorateur”,“Ouvert”,“Audacieux”]},
+{name:“Le Healthy”,emoji:“🥗”,desc:“Manger sain et équilibré, c’est ta priorité.”,tags:[“Équilibré”,“Sportif”,“Conscient”]},
+{name:“Le Gourmand”,emoji:“🍰”,desc:“Tu ne dis jamais non à un bon dessert ou un plat réconfortant.”,tags:[“Généreux”,“Convivial”,“Heureux”]},
+{name:“Le Social”,emoji:“👥”,desc:“Pour toi, manger c’est avant tout partager.”,tags:[“Convivial”,“Fêtard”,“Chaleureux”]},
+{name:“Le Rapide”,emoji:“⚡”,desc:“Efficace en cuisine, tu optimises ton temps.”,tags:[“Pratique”,“Efficace”,“Malin”]}
 ];
 
-const MOCK_BADGES = [
-    { id: 1, name: 'Premier Plat', icon: '🥇', desc: 'Cuisiner sa première recette', unlocked: true },
-    { id: 2, name: 'Streak 7j', icon: '🔥', desc: '7 jours consécutifs', unlocked: true },
-    { id: 3, name: 'Social Chef', icon: '👥', desc: '100 abonnés', unlocked: false },
-    { id: 4, name: 'Globe-trotter', icon: '🌍', desc: '10 cuisines différentes', unlocked: true },
-    { id: 5, name: 'Veggie Week', icon: '🌱', desc: '7 jours végétarien', unlocked: false },
-    { id: 6, name: 'Sommelier', icon: '🍷', desc: '50 accords mets-vins', unlocked: false },
-    { id: 7, name: 'Économe', icon: '💰', desc: '10 repas à moins de 5€', unlocked: true },
-    { id: 8, name: 'Batch Master', icon: '📅', desc: '4 meal preps complétés', unlocked: false },
-    { id: 9, name: 'Streak 30j', icon: '🔥🔥', desc: '30 jours consécutifs', unlocked: false },
+const RECIPES=[
+{id:1,name:“Poulet rôti aux herbes”,type:“main”,time:45,cost:“€€”,img:“https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400”,ingredients:[“1 poulet”,“Herbes de Provence”,“Beurre”,“Ail”],steps:[“Préchauffer le four à 200°C”,“Badigeonner le poulet de beurre”,“Ajouter les herbes et l’ail”,“Enfourner 45 min”],calories:450},
+{id:2,name:“Salade César”,type:“starter”,time:15,cost:“€”,img:“https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=400”,ingredients:[“Laitue romaine”,“Parmesan”,“Croûtons”,“Sauce César”],steps:[“Laver la salade”,“Préparer la sauce”,“Mélanger le tout”],calories:280},
+{id:3,name:“Tiramisu”,type:“dessert”,time:30,cost:“€€”,img:“https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400”,ingredients:[“Mascarpone”,“Café”,“Biscuits”,“Cacao”],steps:[“Préparer le café”,“Monter les œufs et le mascarpone”,“Alterner les couches”],calories:420},
+{id:4,name:“Pasta carbonara”,type:“main”,time:20,cost:“€”,img:“https://images.unsplash.com/photo-1612874742237-6526221588e3?w=400”,ingredients:[“Spaghetti”,“Guanciale”,“Œufs”,“Pecorino”],steps:[“Cuire les pâtes”,“Faire revenir le guanciale”,“Mélanger œufs et fromage”,“Assembler hors du feu”],calories:520},
+{id:5,name:“Buddha bowl”,type:“main”,time:25,cost:“€”,img:“https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400”,ingredients:[“Quinoa”,“Pois chiches”,“Avocat”,“Légumes”],steps:[“Cuire le quinoa”,“Rôtir les pois chiches”,“Assembler le bowl”],calories:380},
+{id:6,name:“Tarte aux pommes”,type:“dessert”,time:50,cost:“€”,img:“https://images.unsplash.com/photo-1568571780765-9276ac8b75a2?w=400”,ingredients:[“Pâte brisée”,“Pommes”,“Sucre”,“Cannelle”],steps:[“Étaler la pâte”,“Disposer les pommes”,“Saupoudrer de sucre”,“Enfourner 40 min”],calories:320},
+{id:7,name:“Risotto aux champignons”,type:“main”,time:35,cost:“€€”,img:“https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=400”,ingredients:[“Riz arborio”,“Champignons”,“Parmesan”,“Bouillon”],steps:[“Faire revenir les champignons”,“Ajouter le riz”,“Mouiller progressivement”],calories:450},
+{id:8,name:“Soupe miso”,type:“starter”,time:15,cost:“€”,img:“https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400”,ingredients:[“Pâte miso”,“Tofu”,“Algues wakame”,“Ciboule”],steps:[“Chauffer l’eau”,“Diluer le miso”,“Ajouter tofu et algues”],calories:85}
 ];
 
-const QUIZ_IMAGES = {
-    'pizza': 'photo-1565299624946-b28f40a0ae38',
-    'pasta': 'photo-1621996346565-e3dbc646d9a9',
-    'sushi': 'photo-1579871494447-9811cf80d66c',
-    'burger': 'photo-1568901346375-23c9450c58cd',
-    'salade': 'photo-1512621776951-a57141f2eefd',
-    'dessert': 'photo-1551024601-bec78aea704b',
-    'viande': 'photo-1600891964092-4316c288032e',
-    'poisson': 'photo-1534604973900-c43ab4c2e0ab',
-    'asiatique': 'photo-1569718212165-3a8278d5f624',
-    'mexicain': 'photo-1565299585323-38d6b0865b47',
-    'default': 'photo-1504674900247-0877df9cc836'
-};
-
-const RECIPE_IMAGES = {
-    'starter': 'photo-1512621776951-a57141f2eefd',
-    'main': 'photo-1546069901-ba9599a7e63c',
-    'dessert': 'photo-1551024601-bec78aea704b',
-    'cheese': 'photo-1452195100486-9cc805987862',
-    'wine': 'photo-1510812431401-41d2bd2722f3'
-};
-
-// =====================================================
-// STATE
-// =====================================================
-
-const state = {
-    user: null,
-    token: null,
-    questionCount: 30,
-    diet: 'omnivore',
-    allergies: [],
-    goal: 'none',
-    questions: [],
-    answers: [],
-    currentQuestion: 0,
-    calculatedProfile: null,
-    recipes: [],
-    favorites: JSON.parse(localStorage.getItem('yumr_favorites') || '[]'),
-    fridge: [...MOCK_FRIDGE],
-    todayMenu: null,
-    menuOptions: {
-        budget: 'medium',
-        persons: 2,
-        maxTime: 30,
-        useFridge: false,
-        cheese: false,
-        wine: false
-    },
-    currentSlide: 1
-};
-
-// =====================================================
-// HELPERS
-// =====================================================
-
-const $ = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
-
-async function api(endpoint, opts = {}) {
-    const headers = { 'Content-Type': 'application/json', ...opts.headers };
-    if (state.token) headers['Authorization'] = `Bearer ${state.token}`;
-    const res = await fetch(`${API_URL}${endpoint}`, { ...opts, headers });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Erreur');
-    return data;
-}
-
-function showScreen(id) {
-    $$('.screen').forEach(s => s.classList.remove('active'));
-    $(`#${id}`).classList.add('active');
-    window.scrollTo(0, 0);
-}
-
-function showTab(tab) {
-    $$('.tab-page').forEach(t => t.classList.remove('active'));
-    $$('.nav-item').forEach(b => b.classList.remove('active'));
-    $(`#tab-${tab}`)?.classList.add('active');
-    $(`.nav-item[data-tab="${tab}"]`)?.classList.add('active');
-    
-    if (tab === 'explore') loadRecipes();
-    if (tab === 'leagues') loadLeaderboard();
-    if (tab === 'profile') updateProfileUI();
-}
-
-function showModal(id) { $(`#${id}`).classList.add('active'); }
-function hideModal(id) { $(`#${id}`).classList.remove('active'); }
-
-function toast(msg, type = '') {
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.textContent = msg;
-    $('#toast-container').appendChild(t);
-    setTimeout(() => t.remove(), 3000);
-}
-
-function showXP(amount) {
-    const popup = $('#xp-popup');
-    $('.xp-popup-text').textContent = `+${amount} XP`;
-    popup.classList.add('show');
-    setTimeout(() => popup.classList.remove('show'), 2000);
-}
-
-function getQuizImage(question) {
-    const text = (question.question || '').toLowerCase();
-    for (const [key, val] of Object.entries(QUIZ_IMAGES)) {
-        if (text.includes(key)) return `https://images.unsplash.com/${val}?w=400&h=250&fit=crop`;
-    }
-    return `https://images.unsplash.com/${QUIZ_IMAGES.default}?w=400&h=250&fit=crop`;
-}
-
-function getRecipeImage(recipe) {
-    const type = recipe?.type || 'main';
-    const photoId = RECIPE_IMAGES[type] || RECIPE_IMAGES.main;
-    return `https://images.unsplash.com/${photoId}?w=400&h=300&fit=crop`;
-}
-
-function getDaysUntilExpiry(date) {
-    const today = new Date();
-    const expiry = new Date(date);
-    const diff = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-    return diff;
-}
-
-// =====================================================
-// INITIALIZATION
-// =====================================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    initEventListeners();
-    initSwipe();
-    
-    // Splash screen
-    setTimeout(() => {
-        checkAuth();
-    }, 2000);
-});
-
-function checkAuth() {
-    const token = localStorage.getItem('yumr_token');
-    const user = localStorage.getItem('yumr_user');
-    
-    if (token && user) {
-        state.token = token;
-        state.user = JSON.parse(user);
-        loadMainApp();
-    } else {
-        showScreen('welcome-screen');
-    }
-}
-
-// =====================================================
-// EVENT LISTENERS
-// =====================================================
-
-function initEventListeners() {
-    // Welcome screen
-    $('#welcome-start-btn').onclick = () => showScreen('quiz-setup-screen');
-    $('#welcome-login-btn').onclick = () => showScreen('login-screen');
-    
-    // Welcome slides
-    $$('.dot').forEach(dot => {
-        dot.onclick = () => goToSlide(parseInt(dot.dataset.slide));
-    });
-    
-    // Login
-    $('#login-back-btn').onclick = () => showScreen('welcome-screen');
-    $('#login-form').onsubmit = handleLogin;
-    
-    // Quiz setup
-    $('#quiz-setup-back-btn').onclick = () => showScreen('welcome-screen');
-    $$('input[name="quiz-count"]').forEach(i => i.onchange = () => state.questionCount = +i.value);
-    $$('input[name="diet"]').forEach(i => i.onchange = () => state.diet = i.value);
-    $$('.allergy-chip input').forEach(i => i.onchange = () => {
-        state.allergies = [...$$('.allergy-chip input:checked')].map(c => c.value);
-    });
-    $$('input[name="goal"]').forEach(i => i.onchange = () => state.goal = i.value);
-    $('#start-quiz-btn').onclick = startQuiz;
-    
-    // Quiz
-    $('#quiz-close-btn').onclick = () => { if (confirm('Quitter le quiz ?')) showScreen('quiz-setup-screen'); };
-    $('#quiz-nope-btn').onclick = () => answerQuestion(false);
-    $('#quiz-love-btn').onclick = () => answerQuestion(true);
-    
-    // Result
-    $('#create-account-btn').onclick = () => {
-        if (state.calculatedProfile) $('#register-profile').textContent = state.calculatedProfile.name;
-        showScreen('register-screen');
-    };
-    $('#skip-account-btn').onclick = () => { toast('Mode invité'); loadMainAppAsGuest(); };
-    
-    // Register
-    $('#register-back-btn').onclick = () => showScreen('result-screen');
-    $('#register-form').onsubmit = handleRegister;
-    
-    // Navigation
-    $$('.nav-item').forEach(b => b.onclick = () => showTab(b.dataset.tab));
-    
-    // Home - Menu generation
-    $('#generate-menu-btn').onclick = () => showModal('menu-options-modal');
-    
-    // Menu options
-    $$('.budget-btn').forEach(b => b.onclick = () => {
-        $$('.budget-btn').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        state.menuOptions.budget = b.dataset.budget;
-    });
-    
-    $$('.time-btn').forEach(b => b.onclick = () => {
-        $$('.time-btn').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        state.menuOptions.maxTime = parseInt(b.dataset.time);
-    });
-    
-    $('#persons-minus').onclick = () => {
-        state.menuOptions.persons = Math.max(1, state.menuOptions.persons - 1);
-        $('#persons-value').textContent = state.menuOptions.persons;
-    };
-    $('#persons-plus').onclick = () => {
-        state.menuOptions.persons = Math.min(12, state.menuOptions.persons + 1);
-        $('#persons-value').textContent = state.menuOptions.persons;
-    };
-    
-    $('#use-fridge-toggle').onchange = e => state.menuOptions.useFridge = e.target.checked;
-    $('#cheese-toggle').onchange = e => state.menuOptions.cheese = e.target.checked;
-    $('#wine-toggle').onchange = e => state.menuOptions.wine = e.target.checked;
-    
-    $('#confirm-menu-btn').onclick = generateDailyMenu;
-    
-    // Quick actions
-    $('#quick-fridge').onclick = () => { openFridge(); };
-    $('#menu-fridge').onclick = () => { openFridge(); };
-    $('#quick-shopping').onclick = () => showModal('shopping-modal');
-    $('#quick-mealprep').onclick = () => toast('Meal Prep - Bientôt disponible !');
-    $('#quick-coach').onclick = () => toast('Coach IA - Bientôt disponible !');
-    
-    // Modal closes
-    $$('[data-close]').forEach(b => b.onclick = () => hideModal(b.dataset.close));
-    $$('.modal-overlay').forEach(el => el.onclick = () => el.closest('.modal').classList.remove('active'));
-    
-    // Fridge
-    $('#add-ingredient-btn').onclick = () => showModal('add-ingredient-modal');
-    $('#save-ingredient-btn').onclick = saveIngredient;
-    $('#scan-fridge-btn').onclick = () => toast('Snap Frigo IA - Bientôt disponible !');
-    $('#scan-receipt-btn').onclick = () => toast('Scan ticket - Bientôt disponible !');
-    $('#tgtg-btn').onclick = () => toast('Too Good To Go - Bientôt disponible !');
-    
-    $$('.fridge-cat').forEach(c => c.onclick = () => {
-        $$('.fridge-cat').forEach(x => x.classList.remove('active'));
-        c.classList.add('active');
-        displayFridge(c.dataset.cat);
-    });
-    
-    // Explore
-    let searchTimeout;
-    $('#search-recipes').oninput = e => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => loadRecipes(e.target.value), 300);
-    };
-    
-    $$('.filter-chip').forEach(c => c.onclick = () => {
-        $$('.filter-chip').forEach(x => x.classList.remove('active'));
-        c.classList.add('active');
-        loadRecipes('', c.dataset.filter);
-    });
-    
-    // Post
-    $('#upload-zone').onclick = () => $('#post-image-input').click();
-    $('#post-image-input').onchange = handlePostImage;
-    $('#publish-post-btn').onclick = publishPost;
-    
-    // Leagues
-    $('#view-league-btn').onclick = () => showTab('leagues');
-    
-    // Profile
-    $('#avatar-edit-btn').onclick = () => $('#avatar-input').click();
-    $('#avatar-input').onchange = handleAvatarUpload;
-    $('#menu-preferences').onclick = () => toast('Préférences - Ouvrir les paramètres');
-    $('#menu-premium').onclick = () => showModal('premium-modal');
-    $('#menu-referral').onclick = () => toast('Code parrainage copié !', 'success');
-    $('#menu-settings').onclick = () => toast('Paramètres - Bientôt disponible');
-    $('#menu-logout').onclick = logout;
-    $('#view-all-badges').onclick = () => showModal('badges-modal');
-    
-    // Premium
-    $('#subscribe-btn').onclick = () => toast('Essai gratuit activé !', 'success');
-}
-
-// Welcome slides
-function goToSlide(num) {
-    state.currentSlide = num;
-    $$('.welcome-slide').forEach(s => s.classList.remove('active'));
-    $$('.dot').forEach(d => d.classList.remove('active'));
-    $(`.welcome-slide[data-slide="${num}"]`).classList.add('active');
-    $(`.dot[data-slide="${num}"]`).classList.add('active');
-}
-
-// =====================================================
-// SWIPE
-// =====================================================
-
-function initSwipe() {
-    const card = $('#quiz-card');
-    if (!card) return;
-    
-    let startX = 0, currentX = 0, isDragging = false;
-    
-    const onStart = (x) => {
-        startX = x;
-        currentX = x;
-        isDragging = true;
-        card.classList.add('dragging');
-    };
-    
-    const onMove = (x) => {
-        if (!isDragging) return;
-        currentX = x;
-        const diff = currentX - startX;
-        card.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
-        
-        card.classList.remove('hint-left', 'hint-right');
-        if (diff < -50) card.classList.add('hint-left');
-        if (diff > 50) card.classList.add('hint-right');
-    };
-    
-    const onEnd = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        card.classList.remove('dragging');
-        
-        const diff = currentX - startX;
-        if (diff < -100) {
-            answerQuestion(false);
-        } else if (diff > 100) {
-            answerQuestion(true);
-        } else {
-            card.style.transform = '';
-            card.classList.remove('hint-left', 'hint-right');
-        }
-    };
-    
-    card.addEventListener('touchstart', e => onStart(e.touches[0].clientX), { passive: true });
-    card.addEventListener('touchmove', e => onMove(e.touches[0].clientX), { passive: true });
-    card.addEventListener('touchend', onEnd);
-    
-    card.addEventListener('mousedown', e => onStart(e.clientX));
-    document.addEventListener('mousemove', e => onMove(e.clientX));
-    document.addEventListener('mouseup', onEnd);
-}
-
-// =====================================================
-// AUTH
-// =====================================================
-
-async function handleLogin(e) {
-    e.preventDefault();
-    try {
-        const data = await api('/auth/login', {
-            method: 'POST',
-            body: JSON.stringify({
-                email: $('#login-email').value,
-                password: $('#login-password').value
-            })
-        });
-        
-        state.token = data.token;
-        state.user = data.user;
-        localStorage.setItem('yumr_token', data.token);
-        localStorage.setItem('yumr_user', JSON.stringify(data.user));
-        loadMainApp();
-    } catch (err) {
-        $('#login-error').textContent = err.message;
-        $('#login-error').classList.add('show');
-    }
-}
-
-async function handleRegister(e) {
-    e.preventDefault();
-    try {
-        const data = await api('/auth/register', {
-            method: 'POST',
-            body: JSON.stringify({
-                username: $('#register-username').value,
-                email: $('#register-email').value,
-                password: $('#register-password').value
-            })
-        });
-        
-        state.token = data.token;
-        state.user = data.user;
-        localStorage.setItem('yumr_token', data.token);
-        localStorage.setItem('yumr_user', JSON.stringify(data.user));
-        
-        // Save quiz + preferences
-        if (state.answers.length > 0) {
-            try {
-                await api('/quiz/submit', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        answers: state.answers,
-                        diet: state.diet,
-                        allergens: JSON.stringify(state.allergies)
-                    })
-                });
-            } catch (err) { console.error(err); }
-        }
-        
-        toast('Bienvenue sur Yumr! 🎉', 'success');
-        showXP(50);
-        loadMainApp();
-    } catch (err) {
-        $('#register-error').textContent = err.message;
-        $('#register-error').classList.add('show');
-    }
-}
-
-function logout() {
-    state.user = null;
-    state.token = null;
-    localStorage.removeItem('yumr_token');
-    localStorage.removeItem('yumr_user');
-    showScreen('welcome-screen');
-}
-
-// =====================================================
-// QUIZ
-// =====================================================
-
-async function startQuiz() {
-    try {
-        state.questions = await api(`/quiz/questions?count=${state.questionCount}`);
-        state.answers = [];
-        state.currentQuestion = 0;
-        showScreen('quiz-screen');
-        displayQuestion();
-    } catch (err) {
-        toast('Erreur chargement quiz', 'error');
-    }
-}
-
-function displayQuestion() {
-    const q = state.questions[state.currentQuestion];
-    if (!q) return;
-    
-    const card = $('#quiz-card');
-    card.classList.remove('swipe-left', 'swipe-right', 'hint-left', 'hint-right');
-    card.style.transform = '';
-    
-    $('#quiz-card-image').style.backgroundImage = `url(${getQuizImage(q)})`;
-    $('#quiz-card-emoji').textContent = q.emoji || '🍽️';
-    $('#quiz-card-question').textContent = q.question;
-    
-    const pct = ((state.currentQuestion + 1) / state.questions.length) * 100;
-    $('#quiz-progress-fill').style.width = `${pct}%`;
-    $('#quiz-counter').textContent = `${state.currentQuestion + 1}/${state.questions.length}`;
-}
-
-function answerQuestion(liked) {
-    const q = state.questions[state.currentQuestion];
-    state.answers.push({ question_id: q.id, liked });
-    
-    const card = $('#quiz-card');
-    card.classList.add(liked ? 'swipe-right' : 'swipe-left');
-    
-    // Update streak display
-    const streak = state.answers.filter(a => a.liked).length;
-    $('#quiz-streak').textContent = streak;
-    
-    setTimeout(() => {
-        state.currentQuestion++;
-        if (state.currentQuestion >= state.questions.length) {
-            finishQuiz();
-        } else {
-            displayQuestion();
-        }
-    }, 300);
-}
-
-async function finishQuiz() {
-    try {
-        const result = await api('/quiz/calculate-profile', {
-            method: 'POST',
-            body: JSON.stringify({ answers: state.answers })
-        });
-        state.calculatedProfile = result.profile;
-        displayResult(result.profile);
-    } catch (err) {
-        state.calculatedProfile = { name: 'Gourmet', emoji: '🍳', description: 'Tu apprécies la bonne cuisine.', traits: 'Curieux,Gourmand' };
-        displayResult(state.calculatedProfile);
-    }
-}
-
-function displayResult(profile) {
-    showScreen('result-screen');
-    $('#result-emoji').textContent = profile.emoji || '🍳';
-    $('#result-name').textContent = profile.name || 'Gourmet';
-    $('#result-description').textContent = profile.description || '';
-    
-    const traits = (profile.traits || '').split(',').filter(t => t.trim());
-    $('#result-traits').innerHTML = traits.map(t => `<span>${t.trim()}</span>`).join('');
-    
-    // Add confetti effect
-    createConfetti();
-}
-
-function createConfetti() {
-    const container = $('#result-confetti');
-    container.innerHTML = '';
-    const colors = ['#FF6B35', '#FFD166', '#4ECB71', '#FF4757'];
-    
-    for (let i = 0; i < 50; i++) {
-        const confetti = document.createElement('div');
-        confetti.style.cssText = `
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: ${colors[Math.floor(Math.random() * colors.length)]};
-            left: ${Math.random() * 100}%;
-            top: -10px;
-            border-radius: 2px;
-            animation: confettiFall ${2 + Math.random() * 2}s linear forwards;
-            animation-delay: ${Math.random() * 0.5}s;
-        `;
-        container.appendChild(confetti);
-    }
-    
-    // Add CSS animation
-    if (!document.querySelector('#confetti-style')) {
-        const style = document.createElement('style');
-        style.id = 'confetti-style';
-        style.textContent = `
-            @keyframes confettiFall {
-                to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-}
-
-// =====================================================
-// MAIN APP
-// =====================================================
-
-async function loadMainApp() {
-    showScreen('main-app');
-    showTab('home');
-    
-    try {
-        const userData = await api('/auth/me');
-        state.user = userData;
-        updateUserUI();
-    } catch (err) {
-        loadMainAppAsGuest();
-        return;
-    }
-    
-    checkDailyMenu();
-    loadStats();
-    loadBadges();
-}
-
-function loadMainAppAsGuest() {
-    showScreen('main-app');
-    showTab('home');
-    state.user = { username: 'Invité', level: 1, total_xp: 0 };
-    updateUserUI();
-}
-
-function updateUserUI() {
-    const u = state.user;
-    
-    // Header
-    $('#header-streak').textContent = u.current_streak || 0;
-    $('#header-xp').textContent = u.total_xp || 0;
-    
-    // Home
-    $('#home-username').textContent = u.username || 'Chef';
-    $('#stat-streak').textContent = u.current_streak || 0;
-    $('#stat-xp-week').textContent = u.total_xp || 0;
-    $('#stat-recipes').textContent = u.recipes_count || 0;
-    
-    // Fridge count
-    $('#fridge-count').textContent = state.fridge.length;
-    
-    // Profile
-    $('#profile-username').textContent = `@${u.username || 'user'}`;
-    $('#profile-level').textContent = u.level || 1;
-    $('#profile-xp').textContent = u.total_xp || 0;
-    $('#profile-recipes').textContent = u.recipes_count || 0;
-    $('#profile-streak-max').textContent = u.longest_streak || 0;
-    
-    // Culinary profile
-    const cp = u.culinary_profile || state.calculatedProfile;
-    if (cp) {
-        $('.culinary-emoji').textContent = cp.emoji || '🍳';
-        $('.culinary-name').textContent = cp.name || 'Gourmet';
-    }
-    
-    // XP bar
-    const level = u.level || 1;
-    const xp = u.total_xp || 0;
-    const currentLevelXP = Math.floor(100 * Math.pow(1.5, level - 1));
-    const nextLevelXP = Math.floor(100 * Math.pow(1.5, level));
-    const progress = ((xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
-    
-    $('#current-level').textContent = level;
-    $('#current-xp').textContent = xp;
-    $('#next-level-xp').textContent = nextLevelXP;
-    $('#xp-bar-fill').style.width = `${Math.min(100, Math.max(0, progress))}%`;
-}
-
-function updateProfileUI() {
-    updateUserUI();
-    loadBadges();
-}
-
-async function loadStats() {
-    if (!state.token) return;
-    try {
-        const stats = await api('/gamification/stats');
-        state.user.level = stats.level;
-        state.user.total_xp = stats.total_xp;
-        state.user.current_streak = stats.current_streak;
-        state.user.longest_streak = stats.longest_streak;
-        updateUserUI();
-    } catch (err) { console.error(err); }
-}
-
-// =====================================================
-// DAILY MENU
-// =====================================================
-
-async function checkDailyMenu() {
-    if (!state.token) return;
-    try {
-        const data = await api('/quiz/daily');
-        if (data.already_answered && data.menu) {
-            state.todayMenu = data.menu;
-            displayTodayMenu();
-        }
-    } catch (err) { console.error(err); }
-}
-
-async function generateDailyMenu() {
-    if (!state.token) {
-        toast('Connecte-toi d\'abord', 'error');
-        return;
-    }
-    
-    const opts = state.menuOptions;
-    
-    try {
-        const data = await api('/quiz/daily', {
-            method: 'POST',
-            body: JSON.stringify({
-                budget: opts.budget,
-                servings: opts.persons,
-                include_cheese: opts.cheese,
-                include_wine: opts.wine
-            })
-        });
-        
-        state.todayMenu = data.menu;
-        hideModal('menu-options-modal');
-        displayTodayMenu();
-        
-        showXP(data.xp_gained || 20);
-        toast(`Streak: ${data.streak} 🔥`, 'success');
-        
-        $('#header-streak').textContent = data.streak;
-        $('#stat-streak').textContent = data.streak;
-    } catch (err) {
-        toast(err.message || 'Erreur', 'error');
-    }
-}
-
-function displayTodayMenu() {
-    $('#daily-menu-status').textContent = 'Ton menu est prêt !';
-    $('#generate-menu-btn').textContent = 'Voir';
-    
-    const preview = $('#daily-menu-preview');
-    preview.classList.remove('hidden');
-    
-    const types = { starter: 'Entrée', main: 'Plat', dessert: 'Dessert', cheese: 'Fromage', wine: 'Vin' };
-    const items = [];
-    
-    ['starter', 'main', 'dessert', 'cheese', 'wine'].forEach(t => {
-        const meal = state.todayMenu[t];
-        if (meal) items.push({ type: t, label: types[t], meal });
-    });
-    
-    preview.innerHTML = items.map(i => `
-        <div class="menu-item-row" onclick="openRecipe('${i.meal.id}')">
-            <div class="menu-item-img" style="background-image:url(${getRecipeImage(i.meal)})"></div>
-            <div class="menu-item-info">
-                <span class="menu-item-type">${i.label}</span>
-                <span class="menu-item-name">${i.meal.name}</span>
-            </div>
-            <span style="color:var(--text-muted)">→</span>
-        </div>
-    `).join('');
-}
-
-// =====================================================
-// FRIDGE
-// =====================================================
-
-function openFridge() {
-    showModal('fridge-modal');
-    displayFridge('all');
-    displayExpiringItems();
-}
-
-function displayFridge(category = 'all') {
-    const items = category === 'all' 
-        ? state.fridge 
-        : state.fridge.filter(i => i.category === category);
-    
-    if (!items.length) {
-        $('#fridge-list').innerHTML = `
-            <div style="text-align:center;padding:40px;color:var(--text-secondary)">
-                <p style="font-size:48px;margin-bottom:16px">🧊</p>
-                <p>Aucun ingrédient dans cette catégorie</p>
-            </div>
-        `;
-        return;
-    }
-    
-    $('#fridge-list').innerHTML = items.map(item => {
-        const days = getDaysUntilExpiry(item.expirationDate);
-        let expClass = 'ok';
-        let expText = `${days}j`;
-        
-        if (days < 0) { expClass = 'danger'; expText = 'Périmé'; }
-        else if (days <= 2) { expClass = 'danger'; }
-        else if (days <= 5) { expClass = 'warning'; }
-        
-        return `
-            <div class="fridge-item">
-                <span class="fridge-item-icon">${item.icon || '🥕'}</span>
-                <div class="fridge-item-info">
-                    <div class="fridge-item-name">${item.name}</div>
-                    <div class="fridge-item-qty">${item.quantity}</div>
-                </div>
-                <span class="fridge-item-exp ${expClass}">${expText}</span>
-                <button class="fridge-item-del" onclick="deleteFridgeItem('${item.id}')">🗑️</button>
-            </div>
-        `;
-    }).join('');
-}
-
-function displayExpiringItems() {
-    const expiring = state.fridge.filter(i => getDaysUntilExpiry(i.expirationDate) <= 3);
-    
-    if (!expiring.length) {
-        $('#fridge-expiring').classList.add('hidden');
-        return;
-    }
-    
-    $('#fridge-expiring').classList.remove('hidden');
-    $('#expiring-list').innerHTML = expiring.map(i => `
-        <div class="fridge-item" style="margin-bottom:8px">
-            <span class="fridge-item-icon">${i.icon}</span>
-            <div class="fridge-item-info">
-                <div class="fridge-item-name">${i.name}</div>
-            </div>
-            <span class="fridge-item-exp danger">${getDaysUntilExpiry(i.expirationDate)}j</span>
-        </div>
-    `).join('');
-}
-
-function saveIngredient() {
-    const name = $('#ingredient-name').value.trim();
-    if (!name) { toast('Nom requis', 'error'); return; }
-    
-    const newItem = {
-        id: Date.now().toString(),
-        name,
-        quantity: $('#ingredient-qty').value || '1',
-        category: $('#ingredient-category').value,
-        icon: getCategoryIcon($('#ingredient-category').value),
-        expirationDate: $('#ingredient-expiry').value || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    };
-    
-    state.fridge.push(newItem);
-    hideModal('add-ingredient-modal');
-    
-    // Reset form
-    $('#ingredient-name').value = '';
-    $('#ingredient-qty').value = '';
-    $('#ingredient-expiry').value = '';
-    
-    toast('Ingrédient ajouté !', 'success');
-    displayFridge('all');
-    displayExpiringItems();
-    $('#fridge-count').textContent = state.fridge.length;
-}
-
-function deleteFridgeItem(id) {
-    state.fridge = state.fridge.filter(i => i.id !== id);
-    displayFridge($('.fridge-cat.active')?.dataset.cat || 'all');
-    displayExpiringItems();
-    $('#fridge-count').textContent = state.fridge.length;
-}
-
-function getCategoryIcon(cat) {
-    const icons = { fruits: '🍎', legumes: '🥬', viandes: '🥩', laitiers: '🧀', epicerie: '🥫', surgeles: '🧊' };
-    return icons[cat] || '🥕';
-}
-
-// =====================================================
-// RECIPES
-// =====================================================
-
-async function loadRecipes(search = '', filter = 'all') {
-    try {
-        let endpoint = '/meals?limit=50';
-        if (search) endpoint += `&search=${encodeURIComponent(search)}`;
-        if (filter && filter !== 'all') endpoint += `&type=${filter}`;
-        
-        const data = await api(endpoint);
-        state.recipes = data.meals || [];
-        displayRecipes();
-    } catch (err) {
-        console.error(err);
-        // Use mock data
-        state.recipes = [];
-        displayRecipes();
-    }
-}
-
-function displayRecipes() {
-    const grid = $('#recipes-grid');
-    
-    if (!state.recipes.length) {
-        grid.innerHTML = `
-            <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-secondary)">
-                <p style="font-size:48px;margin-bottom:16px">🔍</p>
-                <h3 style="margin-bottom:8px">Aucun résultat</h3>
-                <p>Essaie une autre recherche</p>
-            </div>
-        `;
-        return;
-    }
-    
-    grid.innerHTML = state.recipes.map(r => {
-        const isSaved = state.favorites.includes(r.id);
-        return `
-            <div class="recipe-card" onclick="openRecipe('${r.id}')">
-                <div class="recipe-card-img" style="background-image:url(${getRecipeImage(r)})">
-                    <button class="recipe-card-save ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); toggleFavorite('${r.id}')">
-                        ${isSaved ? '❤️' : '🤍'}
-                    </button>
-                </div>
-                <div class="recipe-card-body">
-                    <div class="recipe-card-name">${r.name}</div>
-                    <div class="recipe-card-meta">
-                        <span>⏱️ ${(r.prep_time || 0) + (r.cook_time || 0)}min</span>
-                        <span>💰 ${'€'.repeat(r.budget === 'low' ? 1 : r.budget === 'high' ? 3 : 2)}</span>
-                    </div>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-function toggleFavorite(id) {
-    const idx = state.favorites.indexOf(id);
-    if (idx > -1) {
-        state.favorites.splice(idx, 1);
-        toast('Retiré des favoris');
-    } else {
-        state.favorites.push(id);
-        toast('Ajouté aux favoris !', 'success');
-    }
-    localStorage.setItem('yumr_favorites', JSON.stringify(state.favorites));
-    displayRecipes();
-}
-
-async function openRecipe(id) {
-    try {
-        const r = await api(`/meals/${id}`);
-        const isSaved = state.favorites.includes(id);
-        const types = { starter: 'Entrée', main: 'Plat', dessert: 'Dessert', cheese: 'Fromage', wine: 'Vin' };
-        
-        $('#recipe-detail-page').innerHTML = `
-            <div class="recipe-detail-hero" style="background-image:url(${getRecipeImage(r)})">
-                <button class="btn-back recipe-detail-back" onclick="hideModal('recipe-modal')">←</button>
-                <button class="recipe-detail-save ${isSaved ? 'saved' : ''}" onclick="toggleFavorite('${id}')">${isSaved ? '❤️' : '🤍'}</button>
-            </div>
-            <div class="recipe-detail-content">
-                <span class="recipe-detail-type">${types[r.type] || r.type}</span>
-                <h1 class="recipe-detail-title">${r.name}</h1>
-                <p class="recipe-detail-desc">${r.description || ''}</p>
-                
-                <div class="recipe-detail-meta">
-                    <span class="recipe-meta-item">⏱️ ${(r.prep_time || 0) + (r.cook_time || 0)} min</span>
-                    <span class="recipe-meta-item">💰 ${'€'.repeat(r.budget === 'low' ? 1 : r.budget === 'high' ? 3 : 2)}</span>
-                    ${r.calories ? `<span class="recipe-meta-item">🔥 ${r.calories} kcal</span>` : ''}
-                </div>
-                
-                ${r.ingredients?.length ? `
-                    <div class="recipe-detail-section">
-                        <h3>🥕 Ingrédients</h3>
-                        <ul>${r.ingredients.map(i => `<li><strong>${i.name}</strong> - ${i.qty}</li>`).join('')}</ul>
-                    </div>
-                ` : ''}
-                
-                ${r.recipe?.steps?.length ? `
-                    <div class="recipe-detail-section">
-                        <h3>👨‍🍳 Préparation</h3>
-                        <ol>${r.recipe.steps.map(s => `<li>${s}</li>`).join('')}</ol>
-                    </div>
-                ` : ''}
-            </div>
-        `;
-        
-        showModal('recipe-modal');
-    } catch (err) {
-        toast('Erreur chargement recette', 'error');
-    }
-}
-
-// =====================================================
-// LEADERBOARD
-// =====================================================
-
-function loadLeaderboard() {
-    const list = $('#leaderboard');
-    const myRank = 12; // Mock
-    
-    list.innerHTML = MOCK_LEADERBOARD.map((p, idx) => `
-        <div class="leaderboard-item ${idx + 1 === myRank ? 'me' : ''}">
-            <span class="lb-rank ${p.rank === 1 ? 'gold' : p.rank === 2 ? 'silver' : p.rank === 3 ? 'bronze' : ''}">#${p.rank}</span>
-            <div class="lb-avatar" style="background-image:url(${p.avatar})"></div>
-            <span class="lb-name">${p.name}</span>
-            <span class="lb-points">${p.points} pts</span>
-        </div>
-    `).join('');
-    
-    $('#league-position').textContent = `#${myRank}`;
-}
-
-// =====================================================
-// BADGES
-// =====================================================
-
-function loadBadges() {
-    // Preview (first 5)
-    $('#badges-preview').innerHTML = MOCK_BADGES.slice(0, 5).map(b => `
-        <div class="badge-item ${b.unlocked ? '' : 'locked'}">
-            <div class="badge-icon">${b.icon}</div>
-            <div class="badge-name">${b.name}</div>
-        </div>
-    `).join('');
-    
-    $('#profile-badges').textContent = MOCK_BADGES.filter(b => b.unlocked).length;
-    
-    // Full grid
-    $('#badges-grid').innerHTML = MOCK_BADGES.map(b => `
-        <div class="badge-card ${b.unlocked ? '' : 'locked'}">
-            <div class="badge-card-icon">${b.icon}</div>
-            <div class="badge-card-name">${b.name}</div>
-            <div class="badge-card-desc">${b.desc}</div>
-        </div>
-    `).join('');
-}
-
-// =====================================================
-// POST
-// =====================================================
-
-function handlePostImage(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = ev => {
-        $('#post-preview').src = ev.target.result;
-        $('#post-preview').classList.remove('hidden');
-        $('#upload-zone').classList.add('hidden');
-    };
-    reader.readAsDataURL(file);
-}
-
-function publishPost() {
-    if (!$('#post-preview').src) {
-        toast('Ajoute une photo', 'error');
-        return;
-    }
-    
-    showXP(30);
-    toast('Post publié ! 🎉', 'success');
-    
-    // Reset
-    $('#post-preview').src = '';
-    $('#post-preview').classList.add('hidden');
-    $('#upload-zone').classList.remove('hidden');
-    $('#post-caption').value = '';
-    
-    showTab('home');
-}
-
-// Avatar
-function handleAvatarUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = ev => {
-        $('#avatar-img').src = ev.target.result;
-        toast('Photo mise à jour !', 'success');
-    };
-    reader.readAsDataURL(file);
-}
-
-// =====================================================
-// GLOBAL FUNCTIONS
-// =====================================================
-
-window.openRecipe = openRecipe;
-window.toggleFavorite = toggleFavorite;
-window.deleteFridgeItem = deleteFridgeItem;
+const BADGES=[
+{id:1,name:“Premier Plat”,emoji:“🥇”,desc:“Cuisine ta première recette”,unlocked:true},
+{id:2,name:“Streak 7j”,emoji:“🔥”,desc:“7 jours consécutifs”,unlocked:false},
+{id:3,name:“Social Chef”,emoji:“👥”,desc:“Partage 5 photos”,unlocked:false},
+{id:4,name:“Globe-trotter”,emoji:“🌍”,desc:“Cuisine 10 pays différents”,unlocked:false},
+{id:5,name:“Veggie Week”,emoji:“🌱”,desc:“Une semaine végétarienne”,unlocked:false},
+{id:6,name:“Sommelier”,emoji:“🍷”,desc:“10 accords mets-vins”,unlocked:false},
+{id:7,name:“Économe”,emoji:“💰”,desc:“Budget < 5€/repas pendant 1 mois”,unlocked:false},
+{id:8,name:“Batch Master”,emoji:“📅”,desc:“Complete 4 meal preps”,unlocked:false},
+{id:9,name:“Légende”,emoji:“👑”,desc:“Atteins le niveau 50”,unlocked:false}
+];
+
+const LEADERBOARD=[
+{rank:1,name:“MasterChef99”,pts:2850,img:1},
+{rank:2,name:“FoodieQueen”,pts:2720,img:2},
+{rank:3,name:“CuisineKing”,pts:2650,img:3},
+{rank:4,name:“ChefNinja”,pts:2480,img:4},
+{rank:5,name:“TasteExplorer”,pts:2350,img:5},
+{rank:6,name:“YumrPro”,pts:2200,img:6},
+{rank:7,name:“SpiceHunter”,pts:2100,img:7},
+{rank:8,name:“BowlMaster”,pts:1950,img:9},
+{rank:9,name:“HealthyBite”,pts:1820,img:10},
+{rank:10,name:“PastaLover”,pts:1750,img:11}
+];
+
+function addDays(d){const date=new Date();date.setDate(date.getDate()+d);return date.toISOString().split(‘T’)[0];}
+
+const FRIDGE_INIT=[
+{id:1,name:“Tomates”,qty:“500g”,cat:“legumes”,icon:“🍅”,exp:addDays(3)},
+{id:2,name:“Poulet”,qty:“400g”,cat:“viandes”,icon:“🍗”,exp:addDays(2)},
+{id:3,name:“Lait”,qty:“1L”,cat:“laitiers”,icon:“🥛”,exp:addDays(5)},
+{id:4,name:“Œufs”,qty:“6”,cat:“laitiers”,icon:“🥚”,exp:addDays(10)},
+{id:5,name:“Pommes”,qty:“4”,cat:“fruits”,icon:“🍎”,exp:addDays(7)},
+{id:6,name:“Pâtes”,qty:“500g”,cat:“epicerie”,icon:“🍝”,exp:addDays(180)}
+];
+
+const $=id=>document.getElementById(id);
+const $$=sel=>document.querySelectorAll(sel);
+const show=el=>el?.classList.add(‘active’);
+const hide=el=>el?.classList.remove(‘active’);
+const showScreen=id=>{$$(’.screen’).forEach(s=>hide(s));show($(id));};
+
+function toast(msg,type=’’){const t=document.createElement(‘div’);t.className=`toast ${type}`;t.textContent=msg;$(‘toasts’).appendChild(t);setTimeout(()=>t.remove(),3000);}
+function showXP(amount){$(‘xp-amount’).textContent=`+${amount} XP`;$(‘xp-popup’).classList.add(‘show’);setTimeout(()=>$(‘xp-popup’).classList.remove(‘show’),1500);state.xp+=amount;updateStats();checkLevelUp();}
+function checkLevelUp(){const needed=100*Math.pow(1.5,state.level-1);if(state.xp>=needed){state.level++;$(‘new-lv’).textContent=state.level;$(‘levelup’).classList.add(‘show’);}}
+function updateStats(){if($(‘h-xp’))$(‘h-xp’).textContent=state.xp;if($(‘h-streak’))$(‘h-streak’).textContent=state.streak;if($(‘s-level’))$(‘s-level’).textContent=state.level;if($(‘s-streak’))$(‘s-streak’).textContent=state.streak;if($(‘ps-xp’))$(‘ps-xp’).textContent=state.xp;if($(‘ps-streak’))$(‘ps-streak’).textContent=state.streak;if($(‘p-lv’))$(‘p-lv’).textContent=state.level;if($(‘xp-lv’))$(‘xp-lv’).textContent=state.level;const needed=Math.floor(100*Math.pow(1.5,state.level-1));const progress=(state.xp%needed)/needed*100;if($(‘xp-fill’))$(‘xp-fill’).style.width=`${progress}%`;if($(‘xp-cur’))$(‘xp-cur’).textContent=state.xp%needed;if($(‘xp-max’))$(‘xp-max’).textContent=needed;}
+function openModal(id){show($(id));}
+function closeModal(id){hide($(id));}
+
+setTimeout(()=>{showScreen(‘onboarding’);},2500);
+
+let obSlide=0;
+$(‘ob-next’)?.addEventListener(‘click’,()=>{obSlide++;if(obSlide>=3){showScreen(‘setup’);}else{$$(’.ob-slide’).forEach((s,i)=>s.classList.toggle(‘active’,i===obSlide));$$(’.ob-dots .dot’).forEach((d,i)=>d.classList.toggle(‘active’,i===obSlide));}});
+$(‘ob-login’)?.addEventListener(‘click’,()=>{state.isRegister=false;showScreen(‘auth’);updateAuthUI();});
+
+function updateAuthUI(){$(‘auth-title’).textContent=state.isRegister?‘Créer un compte’:‘Connexion’;$(‘field-username’).style.display=state.isRegister?‘block’:‘none’;$(‘auth-submit’).textContent=state.isRegister?‘Créer mon compte’:‘Se connecter’;$(‘auth-switch’).innerHTML=state.isRegister?‘Déjà un compte ? <button id="auth-toggle">Se connecter</button>’:‘Pas de compte ? <button id="auth-toggle">Créer</button>’;$(‘auth-toggle’)?.addEventListener(‘click’,()=>{state.isRegister=!state.isRegister;updateAuthUI();});}
+$(‘auth-back’)?.addEventListener(‘click’,()=>showScreen(‘onboarding’));
+$(‘auth-form’)?.addEventListener(‘submit’,e=>{e.preventDefault();const email=$(‘auth-email’).value;const pass=$(‘auth-password’).value;const username=$(‘auth-username’)?.value||email.split(’@’)[0];if(!email||!pass){$(‘auth-error’).textContent=‘Remplis tous les champs’;return;}state.user={email,username};state.token=‘demo_token_’+Date.now();localStorage.setItem(‘yumr_token’,state.token);toast(‘Connexion réussie !’,‘success’);initMainApp();});
+
+$(‘setup-back’)?.addEventListener(‘click’,()=>showScreen(‘onboarding’));
+$(‘setup-next’)?.addEventListener(‘click’,()=>{if(state.setupStep<3){state.setupStep++;updateSetupUI();}else{state.quizCount=parseInt(document.querySelector(‘input[name=“dur”]:checked’)?.value||30);state.diet=document.querySelector(‘input[name=“diet”]:checked’)?.value||‘omnivore’;state.allergies=[…$$(’.allergy-wrap input:checked’)].map(i=>i.value);state.goal=document.querySelector(‘input[name=“goal”]:checked’)?.value||‘none’;state.conditions=[…$$(’.cond-wrap input:checked’)].map(i=>i.value);startQuiz();}});
+$(‘setup-prev’)?.addEventListener(‘click’,()=>{if(state.setupStep>1){state.setupStep–;updateSetupUI();}});
+function updateSetupUI(){$$(’.setup-page’).forEach((p,i)=>p.classList.toggle(‘active’,i+1===state.setupStep));$$(’.setup-steps .step’).forEach((s,i)=>s.classList.toggle(‘active’,i+1<=state.setupStep));$(‘setup-prev’).style.visibility=state.setupStep>1?‘visible’:‘hidden’;$(‘setup-next’).textContent=state.setupStep===3?‘Commencer le quiz’:‘Continuer’;}
+
+function startQuiz(){showScreen(‘quiz’);state.currentQ=0;state.answers=[];state.streak=0;loadQuestion();}
+function loadQuestion(){if(state.currentQ>=state.quizCount){finishQuiz();return;}const q=QUESTIONS[state.currentQ%QUESTIONS.length];$(‘card-emoji’).textContent=q.emoji;$(‘card-q’).textContent=q.q;$(‘quiz-count’).textContent=`${state.currentQ+1}/${state.quizCount}`;$(‘quiz-prog’).style.width=`${(state.currentQ/state.quizCount)*100}%`;$(‘quiz-streak’).textContent=state.streak;const card=$(‘quiz-card’);card.classList.remove(‘left’,‘right’,‘hint-left’,‘hint-right’);card.style.transform=’’;}
+function answerQuestion(liked){const q=QUESTIONS[state.currentQ%QUESTIONS.length];state.answers.push({…q,liked});if(liked)state.streak++;else state.streak=0;const card=$(‘quiz-card’);card.classList.add(liked?‘right’:‘left’);setTimeout(()=>{state.currentQ++;loadQuestion();},400);}
+
+let startX=0,currentX=0,isDragging=false;
+$(‘quiz-card’)?.addEventListener(‘touchstart’,e=>{startX=e.touches[0].clientX;isDragging=true;$(‘quiz-card’).classList.add(‘dragging’);});
+$(‘quiz-card’)?.addEventListener(‘touchmove’,e=>{if(!isDragging)return;currentX=e.touches[0].clientX;const diff=currentX-startX;const card=$(‘quiz-card’);card.style.transform=`translateX(${diff}px) rotate(${diff*0.05}deg)`;card.classList.toggle(‘hint-left’,diff<-50);card.classList.toggle(‘hint-right’,diff>50);});
+$(‘quiz-card’)?.addEventListener(‘touchend’,()=>{isDragging=false;$(‘quiz-card’).classList.remove(‘dragging’);const diff=currentX-startX;if(Math.abs(diff)>100){answerQuestion(diff>0);}else{$(‘quiz-card’).style.transform=’’;$(‘quiz-card’).classList.remove(‘hint-left’,‘hint-right’);}startX=currentX=0;});
+$(‘q-nope’)?.addEventListener(‘click’,()=>answerQuestion(false));
+$(‘q-love’)?.addEventListener(‘click’,()=>answerQuestion(true));
+$(‘quiz-close’)?.addEventListener(‘click’,()=>{if(confirm(‘Quitter le quiz ?’))showScreen(‘onboarding’);});
+
+function finishQuiz(){const profile=PROFILES[Math.floor(Math.random()*PROFILES.length)];state.profile=profile;showScreen(‘result’);$(‘res-emoji’).textContent=profile.emoji;$(‘res-name’).textContent=profile.name;$(‘res-desc’).textContent=profile.desc;$(‘res-tags’).innerHTML=profile.tags.map(t=>`<span>${t}</span>`).join(’’);createConfetti();setTimeout(()=>showXP(50),1000);}
+function createConfetti(){const container=$(‘confetti’);container.innerHTML=’’;const colors=[’#FF6B35’,’#FFD166’,’#4ECB71’,’#FF4757’,’#fff’];for(let i=0;i<50;i++){const c=document.createElement(‘div’);c.style.cssText=`position:absolute;width:10px;height:10px;background:${colors[i%colors.length]};left:${Math.random()*100}%;top:-10px;border-radius:${Math.random()>.5?'50%':'2px'};animation:fall ${2+Math.random()*2}s linear forwards;`;container.appendChild(c);}const style=document.createElement(‘style’);style.textContent=’@keyframes fall{to{top:100%;transform:rotate(720deg);}}’;document.head.appendChild(style);}
+$(‘res-signup’)?.addEventListener(‘click’,()=>{state.isRegister=true;showScreen(‘auth’);updateAuthUI();});
+$(‘res-skip’)?.addEventListener(‘click’,()=>{state.user={username:‘Invité’,email:’’};initMainApp();});
+
+function initMainApp(){showScreen(‘main’);state.fridge=[…FRIDGE_INIT];if(state.user){$(‘u-name’).textContent=state.user.username||‘Chef’;$(‘p-name’).textContent=’@’+(state.user.username||‘chef’);}if(state.profile){$(‘p-emoji’).textContent=state.profile.emoji;$(‘p-type’).textContent=state.profile.name;}updateStats();updateFridgeCount();renderRecipes();renderLeaderboard();renderBadges();}
+
+$$(’.nav-btn’).forEach(btn=>{btn.addEventListener(‘click’,()=>{const tab=btn.dataset.tab;$$(’.nav-btn’).forEach(b=>b.classList.remove(‘active’));btn.classList.add(‘active’);$$(’.tab’).forEach(t=>t.classList.toggle(‘active’,t.id===`tab-${tab}`));});});
+
+$(‘btn-menu’)?.addEventListener(‘click’,()=>openModal(‘m-menu’));
+$$(’.budget-btns button’).forEach(btn=>{btn.addEventListener(‘click’,()=>{$$(’.budget-btns button’).forEach(b=>b.classList.remove(‘active’));btn.classList.add(‘active’);state.menuOptions.budget=btn.dataset.v;});});
+$$(’.time-btns button’).forEach(btn=>{btn.addEventListener(‘click’,()=>{$$(’.time-btns button’).forEach(b=>b.classList.remove(‘active’));btn.classList.add(‘active’);state.menuOptions.time=parseInt(btn.dataset.v);});});
+$$(’.diff-btns button’).forEach(btn=>{btn.addEventListener(‘click’,()=>{$$(’.diff-btns button’).forEach(b=>b.classList.remove(‘active’));btn.classList.add(‘active’);state.menuOptions.difficulty=btn.dataset.v;});});
+document.querySelectorAll(’.stepper’).forEach(stepper=>{const val=stepper.querySelector(‘span’);stepper.querySelector(’.st-minus’)?.addEventListener(‘click’,()=>{let v=parseInt(val.textContent);if(v>1)val.textContent=v-1;});stepper.querySelector(’.st-plus’)?.addEventListener(‘click’,()=>{let v=parseInt(val.textContent);if(v<12)val.textContent=v+1;});});
+$(‘confirm-menu’)?.addEventListener(‘click’,()=>{closeModal(‘m-menu’);generateMenu();});
+
+function generateMenu(){const starter=RECIPES.find(r=>r.type===‘starter’);const main=RECIPES.find(r=>r.type===‘main’);const dessert=RECIPES.find(r=>r.type===‘dessert’);state.todayMenu={starter,main,dessert};$(‘daily-status’).textContent=‘Menu prêt !’;$(‘daily-preview’).innerHTML=`<div class="daily-item" data-id="${starter.id}"><div class="daily-item-img" style="background-image:url(${starter.img})"></div><div class="daily-item-info"><span class="daily-item-type">Entrée</span><span class="daily-item-name">${starter.name}</span></div></div><div class="daily-item" data-id="${main.id}"><div class="daily-item-img" style="background-image:url(${main.img})"></div><div class="daily-item-info"><span class="daily-item-type">Plat</span><span class="daily-item-name">${main.name}</span></div></div><div class="daily-item" data-id="${dessert.id}"><div class="daily-item-img" style="background-image:url(${dessert.img})"></div><div class="daily-item-info"><span class="daily-item-type">Dessert</span><span class="daily-item-name">${dessert.name}</span></div></div>`;$$(’.daily-item’).forEach(item=>{item.addEventListener(‘click’,()=>openRecipe(parseInt(item.dataset.id)));});showXP(20);toast(‘Menu généré ! 🍽️’,‘success’);}
+
+$(‘q-fridge’)?.addEventListener(‘click’,()=>{openModal(‘m-fridge’);renderFridge();});
+$(‘q-shop’)?.addEventListener(‘click’,()=>{openModal(‘m-shop’);renderShopping();});
+$(‘q-prep’)?.addEventListener(‘click’,()=>openModal(‘m-prep’));
+$(‘q-coach’)?.addEventListener(‘click’,()=>openModal(‘m-coach’));
+$(‘q-resto’)?.addEventListener(‘click’,()=>openModal(‘m-resto’));
+$(‘q-challenge’)?.addEventListener(‘click’,()=>toast(‘Défis bientôt disponibles !’));
+$(‘s-rank-btn’)?.addEventListener(‘click’,()=>{$$(’.nav-btn’).forEach(b=>b.classList.remove(‘active’));document.querySelector(’.nav-btn[data-tab=“leagues”]’)?.classList.add(‘active’);$$(’.tab’).forEach(t=>t.classList.toggle(‘active’,t.id===‘tab-leagues’));});
+
+function updateFridgeCount(){const count=state.fridge.length;if($(‘fridge-count’))$(‘fridge-count’).textContent=count;}
+function renderFridge(cat=‘all’){const list=$(‘fridge-list’);if(!list)return;const items=cat===‘all’?state.fridge:state.fridge.filter(i=>i.cat===cat);const expiring=state.fridge.filter(i=>{const days=Math.ceil((new Date(i.exp)-new Date())/(1000*60*60*24));return days<=3;});list.innerHTML=items.map(item=>{const days=Math.ceil((new Date(item.exp)-new Date())/(1000*60*60*24));const expClass=days<=2?‘bad’:days<=5?‘warn’:‘ok’;return`<div class="fridge-item" data-id="${item.id}"><span class="fridge-item-icon">${item.icon}</span><div class="fridge-item-info"><span class="fridge-item-name">${item.name}</span><span class="fridge-item-qty">${item.qty}</span></div><span class="fridge-item-exp ${expClass}">${days}j</span><button class="fridge-item-del" data-id="${item.id}">🗑️</button></div>`;}).join(’’);if($(‘exp-list’)){$(‘exp-list’).innerHTML=expiring.map(i=>`<div class="fridge-item"><span>${i.icon}</span><span>${i.name}</span></div>`).join(’’);$(‘fridge-exp’).style.display=expiring.length?‘block’:‘none’;}$$(’.fridge-item-del’).forEach(btn=>{btn.addEventListener(‘click’,e=>{e.stopPropagation();const id=parseInt(btn.dataset.id);state.fridge=state.fridge.filter(i=>i.id!==id);renderFridge(cat);updateFridgeCount();toast(‘Ingrédient supprimé’);});});}
+$$(’.fcat’).forEach(btn=>{btn.addEventListener(‘click’,()=>{$$(’.fcat’).forEach(b=>b.classList.remove(‘active’));btn.classList.add(‘active’);renderFridge(btn.dataset.c);});});
+$(‘add-ing’)?.addEventListener(‘click’,()=>openModal(‘m-ing’));
+$(‘save-ing’)?.addEventListener(‘click’,()=>{const name=$(‘ing-name’).value;const qty=$(‘ing-qty’).value;const cat=$(‘ing-cat’).value;const exp=$(‘ing-exp’).value;if(!name){toast(‘Ajoute un nom’,‘error’);return;}const icons={fruits:‘🍎’,legumes:‘🥬’,viandes:‘🥩’,laitiers:‘🧀’,epicerie:‘🥫’,surgeles:‘❄️’};state.fridge.push({id:Date.now(),name,qty,cat,icon:icons[cat]||‘🍽️’,exp:exp||addDays(7)});closeModal(‘m-ing’);renderFridge();updateFridgeCount();toast(‘Ingrédient ajouté !’,‘success’);$(‘ing-name’).value=’’;$(‘ing-qty’).value=’’;});
+$(‘scan-fridge’)?.addEventListener(‘click’,()=>toast(‘Snap Frigo IA bientôt disponible ! 📷’));
+$(‘scan-ticket’)?.addEventListener(‘click’,()=>toast(‘Scanner ticket bientôt disponible ! 🧾’));
+$(‘tgtg’)?.addEventListener(‘click’,()=>toast(‘Too Good To Go bientôt disponible ! 🍀’));
+
+function renderShopping(){if(state.todayMenu){state.shopping=[];[state.todayMenu.starter,state.todayMenu.main,state.todayMenu.dessert].forEach(r=>{if(r?.ingredients){r.ingredients.forEach(ing=>{if(!state.shopping.find(s=>s.name===ing)){state.shopping.push({name:ing,done:false});}});}});}$(‘shop-count’).textContent=state.shopping.length;$(‘shop-cost’).textContent=`~${state.shopping.length*2}€`;$(‘shop-list’).innerHTML=state.shopping.map((item,i)=>`<div class="shop-item ${item.done?'done':''}" data-i="${i}"><input type="checkbox" ${item.done?'checked':''}><span class="shop-item-name">${item.name}</span></div>`).join(’’);$$(’.shop-item input’).forEach((cb,i)=>{cb.addEventListener(‘change’,()=>{state.shopping[i].done=cb.checked;renderShopping();});});}
+$(‘btn-order’)?.addEventListener(‘click’,()=>toast(‘Commande bientôt disponible ! 🛒’));
+
+function renderRecipes(filter=‘all’,search=’’){let recipes=[…RECIPES];if(filter!==‘all’){if(filter===‘quick’)recipes=recipes.filter(r=>r.time<=20);else recipes=recipes.filter(r=>r.type===filter);}if(search){recipes=recipes.filter(r=>r.name.toLowerCase().includes(search.toLowerCase()));}$(‘recipes’).innerHTML=recipes.map(r=>`<div class="recipe-card" data-id="${r.id}"><div class="recipe-img" style="background-image:url(${r.img})"><button class="recipe-save ${state.favorites.includes(r.id)?'saved':''}" data-id="${r.id}">${state.favorites.includes(r.id)?'❤️':'🤍'}</button></div><div class="recipe-body"><div class="recipe-name">${r.name}</div><div class="recipe-meta">⏱️ ${r.time}min • ${r.cost}</div></div></div>`).join(’’);$$(’.recipe-card’).forEach(card=>{card.addEventListener(‘click’,e=>{if(!e.target.classList.contains(‘recipe-save’)){openRecipe(parseInt(card.dataset.id));}});});$$(’.recipe-save’).forEach(btn=>{btn.addEventListener(‘click’,e=>{e.stopPropagation();const id=parseInt(btn.dataset.id);if(state.favorites.includes(id)){state.favorites=state.favorites.filter(f=>f!==id);btn.classList.remove(‘saved’);btn.textContent=‘🤍’;}else{state.favorites.push(id);btn.classList.add(‘saved’);btn.textContent=‘❤️’;}localStorage.setItem(‘yumr_fav’,JSON.stringify(state.favorites));});});}
+
+$$(’.filter’).forEach(btn=>{btn.addEventListener(‘click’,()=>{$$(’.filter’).forEach(b=>b.classList.remove(‘active’));btn.classList.add(‘active’);renderRecipes(btn.dataset.f);});});
+$$(’.etab’).forEach(btn=>{btn.addEventListener(‘click’,()=>{$$(’.etab’).forEach(b=>b.classList.remove(‘active’));btn.classList.add(‘active’);if(btn.dataset.t===‘saved’){const saved=RECIPES.filter(r=>state.favorites.includes(r.id));$(‘recipes’).innerHTML=saved.length?saved.map(r=>`<div class="recipe-card" data-id="${r.id}"><div class="recipe-img" style="background-image:url(${r.img})"><button class="recipe-save saved" data-id="${r.id}">❤️</button></div><div class="recipe-body"><div class="recipe-name">${r.name}</div><div class="recipe-meta">⏱️ ${r.time}min • ${r.cost}</div></div></div>`).join(’’):’<p style="text-align:center;color:var(--text2);padding:40px">Aucune recette sauvegardée</p>’;}else{renderRecipes();}});});
+
+let searchTimeout;
+$(‘search-in’)?.addEventListener(‘input’,e=>{clearTimeout(searchTimeout);searchTimeout=setTimeout(()=>renderRecipes(‘all’,e.target.value),300);});
+
+function openRecipe(id){const recipe=RECIPES.find(r=>r.id===id);if(!recipe)return;const types={starter:‘Entrée’,main:‘Plat’,dessert:‘Dessert’};$(‘recipe-page’).innerHTML=`<div class="recipe-hero" style="background-image:url(${recipe.img})"><button class="back-btn recipe-back" data-close="m-recipe">←</button><button class="recipe-save-btn ${state.favorites.includes(id)?'saved':''}" data-id="${id}">${state.favorites.includes(id)?'❤️':'🤍'}</button></div><div class="recipe-content"><span class="recipe-type">${types[recipe.type]}</span><h1 class="recipe-title">${recipe.name}</h1><p class="recipe-desc">Une recette délicieuse et facile à préparer.</p><div class="recipe-metas"><span>⏱️ ${recipe.time} min</span><span>💰 ${recipe.cost}</span><span>🔥 ${recipe.calories} kcal</span></div><div class="recipe-section"><h3>🥗 Ingrédients</h3><ul>${recipe.ingredients.map(i=>`<li>${i}</li>`).join('')}</ul></div><div class="recipe-section"><h3>👨‍🍳 Étapes</h3><ol>${recipe.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div><button class="btn btn-primary btn-full btn-glow" id="btn-cook">J'ai cuisiné ! +50 XP</button></div>`;openModal(‘m-recipe’);$(‘recipe-page’).querySelector(’.recipe-back’)?.addEventListener(‘click’,()=>closeModal(‘m-recipe’));$(‘recipe-page’).querySelector(’.recipe-save-btn’)?.addEventListener(‘click’,function(){if(state.favorites.includes(id)){state.favorites=state.favorites.filter(f=>f!==id);this.classList.remove(‘saved’);this.textContent=‘🤍’;}else{state.favorites.push(id);this.classList.add(‘saved’);this.textContent=‘❤️’;}localStorage.setItem(‘yumr_fav’,JSON.stringify(state.favorites));});$(‘btn-cook’)?.addEventListener(‘click’,()=>{closeModal(‘m-recipe’);showXP(50);toast(‘Bravo ! Recette cuisinée 👨‍🍳’,‘success’);state.streak++;updateStats();});}
+
+$(‘upload-zone’)?.addEventListener(‘click’,()=>$(‘post-file’).click());
+$(‘post-file’)?.addEventListener(‘change’,e=>{const file=e.target.files[0];if(file){const reader=new FileReader();reader.onload=ev=>{$(‘post-img’).src=ev.target.result;$(‘post-img’).classList.add(‘show’);$$(’.upload-inner’).forEach(el=>el.style.display=‘none’);};reader.readAsDataURL(file);}});
+$(‘btn-post’)?.addEventListener(‘click’,()=>{if(!$(‘post-img’).classList.contains(‘show’)){toast(‘Ajoute une photo !’,‘error’);return;}toast(‘Photo publiée ! 📸’,‘success’);showXP(30);$(‘post-img’).classList.remove(‘show’);$(‘post-img’).src=’’;$$(’.upload-inner’).forEach(el=>el.style.display=’’);$(‘post-caption’).value=’’;});
+
+function renderLeaderboard(){$(‘leaderboard’).innerHTML=LEADERBOARD.map(u=>`<div class="lb-item ${u.rank===12?'me':''}"><span class="lb-rank ${u.rank===1?'gold':u.rank===2?'silver':u.rank===3?'bronze':''}">#${u.rank}</span><div class="lb-av" style="background-image:url(https://i.pravatar.cc/40?img=${u.img})"></div><span class="lb-name">${u.name}</span><span class="lb-pts">${u.pts}</span></div>`).join(’’);}
+$$(’.ltab’).forEach(btn=>{btn.addEventListener(‘click’,()=>{$$(’.ltab’).forEach(b=>b.classList.remove(‘active’));btn.classList.add(‘active’);const isRank=btn.dataset.v===‘rank’;$(‘leaderboard’).style.display=isRank?‘block’:‘none’;$(‘league-all’).style.display=isRank?‘none’:‘block’;});});
+
+function renderBadges(){$(‘badges-scroll’).innerHTML=BADGES.slice(0,5).map(b=>`<div class="badge-item ${b.unlocked?'':'locked'}"><div class="badge-icon">${b.emoji}</div><span>${b.name}</span></div>`).join(’’);$(‘badges-grid’).innerHTML=BADGES.map(b=>`<div class="badge-card ${b.unlocked?'':'locked'}"><div class="badge-card-icon">${b.emoji}</div><div class="badge-card-name">${b.name}</div><div class="badge-card-desc">${b.desc}</div></div>`).join(’’);$(‘ps-badges’).textContent=BADGES.filter(b=>b.unlocked).length;}
+
+$(‘av-edit’)?.addEventListener(‘click’,()=>$(‘av-file’).click());
+$(‘av-file’)?.addEventListener(‘change’,e=>{const file=e.target.files[0];if(file){const reader=new FileReader();reader.onload=ev=>$(‘av-img’).src=ev.target.result;reader.readAsDataURL(file);}});
+$(‘badges-all’)?.addEventListener(‘click’,()=>openModal(‘m-badges’));
+$(‘m-prefs’)?.addEventListener(‘click’,()=>openModal(‘m-prefs’));
+$(‘m-ref’)?.addEventListener(‘click’,()=>openModal(‘m-ref’));
+$(‘m-premium’)?.addEventListener(‘click’,()=>openModal(‘m-prem’));
+$(‘m-settings’)?.addEventListener(‘click’,()=>toast(‘Paramètres bientôt disponibles !’));
+$(‘m-logout’)?.addEventListener(‘click’,()=>{if(confirm(‘Déconnexion ?’)){localStorage.removeItem(‘yumr_token’);location.reload();}});
+$(‘save-prefs’)?.addEventListener(‘click’,()=>{state.diet=document.querySelector(‘input[name=“p-diet”]:checked’)?.value||state.diet;closeModal(‘m-prefs’);toast(‘Préférences sauvegardées !’,‘success’);});
+$(‘copy-code’)?.addEventListener(‘click’,()=>{navigator.clipboard?.writeText(‘CHEF2024’);toast(‘Code copié !’,‘success’);});
+$(‘share-ref’)?.addEventListener(‘click’,()=>{if(navigator.share){navigator.share({title:‘Yumr’,text:‘Rejoins Yumr avec mon code CHEF2024 !’,url:‘https://yumr.app’});}else{toast(‘Partage: https://yumr.app?ref=CHEF2024’);}});
+$(‘btn-sub’)?.addEventListener(‘click’,()=>toast(‘Abonnement bientôt disponible !’));
+
+$$(’[data-close]’).forEach(btn=>{btn.addEventListener(‘click’,()=>closeModal(btn.dataset.close));});
+$$(’.modal-bg’).forEach(bg=>{bg.addEventListener(‘click’,()=>{const modal=bg.closest(’.modal’);if(modal)hide(modal);});});
+$(‘close-lv’)?.addEventListener(‘click’,()=>$(‘levelup’).classList.remove(‘show’));
+
+if(state.token){state.user={username:‘Chef’,email:‘demo@yumr.app’};state.xp=Math.floor(Math.random()*500);state.level=Math.floor(state.xp/100)+1;state.streak=Math.floor(Math.random()*10);setTimeout(()=>initMainApp(),2500);}
+
+console.log(‘🍽️ Yumr loaded!’);
