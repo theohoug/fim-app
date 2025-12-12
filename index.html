@@ -1,855 +1,1068 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yumr - Swipe. Cook. Enjoy.</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div id="app">
+/* =====================================================
+   YUMR - Swipe. Cook. Enjoy.
+   Premium Culinary App
+   ===================================================== */
+
+const API_URL = 'https://foodmatchs-api-production.up.railway.app/api';
+
+// =====================================================
+// MOCK DATA
+// =====================================================
+
+const MOCK_FRIDGE = [
+    { id: '1', name: 'Œufs', quantity: '6', category: 'laitiers', icon: '🥚', expirationDate: '2024-12-15' },
+    { id: '2', name: 'Poulet', quantity: '500g', category: 'viandes', icon: '🍗', expirationDate: '2024-12-13' },
+    { id: '3', name: 'Tomates', quantity: '4', category: 'legumes', icon: '🍅', expirationDate: '2024-12-14' },
+    { id: '4', name: 'Parmesan', quantity: '150g', category: 'laitiers', icon: '🧀', expirationDate: '2024-12-20' },
+    { id: '5', name: 'Pâtes', quantity: '500g', category: 'epicerie', icon: '🍝', expirationDate: '2025-06-01' },
+    { id: '6', name: 'Crème fraîche', quantity: '20cl', category: 'laitiers', icon: '🥛', expirationDate: '2024-12-13' },
+];
+
+const MOCK_LEADERBOARD = [
+    { rank: 1, name: 'ChefPro99', points: 2847, avatar: 'https://i.pravatar.cc/100?img=1' },
+    { rank: 2, name: 'MarieFood', points: 2634, avatar: 'https://i.pravatar.cc/100?img=2' },
+    { rank: 3, name: 'CuistoMax', points: 2521, avatar: 'https://i.pravatar.cc/100?img=3' },
+    { rank: 4, name: 'GourmetLucie', points: 2398, avatar: 'https://i.pravatar.cc/100?img=4' },
+    { rank: 5, name: 'ChefThomas', points: 2256, avatar: 'https://i.pravatar.cc/100?img=5' },
+    { rank: 6, name: 'FoodieParis', points: 2134, avatar: 'https://i.pravatar.cc/100?img=6' },
+    { rank: 7, name: 'CookMaster', points: 2089, avatar: 'https://i.pravatar.cc/100?img=7' },
+    { rank: 8, name: 'ChefSophie', points: 1987, avatar: 'https://i.pravatar.cc/100?img=8' },
+    { rank: 9, name: 'GastroNico', points: 1856, avatar: 'https://i.pravatar.cc/100?img=9' },
+    { rank: 10, name: 'YumrFan', points: 1743, avatar: 'https://i.pravatar.cc/100?img=10' },
+];
+
+const MOCK_BADGES = [
+    { id: 1, name: 'Premier Plat', icon: '🥇', desc: 'Cuisiner sa première recette', unlocked: true },
+    { id: 2, name: 'Streak 7j', icon: '🔥', desc: '7 jours consécutifs', unlocked: true },
+    { id: 3, name: 'Social Chef', icon: '👥', desc: '100 abonnés', unlocked: false },
+    { id: 4, name: 'Globe-trotter', icon: '🌍', desc: '10 cuisines différentes', unlocked: true },
+    { id: 5, name: 'Veggie Week', icon: '🌱', desc: '7 jours végétarien', unlocked: false },
+    { id: 6, name: 'Sommelier', icon: '🍷', desc: '50 accords mets-vins', unlocked: false },
+    { id: 7, name: 'Économe', icon: '💰', desc: '10 repas à moins de 5€', unlocked: true },
+    { id: 8, name: 'Batch Master', icon: '📅', desc: '4 meal preps complétés', unlocked: false },
+    { id: 9, name: 'Streak 30j', icon: '🔥🔥', desc: '30 jours consécutifs', unlocked: false },
+];
+
+const QUIZ_IMAGES = {
+    'pizza': 'photo-1565299624946-b28f40a0ae38',
+    'pasta': 'photo-1621996346565-e3dbc646d9a9',
+    'sushi': 'photo-1579871494447-9811cf80d66c',
+    'burger': 'photo-1568901346375-23c9450c58cd',
+    'salade': 'photo-1512621776951-a57141f2eefd',
+    'dessert': 'photo-1551024601-bec78aea704b',
+    'viande': 'photo-1600891964092-4316c288032e',
+    'poisson': 'photo-1534604973900-c43ab4c2e0ab',
+    'asiatique': 'photo-1569718212165-3a8278d5f624',
+    'mexicain': 'photo-1565299585323-38d6b0865b47',
+    'default': 'photo-1504674900247-0877df9cc836'
+};
+
+const RECIPE_IMAGES = {
+    'starter': 'photo-1512621776951-a57141f2eefd',
+    'main': 'photo-1546069901-ba9599a7e63c',
+    'dessert': 'photo-1551024601-bec78aea704b',
+    'cheese': 'photo-1452195100486-9cc805987862',
+    'wine': 'photo-1510812431401-41d2bd2722f3'
+};
+
+// =====================================================
+// STATE
+// =====================================================
+
+const state = {
+    user: null,
+    token: null,
+    questionCount: 30,
+    diet: 'omnivore',
+    allergies: [],
+    goal: 'none',
+    questions: [],
+    answers: [],
+    currentQuestion: 0,
+    calculatedProfile: null,
+    recipes: [],
+    favorites: JSON.parse(localStorage.getItem('yumr_favorites') || '[]'),
+    fridge: [...MOCK_FRIDGE],
+    todayMenu: null,
+    menuOptions: {
+        budget: 'medium',
+        persons: 2,
+        maxTime: 30,
+        useFridge: false,
+        cheese: false,
+        wine: false
+    },
+    currentSlide: 1
+};
+
+// =====================================================
+// HELPERS
+// =====================================================
+
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+async function api(endpoint, opts = {}) {
+    const headers = { 'Content-Type': 'application/json', ...opts.headers };
+    if (state.token) headers['Authorization'] = `Bearer ${state.token}`;
+    const res = await fetch(`${API_URL}${endpoint}`, { ...opts, headers });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur');
+    return data;
+}
+
+function showScreen(id) {
+    $$('.screen').forEach(s => s.classList.remove('active'));
+    $(`#${id}`).classList.add('active');
+    window.scrollTo(0, 0);
+}
+
+function showTab(tab) {
+    $$('.tab-page').forEach(t => t.classList.remove('active'));
+    $$('.nav-item').forEach(b => b.classList.remove('active'));
+    $(`#tab-${tab}`)?.classList.add('active');
+    $(`.nav-item[data-tab="${tab}"]`)?.classList.add('active');
+    
+    if (tab === 'explore') loadRecipes();
+    if (tab === 'leagues') loadLeaderboard();
+    if (tab === 'profile') updateProfileUI();
+}
+
+function showModal(id) { $(`#${id}`).classList.add('active'); }
+function hideModal(id) { $(`#${id}`).classList.remove('active'); }
+
+function toast(msg, type = '') {
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    $('#toast-container').appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+}
+
+function showXP(amount) {
+    const popup = $('#xp-popup');
+    $('.xp-popup-text').textContent = `+${amount} XP`;
+    popup.classList.add('show');
+    setTimeout(() => popup.classList.remove('show'), 2000);
+}
+
+function getQuizImage(question) {
+    const text = (question.question || '').toLowerCase();
+    for (const [key, val] of Object.entries(QUIZ_IMAGES)) {
+        if (text.includes(key)) return `https://images.unsplash.com/${val}?w=400&h=250&fit=crop`;
+    }
+    return `https://images.unsplash.com/${QUIZ_IMAGES.default}?w=400&h=250&fit=crop`;
+}
+
+function getRecipeImage(recipe) {
+    const type = recipe?.type || 'main';
+    const photoId = RECIPE_IMAGES[type] || RECIPE_IMAGES.main;
+    return `https://images.unsplash.com/${photoId}?w=400&h=300&fit=crop`;
+}
+
+function getDaysUntilExpiry(date) {
+    const today = new Date();
+    const expiry = new Date(date);
+    const diff = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+    return diff;
+}
+
+// =====================================================
+// INITIALIZATION
+// =====================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    initEventListeners();
+    initSwipe();
+    
+    // Splash screen
+    setTimeout(() => {
+        checkAuth();
+    }, 2000);
+});
+
+function checkAuth() {
+    const token = localStorage.getItem('yumr_token');
+    const user = localStorage.getItem('yumr_user');
+    
+    if (token && user) {
+        state.token = token;
+        state.user = JSON.parse(user);
+        loadMainApp();
+    } else {
+        showScreen('welcome-screen');
+    }
+}
+
+// =====================================================
+// EVENT LISTENERS
+// =====================================================
+
+function initEventListeners() {
+    // Welcome screen
+    $('#welcome-start-btn').onclick = () => showScreen('quiz-setup-screen');
+    $('#welcome-login-btn').onclick = () => showScreen('login-screen');
+    
+    // Welcome slides
+    $$('.dot').forEach(dot => {
+        dot.onclick = () => goToSlide(parseInt(dot.dataset.slide));
+    });
+    
+    // Login
+    $('#login-back-btn').onclick = () => showScreen('welcome-screen');
+    $('#login-form').onsubmit = handleLogin;
+    
+    // Quiz setup
+    $('#quiz-setup-back-btn').onclick = () => showScreen('welcome-screen');
+    $$('input[name="quiz-count"]').forEach(i => i.onchange = () => state.questionCount = +i.value);
+    $$('input[name="diet"]').forEach(i => i.onchange = () => state.diet = i.value);
+    $$('.allergy-chip input').forEach(i => i.onchange = () => {
+        state.allergies = [...$$('.allergy-chip input:checked')].map(c => c.value);
+    });
+    $$('input[name="goal"]').forEach(i => i.onchange = () => state.goal = i.value);
+    $('#start-quiz-btn').onclick = startQuiz;
+    
+    // Quiz
+    $('#quiz-close-btn').onclick = () => { if (confirm('Quitter le quiz ?')) showScreen('quiz-setup-screen'); };
+    $('#quiz-nope-btn').onclick = () => answerQuestion(false);
+    $('#quiz-love-btn').onclick = () => answerQuestion(true);
+    
+    // Result
+    $('#create-account-btn').onclick = () => {
+        if (state.calculatedProfile) $('#register-profile').textContent = state.calculatedProfile.name;
+        showScreen('register-screen');
+    };
+    $('#skip-account-btn').onclick = () => { toast('Mode invité'); loadMainAppAsGuest(); };
+    
+    // Register
+    $('#register-back-btn').onclick = () => showScreen('result-screen');
+    $('#register-form').onsubmit = handleRegister;
+    
+    // Navigation
+    $$('.nav-item').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+    
+    // Home - Menu generation
+    $('#generate-menu-btn').onclick = () => showModal('menu-options-modal');
+    
+    // Menu options
+    $$('.budget-btn').forEach(b => b.onclick = () => {
+        $$('.budget-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        state.menuOptions.budget = b.dataset.budget;
+    });
+    
+    $$('.time-btn').forEach(b => b.onclick = () => {
+        $$('.time-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        state.menuOptions.maxTime = parseInt(b.dataset.time);
+    });
+    
+    $('#persons-minus').onclick = () => {
+        state.menuOptions.persons = Math.max(1, state.menuOptions.persons - 1);
+        $('#persons-value').textContent = state.menuOptions.persons;
+    };
+    $('#persons-plus').onclick = () => {
+        state.menuOptions.persons = Math.min(12, state.menuOptions.persons + 1);
+        $('#persons-value').textContent = state.menuOptions.persons;
+    };
+    
+    $('#use-fridge-toggle').onchange = e => state.menuOptions.useFridge = e.target.checked;
+    $('#cheese-toggle').onchange = e => state.menuOptions.cheese = e.target.checked;
+    $('#wine-toggle').onchange = e => state.menuOptions.wine = e.target.checked;
+    
+    $('#confirm-menu-btn').onclick = generateDailyMenu;
+    
+    // Quick actions
+    $('#quick-fridge').onclick = () => { openFridge(); };
+    $('#menu-fridge').onclick = () => { openFridge(); };
+    $('#quick-shopping').onclick = () => showModal('shopping-modal');
+    $('#quick-mealprep').onclick = () => toast('Meal Prep - Bientôt disponible !');
+    $('#quick-coach').onclick = () => toast('Coach IA - Bientôt disponible !');
+    
+    // Modal closes
+    $$('[data-close]').forEach(b => b.onclick = () => hideModal(b.dataset.close));
+    $$('.modal-overlay').forEach(el => el.onclick = () => el.closest('.modal').classList.remove('active'));
+    
+    // Fridge
+    $('#add-ingredient-btn').onclick = () => showModal('add-ingredient-modal');
+    $('#save-ingredient-btn').onclick = saveIngredient;
+    $('#scan-fridge-btn').onclick = () => toast('Snap Frigo IA - Bientôt disponible !');
+    $('#scan-receipt-btn').onclick = () => toast('Scan ticket - Bientôt disponible !');
+    $('#tgtg-btn').onclick = () => toast('Too Good To Go - Bientôt disponible !');
+    
+    $$('.fridge-cat').forEach(c => c.onclick = () => {
+        $$('.fridge-cat').forEach(x => x.classList.remove('active'));
+        c.classList.add('active');
+        displayFridge(c.dataset.cat);
+    });
+    
+    // Explore
+    let searchTimeout;
+    $('#search-recipes').oninput = e => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => loadRecipes(e.target.value), 300);
+    };
+    
+    $$('.filter-chip').forEach(c => c.onclick = () => {
+        $$('.filter-chip').forEach(x => x.classList.remove('active'));
+        c.classList.add('active');
+        loadRecipes('', c.dataset.filter);
+    });
+    
+    // Post
+    $('#upload-zone').onclick = () => $('#post-image-input').click();
+    $('#post-image-input').onchange = handlePostImage;
+    $('#publish-post-btn').onclick = publishPost;
+    
+    // Leagues
+    $('#view-league-btn').onclick = () => showTab('leagues');
+    
+    // Profile
+    $('#avatar-edit-btn').onclick = () => $('#avatar-input').click();
+    $('#avatar-input').onchange = handleAvatarUpload;
+    $('#menu-preferences').onclick = () => toast('Préférences - Ouvrir les paramètres');
+    $('#menu-premium').onclick = () => showModal('premium-modal');
+    $('#menu-referral').onclick = () => toast('Code parrainage copié !', 'success');
+    $('#menu-settings').onclick = () => toast('Paramètres - Bientôt disponible');
+    $('#menu-logout').onclick = logout;
+    $('#view-all-badges').onclick = () => showModal('badges-modal');
+    
+    // Premium
+    $('#subscribe-btn').onclick = () => toast('Essai gratuit activé !', 'success');
+}
+
+// Welcome slides
+function goToSlide(num) {
+    state.currentSlide = num;
+    $$('.welcome-slide').forEach(s => s.classList.remove('active'));
+    $$('.dot').forEach(d => d.classList.remove('active'));
+    $(`.welcome-slide[data-slide="${num}"]`).classList.add('active');
+    $(`.dot[data-slide="${num}"]`).classList.add('active');
+}
+
+// =====================================================
+// SWIPE
+// =====================================================
+
+function initSwipe() {
+    const card = $('#quiz-card');
+    if (!card) return;
+    
+    let startX = 0, currentX = 0, isDragging = false;
+    
+    const onStart = (x) => {
+        startX = x;
+        currentX = x;
+        isDragging = true;
+        card.classList.add('dragging');
+    };
+    
+    const onMove = (x) => {
+        if (!isDragging) return;
+        currentX = x;
+        const diff = currentX - startX;
+        card.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
         
-        <!-- ========== SPLASH SCREEN ========== -->
-        <div id="splash-screen" class="screen active">
-            <div class="splash-content">
-                <div class="splash-logo">
-                    <span class="logo-icon">🍽️</span>
-                    <span class="logo-text">Yumr</span>
-                </div>
-                <p class="splash-tagline">Swipe. Cook. Enjoy.</p>
-                <div class="splash-loader"></div>
-            </div>
-        </div>
+        card.classList.remove('hint-left', 'hint-right');
+        if (diff < -50) card.classList.add('hint-left');
+        if (diff > 50) card.classList.add('hint-right');
+    };
+    
+    const onEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        card.classList.remove('dragging');
+        
+        const diff = currentX - startX;
+        if (diff < -100) {
+            answerQuestion(false);
+        } else if (diff > 100) {
+            answerQuestion(true);
+        } else {
+            card.style.transform = '';
+            card.classList.remove('hint-left', 'hint-right');
+        }
+    };
+    
+    card.addEventListener('touchstart', e => onStart(e.touches[0].clientX), { passive: true });
+    card.addEventListener('touchmove', e => onMove(e.touches[0].clientX), { passive: true });
+    card.addEventListener('touchend', onEnd);
+    
+    card.addEventListener('mousedown', e => onStart(e.clientX));
+    document.addEventListener('mousemove', e => onMove(e.clientX));
+    document.addEventListener('mouseup', onEnd);
+}
 
-        <!-- ========== WELCOME/ONBOARDING ========== -->
-        <div id="welcome-screen" class="screen">
-            <div class="welcome-slides">
-                <div class="welcome-slide active" data-slide="1">
-                    <div class="slide-image">🍳</div>
-                    <h1>Découvre ton profil culinaire</h1>
-                    <p>Swipe pour révéler tes goûts et obtenir des recommandations personnalisées</p>
-                </div>
-                <div class="welcome-slide" data-slide="2">
-                    <div class="slide-image">📅</div>
-                    <h1>Menus personnalisés chaque jour</h1>
-                    <p>Des recettes adaptées à tes préférences, ton frigo et ton budget</p>
-                </div>
-                <div class="welcome-slide" data-slide="3">
-                    <div class="slide-image">🏆</div>
-                    <h1>Progresse et affronte tes amis</h1>
-                    <p>Gagne de l'XP, monte en ligue et deviens le meilleur chef</p>
-                </div>
-            </div>
-            <div class="welcome-dots">
-                <span class="dot active" data-slide="1"></span>
-                <span class="dot" data-slide="2"></span>
-                <span class="dot" data-slide="3"></span>
-            </div>
-            <div class="welcome-actions">
-                <button class="btn btn-primary btn-glow" id="welcome-start-btn">Commencer</button>
-                <button class="btn btn-ghost" id="welcome-login-btn">J'ai déjà un compte</button>
-            </div>
-        </div>
+// =====================================================
+// AUTH
+// =====================================================
 
-        <!-- ========== LOGIN ========== -->
-        <div id="login-screen" class="screen">
-            <div class="auth-page">
-                <button class="btn-back" id="login-back-btn">←</button>
-                <div class="auth-content">
-                    <div class="auth-logo">🍽️</div>
-                    <h1>Bon retour sur Yumr!</h1>
-                    <p class="auth-sub">Connecte-toi pour retrouver ta progression</p>
-                    <form id="login-form" class="auth-form">
-                        <div class="input-group">
-                            <span class="input-icon">📧</span>
-                            <input type="email" id="login-email" placeholder="Email" required>
-                        </div>
-                        <div class="input-group">
-                            <span class="input-icon">🔒</span>
-                            <input type="password" id="login-password" placeholder="Mot de passe" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-full btn-glow">Se connecter</button>
-                    </form>
-                    <div id="login-error" class="alert alert-error"></div>
-                </div>
-            </div>
-        </div>
+async function handleLogin(e) {
+    e.preventDefault();
+    try {
+        const data = await api('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({
+                email: $('#login-email').value,
+                password: $('#login-password').value
+            })
+        });
+        
+        state.token = data.token;
+        state.user = data.user;
+        localStorage.setItem('yumr_token', data.token);
+        localStorage.setItem('yumr_user', JSON.stringify(data.user));
+        loadMainApp();
+    } catch (err) {
+        $('#login-error').textContent = err.message;
+        $('#login-error').classList.add('show');
+    }
+}
 
-        <!-- ========== QUIZ SETUP ========== -->
-        <div id="quiz-setup-screen" class="screen">
-            <div class="quiz-setup-page">
-                <button class="btn-back" id="quiz-setup-back-btn">←</button>
-                <div class="setup-content">
-                    <div class="setup-header">
-                        <span class="badge badge-gradient">🎯 Étape 1/3</span>
-                        <h1>Personnalise ton expérience</h1>
-                        <p>On va adapter Yumr à tes besoins</p>
-                    </div>
-                    
-                    <div class="setup-section">
-                        <h3>⏱️ Durée du quiz</h3>
-                        <div class="quiz-duration-cards">
-                            <label class="duration-card">
-                                <input type="radio" name="quiz-count" value="10">
-                                <div class="duration-content">
-                                    <span class="duration-number">10</span>
-                                    <span class="duration-label">Express</span>
-                                    <span class="duration-time">~2 min</span>
-                                </div>
-                            </label>
-                            <label class="duration-card recommended">
-                                <input type="radio" name="quiz-count" value="30" checked>
-                                <div class="duration-content">
-                                    <span class="duration-number">30</span>
-                                    <span class="duration-label">Classique</span>
-                                    <span class="duration-time">~5 min</span>
-                                    <span class="duration-badge">⭐ Recommandé</span>
-                                </div>
-                            </label>
-                            <label class="duration-card">
-                                <input type="radio" name="quiz-count" value="50">
-                                <div class="duration-content">
-                                    <span class="duration-number">50</span>
-                                    <span class="duration-label">Complet</span>
-                                    <span class="duration-time">~10 min</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="setup-section">
-                        <h3>🍽️ Régime alimentaire</h3>
-                        <div class="diet-options">
-                            <label class="diet-option">
-                                <input type="radio" name="diet" value="omnivore" checked>
-                                <div class="diet-content"><span>🥩</span><span>Omnivore</span></div>
-                            </label>
-                            <label class="diet-option">
-                                <input type="radio" name="diet" value="flexitarian">
-                                <div class="diet-content"><span>🥗</span><span>Flexitarien</span></div>
-                            </label>
-                            <label class="diet-option">
-                                <input type="radio" name="diet" value="vegetarian">
-                                <div class="diet-content"><span>🥬</span><span>Végétarien</span></div>
-                            </label>
-                            <label class="diet-option">
-                                <input type="radio" name="diet" value="vegan">
-                                <div class="diet-content"><span>🌱</span><span>Végan</span></div>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="setup-section">
-                        <h3>⚠️ Allergies & Intolérances</h3>
-                        <div class="allergy-chips">
-                            <label class="allergy-chip"><input type="checkbox" value="gluten"><span>🌾 Gluten</span></label>
-                            <label class="allergy-chip"><input type="checkbox" value="lactose"><span>🥛 Lactose</span></label>
-                            <label class="allergy-chip"><input type="checkbox" value="nuts"><span>🥜 Arachides</span></label>
-                            <label class="allergy-chip"><input type="checkbox" value="seafood"><span>🦐 Fruits de mer</span></label>
-                            <label class="allergy-chip"><input type="checkbox" value="eggs"><span>🥚 Œufs</span></label>
-                            <label class="allergy-chip"><input type="checkbox" value="soy"><span>🫘 Soja</span></label>
-                        </div>
-                    </div>
-                    
-                    <div class="setup-section">
-                        <h3>💪 Objectif (optionnel)</h3>
-                        <div class="goal-options">
-                            <label class="goal-option"><input type="radio" name="goal" value="none" checked><span>Aucun objectif particulier</span></label>
-                            <label class="goal-option"><input type="radio" name="goal" value="weight_loss"><span>🏃 Perte de poids</span></label>
-                            <label class="goal-option"><input type="radio" name="goal" value="muscle_gain"><span>💪 Prise de masse</span></label>
-                            <label class="goal-option"><input type="radio" name="goal" value="cutting"><span>🔥 Sèche</span></label>
-                            <label class="goal-option"><input type="radio" name="goal" value="maintenance"><span>⚖️ Maintien</span></label>
-                        </div>
-                    </div>
-                    
-                    <button class="btn btn-primary btn-full btn-glow" id="start-quiz-btn">
-                        C'est parti ! 🚀
+async function handleRegister(e) {
+    e.preventDefault();
+    try {
+        const data = await api('/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({
+                username: $('#register-username').value,
+                email: $('#register-email').value,
+                password: $('#register-password').value
+            })
+        });
+        
+        state.token = data.token;
+        state.user = data.user;
+        localStorage.setItem('yumr_token', data.token);
+        localStorage.setItem('yumr_user', JSON.stringify(data.user));
+        
+        // Save quiz + preferences
+        if (state.answers.length > 0) {
+            try {
+                await api('/quiz/submit', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        answers: state.answers,
+                        diet: state.diet,
+                        allergens: JSON.stringify(state.allergies)
+                    })
+                });
+            } catch (err) { console.error(err); }
+        }
+        
+        toast('Bienvenue sur Yumr! 🎉', 'success');
+        showXP(50);
+        loadMainApp();
+    } catch (err) {
+        $('#register-error').textContent = err.message;
+        $('#register-error').classList.add('show');
+    }
+}
+
+function logout() {
+    state.user = null;
+    state.token = null;
+    localStorage.removeItem('yumr_token');
+    localStorage.removeItem('yumr_user');
+    showScreen('welcome-screen');
+}
+
+// =====================================================
+// QUIZ
+// =====================================================
+
+async function startQuiz() {
+    try {
+        state.questions = await api(`/quiz/questions?count=${state.questionCount}`);
+        state.answers = [];
+        state.currentQuestion = 0;
+        showScreen('quiz-screen');
+        displayQuestion();
+    } catch (err) {
+        toast('Erreur chargement quiz', 'error');
+    }
+}
+
+function displayQuestion() {
+    const q = state.questions[state.currentQuestion];
+    if (!q) return;
+    
+    const card = $('#quiz-card');
+    card.classList.remove('swipe-left', 'swipe-right', 'hint-left', 'hint-right');
+    card.style.transform = '';
+    
+    $('#quiz-card-image').style.backgroundImage = `url(${getQuizImage(q)})`;
+    $('#quiz-card-emoji').textContent = q.emoji || '🍽️';
+    $('#quiz-card-question').textContent = q.question;
+    
+    const pct = ((state.currentQuestion + 1) / state.questions.length) * 100;
+    $('#quiz-progress-fill').style.width = `${pct}%`;
+    $('#quiz-counter').textContent = `${state.currentQuestion + 1}/${state.questions.length}`;
+}
+
+function answerQuestion(liked) {
+    const q = state.questions[state.currentQuestion];
+    state.answers.push({ question_id: q.id, liked });
+    
+    const card = $('#quiz-card');
+    card.classList.add(liked ? 'swipe-right' : 'swipe-left');
+    
+    // Update streak display
+    const streak = state.answers.filter(a => a.liked).length;
+    $('#quiz-streak').textContent = streak;
+    
+    setTimeout(() => {
+        state.currentQuestion++;
+        if (state.currentQuestion >= state.questions.length) {
+            finishQuiz();
+        } else {
+            displayQuestion();
+        }
+    }, 300);
+}
+
+async function finishQuiz() {
+    try {
+        const result = await api('/quiz/calculate-profile', {
+            method: 'POST',
+            body: JSON.stringify({ answers: state.answers })
+        });
+        state.calculatedProfile = result.profile;
+        displayResult(result.profile);
+    } catch (err) {
+        state.calculatedProfile = { name: 'Gourmet', emoji: '🍳', description: 'Tu apprécies la bonne cuisine.', traits: 'Curieux,Gourmand' };
+        displayResult(state.calculatedProfile);
+    }
+}
+
+function displayResult(profile) {
+    showScreen('result-screen');
+    $('#result-emoji').textContent = profile.emoji || '🍳';
+    $('#result-name').textContent = profile.name || 'Gourmet';
+    $('#result-description').textContent = profile.description || '';
+    
+    const traits = (profile.traits || '').split(',').filter(t => t.trim());
+    $('#result-traits').innerHTML = traits.map(t => `<span>${t.trim()}</span>`).join('');
+    
+    // Add confetti effect
+    createConfetti();
+}
+
+function createConfetti() {
+    const container = $('#result-confetti');
+    container.innerHTML = '';
+    const colors = ['#FF6B35', '#FFD166', '#4ECB71', '#FF4757'];
+    
+    for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.cssText = `
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            left: ${Math.random() * 100}%;
+            top: -10px;
+            border-radius: 2px;
+            animation: confettiFall ${2 + Math.random() * 2}s linear forwards;
+            animation-delay: ${Math.random() * 0.5}s;
+        `;
+        container.appendChild(confetti);
+    }
+    
+    // Add CSS animation
+    if (!document.querySelector('#confetti-style')) {
+        const style = document.createElement('style');
+        style.id = 'confetti-style';
+        style.textContent = `
+            @keyframes confettiFall {
+                to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// =====================================================
+// MAIN APP
+// =====================================================
+
+async function loadMainApp() {
+    showScreen('main-app');
+    showTab('home');
+    
+    try {
+        const userData = await api('/auth/me');
+        state.user = userData;
+        updateUserUI();
+    } catch (err) {
+        loadMainAppAsGuest();
+        return;
+    }
+    
+    checkDailyMenu();
+    loadStats();
+    loadBadges();
+}
+
+function loadMainAppAsGuest() {
+    showScreen('main-app');
+    showTab('home');
+    state.user = { username: 'Invité', level: 1, total_xp: 0 };
+    updateUserUI();
+}
+
+function updateUserUI() {
+    const u = state.user;
+    
+    // Header
+    $('#header-streak').textContent = u.current_streak || 0;
+    $('#header-xp').textContent = u.total_xp || 0;
+    
+    // Home
+    $('#home-username').textContent = u.username || 'Chef';
+    $('#stat-streak').textContent = u.current_streak || 0;
+    $('#stat-xp-week').textContent = u.total_xp || 0;
+    $('#stat-recipes').textContent = u.recipes_count || 0;
+    
+    // Fridge count
+    $('#fridge-count').textContent = state.fridge.length;
+    
+    // Profile
+    $('#profile-username').textContent = `@${u.username || 'user'}`;
+    $('#profile-level').textContent = u.level || 1;
+    $('#profile-xp').textContent = u.total_xp || 0;
+    $('#profile-recipes').textContent = u.recipes_count || 0;
+    $('#profile-streak-max').textContent = u.longest_streak || 0;
+    
+    // Culinary profile
+    const cp = u.culinary_profile || state.calculatedProfile;
+    if (cp) {
+        $('.culinary-emoji').textContent = cp.emoji || '🍳';
+        $('.culinary-name').textContent = cp.name || 'Gourmet';
+    }
+    
+    // XP bar
+    const level = u.level || 1;
+    const xp = u.total_xp || 0;
+    const currentLevelXP = Math.floor(100 * Math.pow(1.5, level - 1));
+    const nextLevelXP = Math.floor(100 * Math.pow(1.5, level));
+    const progress = ((xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
+    
+    $('#current-level').textContent = level;
+    $('#current-xp').textContent = xp;
+    $('#next-level-xp').textContent = nextLevelXP;
+    $('#xp-bar-fill').style.width = `${Math.min(100, Math.max(0, progress))}%`;
+}
+
+function updateProfileUI() {
+    updateUserUI();
+    loadBadges();
+}
+
+async function loadStats() {
+    if (!state.token) return;
+    try {
+        const stats = await api('/gamification/stats');
+        state.user.level = stats.level;
+        state.user.total_xp = stats.total_xp;
+        state.user.current_streak = stats.current_streak;
+        state.user.longest_streak = stats.longest_streak;
+        updateUserUI();
+    } catch (err) { console.error(err); }
+}
+
+// =====================================================
+// DAILY MENU
+// =====================================================
+
+async function checkDailyMenu() {
+    if (!state.token) return;
+    try {
+        const data = await api('/quiz/daily');
+        if (data.already_answered && data.menu) {
+            state.todayMenu = data.menu;
+            displayTodayMenu();
+        }
+    } catch (err) { console.error(err); }
+}
+
+async function generateDailyMenu() {
+    if (!state.token) {
+        toast('Connecte-toi d\'abord', 'error');
+        return;
+    }
+    
+    const opts = state.menuOptions;
+    
+    try {
+        const data = await api('/quiz/daily', {
+            method: 'POST',
+            body: JSON.stringify({
+                budget: opts.budget,
+                servings: opts.persons,
+                include_cheese: opts.cheese,
+                include_wine: opts.wine
+            })
+        });
+        
+        state.todayMenu = data.menu;
+        hideModal('menu-options-modal');
+        displayTodayMenu();
+        
+        showXP(data.xp_gained || 20);
+        toast(`Streak: ${data.streak} 🔥`, 'success');
+        
+        $('#header-streak').textContent = data.streak;
+        $('#stat-streak').textContent = data.streak;
+    } catch (err) {
+        toast(err.message || 'Erreur', 'error');
+    }
+}
+
+function displayTodayMenu() {
+    $('#daily-menu-status').textContent = 'Ton menu est prêt !';
+    $('#generate-menu-btn').textContent = 'Voir';
+    
+    const preview = $('#daily-menu-preview');
+    preview.classList.remove('hidden');
+    
+    const types = { starter: 'Entrée', main: 'Plat', dessert: 'Dessert', cheese: 'Fromage', wine: 'Vin' };
+    const items = [];
+    
+    ['starter', 'main', 'dessert', 'cheese', 'wine'].forEach(t => {
+        const meal = state.todayMenu[t];
+        if (meal) items.push({ type: t, label: types[t], meal });
+    });
+    
+    preview.innerHTML = items.map(i => `
+        <div class="menu-item-row" onclick="openRecipe('${i.meal.id}')">
+            <div class="menu-item-img" style="background-image:url(${getRecipeImage(i.meal)})"></div>
+            <div class="menu-item-info">
+                <span class="menu-item-type">${i.label}</span>
+                <span class="menu-item-name">${i.meal.name}</span>
+            </div>
+            <span style="color:var(--text-muted)">→</span>
+        </div>
+    `).join('');
+}
+
+// =====================================================
+// FRIDGE
+// =====================================================
+
+function openFridge() {
+    showModal('fridge-modal');
+    displayFridge('all');
+    displayExpiringItems();
+}
+
+function displayFridge(category = 'all') {
+    const items = category === 'all' 
+        ? state.fridge 
+        : state.fridge.filter(i => i.category === category);
+    
+    if (!items.length) {
+        $('#fridge-list').innerHTML = `
+            <div style="text-align:center;padding:40px;color:var(--text-secondary)">
+                <p style="font-size:48px;margin-bottom:16px">🧊</p>
+                <p>Aucun ingrédient dans cette catégorie</p>
+            </div>
+        `;
+        return;
+    }
+    
+    $('#fridge-list').innerHTML = items.map(item => {
+        const days = getDaysUntilExpiry(item.expirationDate);
+        let expClass = 'ok';
+        let expText = `${days}j`;
+        
+        if (days < 0) { expClass = 'danger'; expText = 'Périmé'; }
+        else if (days <= 2) { expClass = 'danger'; }
+        else if (days <= 5) { expClass = 'warning'; }
+        
+        return `
+            <div class="fridge-item">
+                <span class="fridge-item-icon">${item.icon || '🥕'}</span>
+                <div class="fridge-item-info">
+                    <div class="fridge-item-name">${item.name}</div>
+                    <div class="fridge-item-qty">${item.quantity}</div>
+                </div>
+                <span class="fridge-item-exp ${expClass}">${expText}</span>
+                <button class="fridge-item-del" onclick="deleteFridgeItem('${item.id}')">🗑️</button>
+            </div>
+        `;
+    }).join('');
+}
+
+function displayExpiringItems() {
+    const expiring = state.fridge.filter(i => getDaysUntilExpiry(i.expirationDate) <= 3);
+    
+    if (!expiring.length) {
+        $('#fridge-expiring').classList.add('hidden');
+        return;
+    }
+    
+    $('#fridge-expiring').classList.remove('hidden');
+    $('#expiring-list').innerHTML = expiring.map(i => `
+        <div class="fridge-item" style="margin-bottom:8px">
+            <span class="fridge-item-icon">${i.icon}</span>
+            <div class="fridge-item-info">
+                <div class="fridge-item-name">${i.name}</div>
+            </div>
+            <span class="fridge-item-exp danger">${getDaysUntilExpiry(i.expirationDate)}j</span>
+        </div>
+    `).join('');
+}
+
+function saveIngredient() {
+    const name = $('#ingredient-name').value.trim();
+    if (!name) { toast('Nom requis', 'error'); return; }
+    
+    const newItem = {
+        id: Date.now().toString(),
+        name,
+        quantity: $('#ingredient-qty').value || '1',
+        category: $('#ingredient-category').value,
+        icon: getCategoryIcon($('#ingredient-category').value),
+        expirationDate: $('#ingredient-expiry').value || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    };
+    
+    state.fridge.push(newItem);
+    hideModal('add-ingredient-modal');
+    
+    // Reset form
+    $('#ingredient-name').value = '';
+    $('#ingredient-qty').value = '';
+    $('#ingredient-expiry').value = '';
+    
+    toast('Ingrédient ajouté !', 'success');
+    displayFridge('all');
+    displayExpiringItems();
+    $('#fridge-count').textContent = state.fridge.length;
+}
+
+function deleteFridgeItem(id) {
+    state.fridge = state.fridge.filter(i => i.id !== id);
+    displayFridge($('.fridge-cat.active')?.dataset.cat || 'all');
+    displayExpiringItems();
+    $('#fridge-count').textContent = state.fridge.length;
+}
+
+function getCategoryIcon(cat) {
+    const icons = { fruits: '🍎', legumes: '🥬', viandes: '🥩', laitiers: '🧀', epicerie: '🥫', surgeles: '🧊' };
+    return icons[cat] || '🥕';
+}
+
+// =====================================================
+// RECIPES
+// =====================================================
+
+async function loadRecipes(search = '', filter = 'all') {
+    try {
+        let endpoint = '/meals?limit=50';
+        if (search) endpoint += `&search=${encodeURIComponent(search)}`;
+        if (filter && filter !== 'all') endpoint += `&type=${filter}`;
+        
+        const data = await api(endpoint);
+        state.recipes = data.meals || [];
+        displayRecipes();
+    } catch (err) {
+        console.error(err);
+        // Use mock data
+        state.recipes = [];
+        displayRecipes();
+    }
+}
+
+function displayRecipes() {
+    const grid = $('#recipes-grid');
+    
+    if (!state.recipes.length) {
+        grid.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-secondary)">
+                <p style="font-size:48px;margin-bottom:16px">🔍</p>
+                <h3 style="margin-bottom:8px">Aucun résultat</h3>
+                <p>Essaie une autre recherche</p>
+            </div>
+        `;
+        return;
+    }
+    
+    grid.innerHTML = state.recipes.map(r => {
+        const isSaved = state.favorites.includes(r.id);
+        return `
+            <div class="recipe-card" onclick="openRecipe('${r.id}')">
+                <div class="recipe-card-img" style="background-image:url(${getRecipeImage(r)})">
+                    <button class="recipe-card-save ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); toggleFavorite('${r.id}')">
+                        ${isSaved ? '❤️' : '🤍'}
                     </button>
                 </div>
+                <div class="recipe-card-body">
+                    <div class="recipe-card-name">${r.name}</div>
+                    <div class="recipe-card-meta">
+                        <span>⏱️ ${(r.prep_time || 0) + (r.cook_time || 0)}min</span>
+                        <span>💰 ${'€'.repeat(r.budget === 'low' ? 1 : r.budget === 'high' ? 3 : 2)}</span>
+                    </div>
+                </div>
             </div>
-        </div>
+        `;
+    }).join('');
+}
 
-        <!-- ========== QUIZ SWIPE ========== -->
-        <div id="quiz-screen" class="screen">
-            <div class="quiz-page">
-                <div class="quiz-header">
-                    <button class="quiz-close" id="quiz-close-btn">✕</button>
-                    <div class="quiz-progress-container">
-                        <div class="quiz-progress-bar">
-                            <div class="quiz-progress-fill" id="quiz-progress-fill"></div>
-                        </div>
-                        <span class="quiz-counter" id="quiz-counter">1/30</span>
-                    </div>
-                    <div class="quiz-streak">
-                        <span class="streak-icon">🔥</span>
-                        <span class="streak-count" id="quiz-streak">0</span>
-                    </div>
+function toggleFavorite(id) {
+    const idx = state.favorites.indexOf(id);
+    if (idx > -1) {
+        state.favorites.splice(idx, 1);
+        toast('Retiré des favoris');
+    } else {
+        state.favorites.push(id);
+        toast('Ajouté aux favoris !', 'success');
+    }
+    localStorage.setItem('yumr_favorites', JSON.stringify(state.favorites));
+    displayRecipes();
+}
+
+async function openRecipe(id) {
+    try {
+        const r = await api(`/meals/${id}`);
+        const isSaved = state.favorites.includes(id);
+        const types = { starter: 'Entrée', main: 'Plat', dessert: 'Dessert', cheese: 'Fromage', wine: 'Vin' };
+        
+        $('#recipe-detail-page').innerHTML = `
+            <div class="recipe-detail-hero" style="background-image:url(${getRecipeImage(r)})">
+                <button class="btn-back recipe-detail-back" onclick="hideModal('recipe-modal')">←</button>
+                <button class="recipe-detail-save ${isSaved ? 'saved' : ''}" onclick="toggleFavorite('${id}')">${isSaved ? '❤️' : '🤍'}</button>
+            </div>
+            <div class="recipe-detail-content">
+                <span class="recipe-detail-type">${types[r.type] || r.type}</span>
+                <h1 class="recipe-detail-title">${r.name}</h1>
+                <p class="recipe-detail-desc">${r.description || ''}</p>
+                
+                <div class="recipe-detail-meta">
+                    <span class="recipe-meta-item">⏱️ ${(r.prep_time || 0) + (r.cook_time || 0)} min</span>
+                    <span class="recipe-meta-item">💰 ${'€'.repeat(r.budget === 'low' ? 1 : r.budget === 'high' ? 3 : 2)}</span>
+                    ${r.calories ? `<span class="recipe-meta-item">🔥 ${r.calories} kcal</span>` : ''}
                 </div>
                 
-                <div class="quiz-cards-container">
-                    <div class="quiz-card" id="quiz-card">
-                        <div class="quiz-card-image" id="quiz-card-image"></div>
-                        <div class="quiz-card-content">
-                            <span class="quiz-card-emoji" id="quiz-card-emoji">🍕</span>
-                            <h2 class="quiz-card-question" id="quiz-card-question">Tu aimes les pizzas ?</h2>
-                        </div>
-                        <div class="swipe-overlay swipe-left-overlay">
-                            <span>👎 NOPE</span>
-                        </div>
-                        <div class="swipe-overlay swipe-right-overlay">
-                            <span>💚 LOVE</span>
-                        </div>
+                ${r.ingredients?.length ? `
+                    <div class="recipe-detail-section">
+                        <h3>🥕 Ingrédients</h3>
+                        <ul>${r.ingredients.map(i => `<li><strong>${i.name}</strong> - ${i.qty}</li>`).join('')}</ul>
                     </div>
-                </div>
+                ` : ''}
                 
-                <div class="quiz-actions">
-                    <button class="quiz-action-btn nope" id="quiz-nope-btn">
-                        <span class="action-icon">👎</span>
-                        <span class="action-text">Bof</span>
-                    </button>
-                    <button class="quiz-action-btn love" id="quiz-love-btn">
-                        <span class="action-icon">💚</span>
-                        <span class="action-text">J'adore</span>
-                    </button>
-                </div>
+                ${r.recipe?.steps?.length ? `
+                    <div class="recipe-detail-section">
+                        <h3>👨‍🍳 Préparation</h3>
+                        <ol>${r.recipe.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+                    </div>
+                ` : ''}
             </div>
-        </div>
-
-        <!-- ========== QUIZ RESULT ========== -->
-        <div id="result-screen" class="screen">
-            <div class="result-page">
-                <div class="result-confetti" id="result-confetti"></div>
-                <div class="result-content">
-                    <span class="badge badge-gold">🎉 Félicitations !</span>
-                    <h1>Ton profil culinaire</h1>
-                    
-                    <div class="profile-reveal">
-                        <div class="profile-reveal-glow"></div>
-                        <div class="profile-emoji" id="result-emoji">🍳</div>
-                        <h2 class="profile-name" id="result-name">Le Gourmet</h2>
-                        <p class="profile-desc" id="result-description">Tu apprécies la bonne cuisine et les saveurs authentiques.</p>
-                        <div class="profile-traits" id="result-traits"></div>
-                    </div>
-                    
-                    <div class="result-xp-gain">
-                        <span class="xp-icon">✨</span>
-                        <span class="xp-text">+50 XP gagnés !</span>
-                    </div>
-                    
-                    <div class="result-cta">
-                        <p>Crée ton compte pour débloquer :</p>
-                        <ul class="result-benefits">
-                            <li>📅 Ton menu du jour personnalisé</li>
-                            <li>🧊 Ton frigo intelligent</li>
-                            <li>🏆 Les ligues et classements</li>
-                            <li>🛒 Ta liste de courses automatique</li>
-                        </ul>
-                        <button class="btn btn-primary btn-full btn-glow" id="create-account-btn">Créer mon compte gratuit</button>
-                        <button class="btn btn-ghost" id="skip-account-btn">Continuer en invité</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========== REGISTER ========== -->
-        <div id="register-screen" class="screen">
-            <div class="auth-page">
-                <button class="btn-back" id="register-back-btn">←</button>
-                <div class="auth-content">
-                    <h1>Rejoins Yumr!</h1>
-                    <p class="auth-sub">Profil détecté : <strong id="register-profile">Gourmet</strong></p>
-                    <form id="register-form" class="auth-form">
-                        <div class="input-group">
-                            <span class="input-icon">👤</span>
-                            <input type="text" id="register-username" placeholder="Pseudo" required minlength="3">
-                        </div>
-                        <div class="input-group">
-                            <span class="input-icon">📧</span>
-                            <input type="email" id="register-email" placeholder="Email" required>
-                        </div>
-                        <div class="input-group">
-                            <span class="input-icon">🔒</span>
-                            <input type="password" id="register-password" placeholder="Mot de passe (6+ caractères)" required minlength="6">
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-full btn-glow">Créer mon compte</button>
-                    </form>
-                    <div id="register-error" class="alert alert-error"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========== MAIN APP ========== -->
-        <div id="main-app" class="screen">
-            <!-- Header -->
-            <header class="app-header">
-                <div class="header-left">
-                    <span class="header-logo">🍽️</span>
-                    <span class="header-title">Yumr</span>
-                </div>
-                <div class="header-right">
-                    <div class="header-streak">
-                        <span class="streak-flame">🔥</span>
-                        <span class="streak-number" id="header-streak">0</span>
-                    </div>
-                    <div class="header-xp">
-                        <span class="xp-icon">✨</span>
-                        <span class="xp-amount" id="header-xp">0</span>
-                    </div>
-                    <button class="header-notif" id="notif-btn">
-                        🔔
-                        <span class="notif-badge" id="notif-badge">3</span>
-                    </button>
-                </div>
-            </header>
-
-            <!-- Main Content -->
-            <main class="app-content">
-                
-                <!-- HOME TAB -->
-                <section class="tab-page active" id="tab-home">
-                    <div class="home-greeting">
-                        <h1>Salut <span id="home-username">Chef</span> ! 👋</h1>
-                        <p>Prêt à cuisiner aujourd'hui ?</p>
-                    </div>
-                    
-                    <!-- Daily Menu Card -->
-                    <div class="daily-menu-card glass-card" id="daily-menu-card">
-                        <div class="daily-menu-header">
-                            <div class="daily-menu-title">
-                                <span class="menu-icon">🍽️</span>
-                                <div>
-                                    <h3>Menu du jour</h3>
-                                    <p id="daily-menu-status">Génère ton menu personnalisé</p>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary btn-sm" id="generate-menu-btn">Générer</button>
-                        </div>
-                        <div class="daily-menu-preview hidden" id="daily-menu-preview"></div>
-                    </div>
-                    
-                    <!-- Quick Actions -->
-                    <div class="quick-actions">
-                        <button class="quick-action glass-card" id="quick-fridge">
-                            <span class="qa-icon">🧊</span>
-                            <span class="qa-label">Mon Frigo</span>
-                            <span class="qa-badge" id="fridge-count">0</span>
-                        </button>
-                        <button class="quick-action glass-card" id="quick-shopping">
-                            <span class="qa-icon">🛒</span>
-                            <span class="qa-label">Courses</span>
-                        </button>
-                        <button class="quick-action glass-card" id="quick-mealprep">
-                            <span class="qa-icon">📅</span>
-                            <span class="qa-label">Meal Prep</span>
-                            <span class="qa-premium">PRO</span>
-                        </button>
-                        <button class="quick-action glass-card" id="quick-coach">
-                            <span class="qa-icon">🤖</span>
-                            <span class="qa-label">Coach IA</span>
-                            <span class="qa-premium">PRO</span>
-                        </button>
-                    </div>
-                    
-                    <!-- Weekly Challenge -->
-                    <div class="challenge-card glass-card">
-                        <div class="challenge-header">
-                            <span class="challenge-badge">🎯 Défi de la semaine</span>
-                            <span class="challenge-timer" id="challenge-timer">5j restants</span>
-                        </div>
-                        <div class="challenge-content">
-                            <h3 id="challenge-title">Carbonara revisitée</h3>
-                            <p id="challenge-desc">Poste ta version et gagne jusqu'à 500 XP !</p>
-                            <div class="challenge-progress">
-                                <div class="challenge-participants">
-                                    <span>👥 247 participants</span>
-                                </div>
-                                <button class="btn btn-outline btn-sm">Participer</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Stats Overview -->
-                    <div class="stats-overview">
-                        <h3>📊 Cette semaine</h3>
-                        <div class="stats-grid">
-                            <div class="stat-item glass-card">
-                                <span class="stat-value" id="stat-recipes">0</span>
-                                <span class="stat-label">Recettes</span>
-                            </div>
-                            <div class="stat-item glass-card">
-                                <span class="stat-value" id="stat-streak">0</span>
-                                <span class="stat-label">Streak</span>
-                            </div>
-                            <div class="stat-item glass-card">
-                                <span class="stat-value" id="stat-xp-week">0</span>
-                                <span class="stat-label">XP gagnés</span>
-                            </div>
-                            <div class="stat-item glass-card clickable" id="view-league-btn">
-                                <span class="stat-value" id="stat-rank">#--</span>
-                                <span class="stat-label">Classement</span>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- EXPLORE TAB -->
-                <section class="tab-page" id="tab-explore">
-                    <div class="explore-header">
-                        <h1>Explorer</h1>
-                        <div class="search-container">
-                            <span class="search-icon">🔍</span>
-                            <input type="text" id="search-recipes" placeholder="Rechercher une recette...">
-                        </div>
-                    </div>
-                    
-                    <div class="explore-tabs">
-                        <button class="explore-tab active" data-tab="recipes">🍝 Recettes</button>
-                        <button class="explore-tab" data-tab="trending">🔥 Tendances</button>
-                        <button class="explore-tab" data-tab="saved">💾 Sauvegardés</button>
-                    </div>
-                    
-                    <div class="filter-bar">
-                        <button class="filter-chip active" data-filter="all">Tout</button>
-                        <button class="filter-chip" data-filter="starter">🥗 Entrées</button>
-                        <button class="filter-chip" data-filter="main">🍖 Plats</button>
-                        <button class="filter-chip" data-filter="dessert">🍰 Desserts</button>
-                        <button class="filter-chip" data-filter="quick">⚡ < 30min</button>
-                    </div>
-                    
-                    <div class="recipes-grid" id="recipes-grid"></div>
-                </section>
-
-                <!-- POST TAB (Center) -->
-                <section class="tab-page" id="tab-post">
-                    <div class="post-page">
-                        <h1>📸 Partager un plat</h1>
-                        <p>Montre ta création à la communauté !</p>
-                        
-                        <div class="post-upload glass-card">
-                            <div class="upload-zone" id="upload-zone">
-                                <span class="upload-icon">📷</span>
-                                <p>Ajoute une photo de ton plat</p>
-                                <input type="file" id="post-image-input" accept="image/*" hidden>
-                            </div>
-                            <img id="post-preview" class="post-preview hidden" src="" alt="">
-                        </div>
-                        
-                        <div class="post-form">
-                            <div class="input-group">
-                                <textarea id="post-caption" placeholder="Décris ton plat... 🍽️" rows="3"></textarea>
-                            </div>
-                            <div class="input-group">
-                                <select id="post-recipe">
-                                    <option value="">Lier à une recette (optionnel)</option>
-                                </select>
-                            </div>
-                            <button class="btn btn-primary btn-full btn-glow" id="publish-post-btn">
-                                Publier (+30 XP)
-                            </button>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- LEAGUES TAB -->
-                <section class="tab-page" id="tab-leagues">
-                    <div class="leagues-header">
-                        <h1>🏆 Ligues</h1>
-                        <div class="current-league glass-card">
-                            <span class="league-icon" id="league-icon">🥈</span>
-                            <div class="league-info">
-                                <span class="league-name" id="league-name">Ligue Argent</span>
-                                <span class="league-rank">Position: <strong id="league-position">#12</strong></span>
-                            </div>
-                            <div class="league-timer">
-                                <span>Reset dans</span>
-                                <strong id="league-reset">2j 14h</strong>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="league-tabs">
-                        <button class="league-tab active" data-league="current">Cette semaine</button>
-                        <button class="league-tab" data-league="all">Toutes les ligues</button>
-                    </div>
-                    
-                    <div class="leaderboard" id="leaderboard">
-                        <!-- Filled by JS -->
-                    </div>
-                    
-                    <div class="league-rewards glass-card">
-                        <h3>🎁 Récompenses</h3>
-                        <div class="rewards-list">
-                            <div class="reward-item"><span>🥇 Top 1</span><span>+500 XP + Badge</span></div>
-                            <div class="reward-item"><span>🥈 Top 3</span><span>+300 XP</span></div>
-                            <div class="reward-item"><span>🥉 Top 10</span><span>+100 XP + Promotion</span></div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- PROFILE TAB -->
-                <section class="tab-page" id="tab-profile">
-                    <div class="profile-header-card glass-card">
-                        <div class="profile-cover"></div>
-                        <div class="profile-main">
-                            <div class="profile-avatar-container">
-                                <div class="profile-avatar" id="profile-avatar">
-                                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&h=200&fit=crop" id="avatar-img" alt="">
-                                </div>
-                                <button class="avatar-edit" id="avatar-edit-btn">📷</button>
-                                <input type="file" id="avatar-input" accept="image/*" hidden>
-                                <div class="profile-level" id="profile-level">12</div>
-                            </div>
-                            <h2 id="profile-username">@username</h2>
-                            <div class="profile-culinary" id="profile-culinary">
-                                <span class="culinary-emoji">🍳</span>
-                                <span class="culinary-name">Gourmet</span>
-                            </div>
-                        </div>
-                        <div class="profile-stats">
-                            <div class="profile-stat">
-                                <strong id="profile-xp">0</strong>
-                                <span>XP Total</span>
-                            </div>
-                            <div class="profile-stat">
-                                <strong id="profile-recipes">0</strong>
-                                <span>Recettes</span>
-                            </div>
-                            <div class="profile-stat">
-                                <strong id="profile-streak-max">0</strong>
-                                <span>Best Streak</span>
-                            </div>
-                            <div class="profile-stat">
-                                <strong id="profile-badges">0</strong>
-                                <span>Badges</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="profile-xp-bar glass-card">
-                        <div class="xp-bar-header">
-                            <span>Niveau <span id="current-level">12</span></span>
-                            <span><span id="current-xp">450</span> / <span id="next-level-xp">500</span> XP</span>
-                        </div>
-                        <div class="xp-bar">
-                            <div class="xp-bar-fill" id="xp-bar-fill" style="width: 90%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="profile-badges glass-card">
-                        <div class="section-header">
-                            <h3>🏅 Badges</h3>
-                            <button class="btn-link" id="view-all-badges">Voir tout</button>
-                        </div>
-                        <div class="badges-preview" id="badges-preview"></div>
-                    </div>
-                    
-                    <div class="profile-menu">
-                        <button class="menu-item glass-card" id="menu-preferences">
-                            <span class="menu-icon">⚙️</span>
-                            <span class="menu-label">Préférences alimentaires</span>
-                            <span class="menu-arrow">→</span>
-                        </button>
-                        <button class="menu-item glass-card" id="menu-fridge">
-                            <span class="menu-icon">🧊</span>
-                            <span class="menu-label">Mon Frigo</span>
-                            <span class="menu-arrow">→</span>
-                        </button>
-                        <button class="menu-item glass-card" id="menu-premium">
-                            <span class="menu-icon">⭐</span>
-                            <span class="menu-label">Passer Premium</span>
-                            <span class="menu-badge premium">PRO</span>
-                        </button>
-                        <button class="menu-item glass-card" id="menu-referral">
-                            <span class="menu-icon">🎁</span>
-                            <span class="menu-label">Parrainer des amis</span>
-                            <span class="menu-arrow">→</span>
-                        </button>
-                        <button class="menu-item glass-card" id="menu-settings">
-                            <span class="menu-icon">🔧</span>
-                            <span class="menu-label">Paramètres</span>
-                            <span class="menu-arrow">→</span>
-                        </button>
-                        <button class="menu-item glass-card danger" id="menu-logout">
-                            <span class="menu-icon">🚪</span>
-                            <span class="menu-label">Déconnexion</span>
-                        </button>
-                    </div>
-                </section>
-
-            </main>
-
-            <!-- Bottom Navigation -->
-            <nav class="bottom-nav">
-                <button class="nav-item active" data-tab="home">
-                    <span class="nav-icon">🏠</span>
-                    <span class="nav-label">Home</span>
-                </button>
-                <button class="nav-item" data-tab="explore">
-                    <span class="nav-icon">🔍</span>
-                    <span class="nav-label">Explorer</span>
-                </button>
-                <button class="nav-item nav-center" data-tab="post">
-                    <span class="nav-icon-center">➕</span>
-                </button>
-                <button class="nav-item" data-tab="leagues">
-                    <span class="nav-icon">🏆</span>
-                    <span class="nav-label">Ligues</span>
-                </button>
-                <button class="nav-item" data-tab="profile">
-                    <span class="nav-icon">👤</span>
-                    <span class="nav-label">Profil</span>
-                </button>
-            </nav>
-        </div>
-
-        <!-- ========== MODALS ========== -->
+        `;
         
-        <!-- Menu Options Modal -->
-        <div class="modal" id="menu-options-modal">
-            <div class="modal-overlay"></div>
-            <div class="modal-content glass-card">
-                <div class="modal-header">
-                    <h3>🍽️ Options du menu</h3>
-                    <button class="modal-close" data-close="menu-options-modal">✕</button>
-                </div>
-                <div class="modal-body">
-                    <div class="option-group">
-                        <label>💰 Budget</label>
-                        <div class="budget-selector">
-                            <button class="budget-btn active" data-budget="low">€</button>
-                            <button class="budget-btn" data-budget="medium">€€</button>
-                            <button class="budget-btn" data-budget="high">€€€</button>
-                        </div>
-                    </div>
-                    <div class="option-group">
-                        <label>👥 Personnes</label>
-                        <div class="stepper">
-                            <button class="stepper-btn" id="persons-minus">−</button>
-                            <span class="stepper-value" id="persons-value">2</span>
-                            <button class="stepper-btn" id="persons-plus">+</button>
-                        </div>
-                    </div>
-                    <div class="option-group">
-                        <label>⏱️ Temps max</label>
-                        <div class="time-selector">
-                            <button class="time-btn" data-time="15">15min</button>
-                            <button class="time-btn active" data-time="30">30min</button>
-                            <button class="time-btn" data-time="60">1h</button>
-                            <button class="time-btn" data-time="0">∞</button>
-                        </div>
-                    </div>
-                    <div class="option-group">
-                        <label class="toggle-option">
-                            <span>🧊 Utiliser mon frigo</span>
-                            <input type="checkbox" id="use-fridge-toggle">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="option-group">
-                        <label class="toggle-option">
-                            <span>🧀 Inclure fromage</span>
-                            <input type="checkbox" id="cheese-toggle">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    <div class="option-group">
-                        <label class="toggle-option">
-                            <span>🍷 Suggérer un vin</span>
-                            <input type="checkbox" id="wine-toggle">
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary btn-full btn-glow" id="confirm-menu-btn">
-                        ✨ Générer mon menu
-                    </button>
-                </div>
-            </div>
+        showModal('recipe-modal');
+    } catch (err) {
+        toast('Erreur chargement recette', 'error');
+    }
+}
+
+// =====================================================
+// LEADERBOARD
+// =====================================================
+
+function loadLeaderboard() {
+    const list = $('#leaderboard');
+    const myRank = 12; // Mock
+    
+    list.innerHTML = MOCK_LEADERBOARD.map((p, idx) => `
+        <div class="leaderboard-item ${idx + 1 === myRank ? 'me' : ''}">
+            <span class="lb-rank ${p.rank === 1 ? 'gold' : p.rank === 2 ? 'silver' : p.rank === 3 ? 'bronze' : ''}">#${p.rank}</span>
+            <div class="lb-avatar" style="background-image:url(${p.avatar})"></div>
+            <span class="lb-name">${p.name}</span>
+            <span class="lb-points">${p.points} pts</span>
         </div>
+    `).join('');
+    
+    $('#league-position').textContent = `#${myRank}`;
+}
 
-        <!-- Fridge Modal -->
-        <div class="modal modal-full" id="fridge-modal">
-            <div class="modal-page">
-                <div class="modal-topbar">
-                    <button class="btn-back" data-close="fridge-modal">←</button>
-                    <h2>🧊 Mon Frigo</h2>
-                    <button class="btn btn-primary btn-sm" id="add-ingredient-btn">+ Ajouter</button>
-                </div>
-                <div class="modal-page-content">
-                    <div class="fridge-actions">
-                        <button class="fridge-action glass-card" id="scan-fridge-btn">
-                            <span>📷</span>
-                            <span>Scanner frigo</span>
-                            <span class="action-badge">IA</span>
-                        </button>
-                        <button class="fridge-action glass-card" id="scan-receipt-btn">
-                            <span>🧾</span>
-                            <span>Scanner ticket</span>
-                        </button>
-                    </div>
-                    
-                    <div class="fridge-categories" id="fridge-categories">
-                        <button class="fridge-cat active" data-cat="all">Tout</button>
-                        <button class="fridge-cat" data-cat="fruits">🍎 Fruits</button>
-                        <button class="fridge-cat" data-cat="legumes">🥬 Légumes</button>
-                        <button class="fridge-cat" data-cat="viandes">🥩 Viandes</button>
-                        <button class="fridge-cat" data-cat="laitiers">🧀 Laitiers</button>
-                        <button class="fridge-cat" data-cat="epicerie">🥫 Épicerie</button>
-                    </div>
-                    
-                    <div class="fridge-list" id="fridge-list"></div>
-                    
-                    <div class="fridge-expiring glass-card" id="fridge-expiring">
-                        <h4>⚠️ Bientôt périmé</h4>
-                        <div class="expiring-list" id="expiring-list"></div>
-                        <button class="btn btn-outline btn-sm" id="tgtg-btn">🍀 Envoyer à Too Good To Go</button>
-                    </div>
-                </div>
-            </div>
+// =====================================================
+// BADGES
+// =====================================================
+
+function loadBadges() {
+    // Preview (first 5)
+    $('#badges-preview').innerHTML = MOCK_BADGES.slice(0, 5).map(b => `
+        <div class="badge-item ${b.unlocked ? '' : 'locked'}">
+            <div class="badge-icon">${b.icon}</div>
+            <div class="badge-name">${b.name}</div>
         </div>
-
-        <!-- Add Ingredient Modal -->
-        <div class="modal" id="add-ingredient-modal">
-            <div class="modal-overlay"></div>
-            <div class="modal-content glass-card">
-                <div class="modal-header">
-                    <h3>➕ Ajouter un ingrédient</h3>
-                    <button class="modal-close" data-close="add-ingredient-modal">✕</button>
-                </div>
-                <div class="modal-body">
-                    <div class="input-group">
-                        <label>Nom</label>
-                        <input type="text" id="ingredient-name" placeholder="Ex: Tomates">
-                    </div>
-                    <div class="input-row">
-                        <div class="input-group">
-                            <label>Quantité</label>
-                            <input type="text" id="ingredient-qty" placeholder="500g">
-                        </div>
-                        <div class="input-group">
-                            <label>Catégorie</label>
-                            <select id="ingredient-category">
-                                <option value="fruits">🍎 Fruits</option>
-                                <option value="legumes">🥬 Légumes</option>
-                                <option value="viandes">🥩 Viandes</option>
-                                <option value="laitiers">🧀 Laitiers</option>
-                                <option value="epicerie">🥫 Épicerie</option>
-                                <option value="surgeles">🧊 Surgelés</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label>Date de péremption</label>
-                        <input type="date" id="ingredient-expiry">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary btn-full" id="save-ingredient-btn">Ajouter</button>
-                </div>
-            </div>
+    `).join('');
+    
+    $('#profile-badges').textContent = MOCK_BADGES.filter(b => b.unlocked).length;
+    
+    // Full grid
+    $('#badges-grid').innerHTML = MOCK_BADGES.map(b => `
+        <div class="badge-card ${b.unlocked ? '' : 'locked'}">
+            <div class="badge-card-icon">${b.icon}</div>
+            <div class="badge-card-name">${b.name}</div>
+            <div class="badge-card-desc">${b.desc}</div>
         </div>
+    `).join('');
+}
 
-        <!-- Recipe Detail Modal -->
-        <div class="modal modal-full" id="recipe-modal">
-            <div class="recipe-detail-page" id="recipe-detail-page"></div>
-        </div>
+// =====================================================
+// POST
+// =====================================================
 
-        <!-- Premium Modal -->
-        <div class="modal modal-full" id="premium-modal">
-            <div class="premium-page">
-                <div class="modal-topbar">
-                    <button class="btn-back" data-close="premium-modal">←</button>
-                    <h2>⭐ Yumr Pro</h2>
-                    <div></div>
-                </div>
-                <div class="premium-content">
-                    <div class="premium-hero">
-                        <span class="premium-icon">👑</span>
-                        <h1>Débloquez tout le potentiel de Yumr</h1>
-                    </div>
-                    
-                    <div class="premium-features">
-                        <div class="premium-feature glass-card">
-                            <span>🍽️</span>
-                            <div><h4>Menus illimités</h4><p>Régénérez autant que vous voulez</p></div>
-                        </div>
-                        <div class="premium-feature glass-card">
-                            <span>🤖</span>
-                            <div><h4>Coach Nutrition IA</h4><p>Conseils personnalisés 24/7</p></div>
-                        </div>
-                        <div class="premium-feature glass-card">
-                            <span>📊</span>
-                            <div><h4>Macros détaillés</h4><p>Calories, protéines, glucides, lipides</p></div>
-                        </div>
-                        <div class="premium-feature glass-card">
-                            <span>📅</span>
-                            <div><h4>Meal Prep</h4><p>Planifiez votre semaine</p></div>
-                        </div>
-                    </div>
-                    
-                    <div class="premium-plans">
-                        <div class="premium-plan glass-card" data-plan="monthly">
-                            <span class="plan-name">Mensuel</span>
-                            <span class="plan-price">4.99€<small>/mois</small></span>
-                        </div>
-                        <div class="premium-plan glass-card popular" data-plan="yearly">
-                            <span class="plan-badge">-33%</span>
-                            <span class="plan-name">Annuel</span>
-                            <span class="plan-price">39.99€<small>/an</small></span>
-                            <span class="plan-sub">Soit 3.33€/mois</span>
-                        </div>
-                    </div>
-                    
-                    <button class="btn btn-primary btn-full btn-glow" id="subscribe-btn">
-                        Commencer l'essai gratuit (7 jours)
-                    </button>
-                </div>
-            </div>
-        </div>
+function handlePostImage(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = ev => {
+        $('#post-preview').src = ev.target.result;
+        $('#post-preview').classList.remove('hidden');
+        $('#upload-zone').classList.add('hidden');
+    };
+    reader.readAsDataURL(file);
+}
 
-        <!-- Badges Modal -->
-        <div class="modal modal-full" id="badges-modal">
-            <div class="modal-page">
-                <div class="modal-topbar">
-                    <button class="btn-back" data-close="badges-modal">←</button>
-                    <h2>🏅 Mes Badges</h2>
-                    <div></div>
-                </div>
-                <div class="badges-grid" id="badges-grid"></div>
-            </div>
-        </div>
+function publishPost() {
+    if (!$('#post-preview').src) {
+        toast('Ajoute une photo', 'error');
+        return;
+    }
+    
+    showXP(30);
+    toast('Post publié ! 🎉', 'success');
+    
+    // Reset
+    $('#post-preview').src = '';
+    $('#post-preview').classList.add('hidden');
+    $('#upload-zone').classList.remove('hidden');
+    $('#post-caption').value = '';
+    
+    showTab('home');
+}
 
-        <!-- Shopping List Modal -->
-        <div class="modal modal-full" id="shopping-modal">
-            <div class="modal-page">
-                <div class="modal-topbar">
-                    <button class="btn-back" data-close="shopping-modal">←</button>
-                    <h2>🛒 Liste de courses</h2>
-                    <button class="btn btn-ghost btn-sm" id="share-list-btn">📤</button>
-                </div>
-                <div class="shopping-content">
-                    <div class="shopping-summary glass-card">
-                        <span id="shopping-count">0 articles</span>
-                        <span id="shopping-total">~0€</span>
-                    </div>
-                    <div class="shopping-list" id="shopping-list"></div>
-                </div>
-            </div>
-        </div>
+// Avatar
+function handleAvatarUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = ev => {
+        $('#avatar-img').src = ev.target.result;
+        toast('Photo mise à jour !', 'success');
+    };
+    reader.readAsDataURL(file);
+}
 
-        <!-- Toast Container -->
-        <div class="toast-container" id="toast-container"></div>
-        
-        <!-- XP Popup -->
-        <div class="xp-popup" id="xp-popup">
-            <span class="xp-popup-icon">✨</span>
-            <span class="xp-popup-text">+50 XP</span>
-        </div>
+// =====================================================
+// GLOBAL FUNCTIONS
+// =====================================================
 
-    </div>
-
-    <script src="app.js"></script>
-</body>
-</html>
+window.openRecipe = openRecipe;
+window.toggleFavorite = toggleFavorite;
+window.deleteFridgeItem = deleteFridgeItem;
