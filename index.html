@@ -3,307 +3,937 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Yumr - Swipe. Cook. Enjoy.</title>
+    <title>Yumr</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <meta name="theme-color" content="#050507">
+    <style>
+:root{--bg:#050507;--bg2:#0a0a0f;--bg3:#12121a;--accent:#FF6B35;--accent2:#FF8C42;--gold:#FFD166;--green:#4ECB71;--red:#FF4757;--text:#FFF;--text2:rgba(255,255,255,0.7);--text3:rgba(255,255,255,0.4);--glass:rgba(255,255,255,0.06);--border:rgba(255,255,255,0.1);--r:14px;--nav:70px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+.screen{display:none;height:100%;flex-direction:column;position:relative}
+.screen.active{display:flex}
+.glass-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;border:none;border-radius:var(--r);font-weight:600;font-size:14px;cursor:pointer;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-glass{background:var(--glass);border:1px solid var(--border);color:var(--text)}
+.btn-full{width:100%}
+.btn-sm{padding:10px 16px;font-size:12px}
+.back-btn{width:40px;height:40px;background:var(--glass);border:1px solid var(--border);border-radius:50%;color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.input-field{width:100%;padding:14px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:14px}
+.input-field:focus{outline:none;border-color:var(--accent)}
+
+/* SPLASH */
+#splash{align-items:center;justify-content:center;background:radial-gradient(circle at 50% 30%,rgba(255,107,53,0.15),transparent 50%)}
+.splash-logo{font-size:64px;animation:bounce 2s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+#splash h1{font-size:42px;font-weight:900;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:12px 0}
+#splash p{color:var(--text2)}
+.splash-loader{width:150px;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;margin-top:30px;overflow:hidden}
+.loader-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));animation:load 2s forwards}
+@keyframes load{to{width:100%}}
+
+/* ONBOARDING */
+#onboarding{padding:40px 20px 30px}
+.ob-slide{display:none;flex-direction:column;align-items:center;text-align:center;flex:1}
+.ob-slide.active{display:flex}
+.ob-visual{height:200px;display:flex;align-items:center;justify-content:center;font-size:80px;margin-bottom:30px}
+.ob-slide h1{font-size:24px;margin-bottom:10px}
+.ob-slide p{color:var(--text2);font-size:14px;max-width:280px}
+.ob-dots{display:flex;justify-content:center;gap:8px;margin-bottom:24px}
+.dot{width:8px;height:8px;background:rgba(255,255,255,0.2);border-radius:50%}
+.dot.active{width:24px;border-radius:4px;background:var(--accent)}
+.ob-actions{display:flex;flex-direction:column;gap:10px}
+
+/* QUIZ CHOICE */
+#quiz-choice{padding:20px}
+#quiz-choice .back-btn{position:absolute;top:20px;left:20px}
+.qc-content{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.qc-icon{font-size:60px;margin-bottom:16px}
+.qc-content h1{font-size:22px;margin-bottom:8px}
+.qc-content>p{color:var(--text2);margin-bottom:24px;font-size:14px}
+.qc-options{display:flex;gap:10px;margin-bottom:24px;width:100%;max-width:320px}
+.qc-opt{flex:1;padding:16px 8px;background:var(--glass);border:2px solid var(--border);border-radius:var(--r);cursor:pointer;text-align:center}
+.qc-opt.selected{border-color:var(--accent);background:rgba(255,107,53,0.1)}
+.qc-num{font-size:28px;font-weight:900;color:var(--accent);display:block}
+.qc-label{font-size:11px;font-weight:600;display:block;margin-top:4px}
+.qc-time{font-size:10px;color:var(--text3)}
+
+/* AUTH */
+#auth{padding:20px}
+#auth .back-btn{position:absolute;top:20px;left:20px}
+.auth-box{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:340px;margin:0 auto;width:100%}
+.auth-logo{font-size:56px;text-align:center;margin-bottom:20px}
+.auth-box h1{font-size:24px;text-align:center;margin-bottom:24px}
+#auth-form{display:flex;flex-direction:column;gap:14px}
+.field label{display:block;font-size:11px;color:var(--text2);margin-bottom:6px;font-weight:600}
+.field input{width:100%;padding:14px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:14px}
+.auth-error{color:var(--red);font-size:12px;text-align:center}
+.auth-switch{text-align:center;color:var(--text2);margin-top:20px;font-size:13px}
+.auth-switch button{background:none;border:none;color:var(--accent);font-weight:600;cursor:pointer}
+
+/* SETUP */
+#setup{padding:20px;overflow-y:auto}
+.setup-steps{display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.step{width:32px;height:32px;background:var(--glass);border:2px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--text3)}
+.step.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.step-line{width:30px;height:2px;background:var(--border)}
+.setup-page{display:none}
+.setup-page.active{display:block}
+.step-badge{display:inline-block;background:var(--accent);color:#fff;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:700;margin-bottom:12px}
+.setup-page h1{font-size:20px;margin-bottom:16px}
+.setup-page h3{font-size:12px;color:var(--text2);margin:16px 0 10px}
+.diet-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.diet-opt input{display:none}
+.diet-card{padding:14px;display:flex;align-items:center;gap:10px;cursor:pointer;background:var(--glass);border:2px solid var(--border);border-radius:var(--r)}
+.diet-card span:first-child{font-size:20px}
+.diet-card span:last-child{font-size:12px;font-weight:600}
+.diet-opt input:checked+.diet-card{border-color:var(--accent);background:rgba(255,107,53,0.1)}
+.chip-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.chip-opt input{display:none}
+.chip-opt span{display:block;padding:8px 14px;background:var(--glass);border:2px solid var(--border);border-radius:20px;font-size:12px;cursor:pointer}
+.chip-opt input:checked+span{background:var(--accent);border-color:var(--accent)}
+.goal-list{display:flex;flex-direction:column;gap:8px}
+.goal-opt input{display:none}
+.goal-card{padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;background:var(--glass);border:2px solid var(--border);border-radius:var(--r)}
+.goal-card>span{font-size:24px}
+.goal-card strong{font-size:13px;display:block}
+.goal-card p{font-size:11px;color:var(--text2)}
+.goal-opt input:checked+.goal-card{border-color:var(--accent);background:rgba(255,107,53,0.1)}
+.setup-actions{display:flex;justify-content:space-between;margin-top:24px;padding-bottom:20px}
+.dislike-search{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px}
+.dislike-search input{flex:1;background:none;border:none;color:var(--text);font-size:14px;outline:none}
+.dislike-section{margin-bottom:16px}
+.dislike-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.dislike-header h4{font-size:13px}
+.select-all{background:none;border:none;color:var(--accent);font-size:11px;font-weight:600;cursor:pointer}
+
+/* QUIZ */
+#quiz{background:linear-gradient(180deg,var(--bg),#0d0508);padding:16px}
+.quiz-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.quiz-close{width:36px;height:36px;background:var(--glass);border:1px solid var(--border);border-radius:50%;color:var(--text);font-size:14px;cursor:pointer}
+.quiz-prog{flex:1;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden}
+.quiz-prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));width:0}
+.quiz-count{font-size:12px;color:var(--text2)}
+.quiz-streak{padding:6px 12px;font-size:12px;font-weight:700;background:rgba(255,107,53,0.2);border-radius:20px}
+.quiz-area{flex:1;display:flex;align-items:center;justify-content:center}
+.quiz-card{width:100%;max-width:280px;background:var(--bg3);border-radius:var(--r);overflow:hidden;border:1px solid var(--border);position:relative}
+.card-img{height:160px;background-size:cover;background-position:center}
+.card-body{padding:16px;text-align:center}
+.card-emoji{font-size:32px}
+#card-q{font-size:16px;font-weight:700;margin:8px 0 4px}
+.card-desc{font-size:12px;color:var(--text2)}
+.overlay{position:absolute;top:20px;padding:10px 20px;border-radius:var(--r);font-size:20px;font-weight:900;opacity:0;pointer-events:none}
+.overlay.nope{left:16px;background:var(--red);transform:rotate(-15deg)}
+.overlay.love{right:16px;background:var(--green);transform:rotate(15deg)}
+.quiz-card.hint-left .overlay.nope,.quiz-card.hint-right .overlay.love{opacity:1}
+.quiz-btns{display:flex;justify-content:center;gap:30px;padding:20px 0}
+.qbtn{width:64px;height:64px;border-radius:50%;border:none;font-size:24px;cursor:pointer}
+.qbtn.nope{background:rgba(255,71,87,0.15);border:3px solid var(--red);color:var(--red)}
+.qbtn.love{background:var(--green);color:#fff}
+.quiz-hint{text-align:center;color:var(--text3);font-size:11px}
+
+/* RESULT */
+#result{padding:20px;align-items:center;justify-content:center;text-align:center}
+.result-badge{display:inline-block;background:linear-gradient(135deg,var(--gold),var(--accent));color:#000;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:20px}
+.result-profile{padding:30px 20px;margin-bottom:20px;width:100%;max-width:300px}
+.profile-emoji{font-size:64px}
+.result-profile h1{font-size:26px;color:var(--accent);margin:12px 0 8px}
+.result-profile p{color:var(--text2);font-size:13px}
+.profile-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:16px}
+.profile-tags span{padding:5px 12px;background:rgba(255,255,255,0.1);border-radius:20px;font-size:11px}
+.result-xp{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;font-size:16px;font-weight:700;background:rgba(255,209,102,0.2);border-radius:var(--r);color:var(--gold);margin-bottom:20px}
+
+/* MAIN */
+#main{background:var(--bg)}
+.header{height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:rgba(5,5,7,0.95);border-bottom:1px solid var(--border)}
+.h-left{display:flex;align-items:center;gap:6px;font-size:18px;font-weight:800;color:var(--accent)}
+.h-right{display:flex;align-items:center;gap:6px}
+.h-btn{display:flex;align-items:center;gap:4px;padding:5px 10px;font-size:12px;font-weight:600;background:var(--glass);border:1px solid var(--border);border-radius:16px;cursor:pointer;color:var(--text)}
+.h-btn.icon{padding:6px;border-radius:50%;position:relative}
+.notif-dot{position:absolute;top:2px;right:2px;width:6px;height:6px;background:var(--red);border-radius:50%}
+.main-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nav) + 10px)}
+.tab{display:none;padding:16px}
+.tab.active{display:block}
+
+/* NAV */
+.nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav);display:flex;justify-content:space-around;align-items:center;padding-bottom:env(safe-area-inset-bottom);background:rgba(5,5,7,0.98);border-top:1px solid var(--border);z-index:100}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 12px;background:none;border:none;color:var(--text3);cursor:pointer}
+.nav-btn.active{color:var(--accent)}
+.nav-btn span:first-child{font-size:20px}
+.nav-btn span:last-child{font-size:9px;font-weight:600}
+.nav-btn.center{margin-top:-20px}
+.nav-plus{width:50px;height:50px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff}
+
+/* HOME */
+.greeting h1{font-size:20px}
+.greeting h1 span{color:var(--accent)}
+.greeting p{color:var(--text2);font-size:13px;margin-top:2px;margin-bottom:16px}
+.daily{padding:14px;margin-bottom:14px}
+.daily-head{display:flex;align-items:center;justify-content:space-between}
+.daily-info{display:flex;align-items:center;gap:10px}
+.daily-info>span{font-size:28px}
+.daily-info h3{font-size:14px}
+.daily-info p{font-size:11px;color:var(--text2)}
+.daily-preview{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.daily-empty{text-align:center;color:var(--text3);padding:12px;font-size:13px}
+.daily-item{display:flex;align-items:center;gap:12px;padding:10px;margin-bottom:6px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r);cursor:pointer}
+.daily-item-img{width:48px;height:48px;border-radius:10px;background-size:cover;background-position:center;flex-shrink:0}
+.daily-item-info{flex:1;min-width:0}
+.daily-item-type{font-size:9px;font-weight:700;color:var(--accent);text-transform:uppercase}
+.daily-item-name{font-size:13px;font-weight:600}
+.daily-item-rating{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--gold)}
+.quick-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.quick{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;border:none;position:relative;cursor:pointer;background:var(--glass);border:1px solid var(--border);border-radius:var(--r);color:var(--text)}
+.quick span:first-child{font-size:24px}
+.quick span:nth-child(2){font-size:10px;font-weight:600;color:var(--text2)}
+.qbadge{position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;min-width:18px;height:18px;border-radius:50%;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.pro{position:absolute;top:4px;right:4px;background:var(--gold);color:#000;padding:2px 6px;border-radius:8px;font-size:7px;font-weight:800}
+.challenge{padding:14px;margin-bottom:14px}
+.ch-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ch-tag{background:var(--accent);color:#fff;padding:4px 10px;border-radius:20px;font-size:9px;font-weight:700}
+.ch-timer{font-size:10px;color:var(--text3)}
+.challenge h3{font-size:14px;margin-bottom:4px}
+.challenge p{font-size:12px;color:var(--text2)}
+.stats-section h3{font-size:12px;color:var(--text2);margin-bottom:10px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{padding:12px 6px;text-align:center;background:var(--glass);border:1px solid var(--border);border-radius:var(--r)}
+.stat strong{display:block;font-size:18px;color:var(--accent);font-weight:800}
+.stat span{font-size:9px;color:var(--text3)}
+
+/* EXPLORE */
+.search{display:flex;align-items:center;gap:10px;padding:10px 14px;margin-bottom:12px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r)}
+.search span{font-size:16px;opacity:.5}
+.search input{flex:1;background:none;border:none;color:var(--text);font-size:14px;outline:none}
+.filters{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.filters::-webkit-scrollbar{display:none}
+.filter{padding:7px 14px;background:var(--glass);border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:11px;white-space:nowrap;cursor:pointer;flex-shrink:0}
+.filter.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.recipes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.recipe-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer}
+.recipe-img{height:100px;background-size:cover;background-position:center;position:relative}
+.recipe-save{position:absolute;top:6px;right:6px;width:28px;height:28px;background:rgba(0,0,0,0.5);border:none;border-radius:50%;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.recipe-body{padding:10px}
+.recipe-name{font-size:12px;font-weight:600;margin-bottom:4px}
+.recipe-meta{font-size:10px;color:var(--text2);display:flex;align-items:center;gap:8px}
+.recipe-rating{color:var(--gold)}
+
+/* LEAGUES */
+.league-current{display:flex;align-items:center;gap:12px;padding:14px;margin-bottom:12px}
+.league-icon{font-size:36px}
+.league-info{flex:1}
+.league-info strong{font-size:14px;display:block}
+.league-info span{font-size:12px;color:var(--text2)}
+.league-timer{text-align:right}
+.league-timer span{font-size:10px;color:var(--text3);display:block}
+.league-timer strong{font-size:13px;color:var(--accent)}
+.league-tabs{display:flex;gap:8px;margin-bottom:12px}
+.ltab{flex:1;padding:10px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r);text-align:center;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer}
+.ltab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.lb-item{display:flex;align-items:center;gap:10px;padding:12px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px}
+.lb-item.me{border-color:var(--accent);background:rgba(255,107,53,0.1)}
+.lb-rank{width:28px;text-align:center;font-weight:800;font-size:14px}
+.lb-rank.gold{color:#FFD700}
+.lb-rank.silver{color:#C0C0C0}
+.lb-rank.bronze{color:#CD7F32}
+.lb-av{width:36px;height:36px;border-radius:50%;background-size:cover}
+.lb-name{flex:1;font-weight:600;font-size:13px}
+.lb-pts{font-weight:700;color:var(--gold);font-size:13px}
+.tier{display:flex;align-items:center;gap:12px;padding:14px;margin-bottom:6px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r)}
+.tier span:first-child{font-size:24px}
+.tier span:nth-child(2){flex:1;font-weight:600;font-size:13px}
+.tier small{color:var(--accent);font-weight:600;font-size:11px}
+.tier.current{border-color:var(--gold);background:rgba(255,209,102,0.1)}
+
+/* FEED */
+.feed-search{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px}
+.feed-search input{flex:1;background:none;border:none;color:var(--text);font-size:14px;outline:none}
+.feed-tabs{display:flex;gap:6px;margin-bottom:12px}
+.ftab{padding:8px 14px;background:var(--glass);border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:11px;font-weight:600;cursor:pointer}
+.ftab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.feed-post{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.feed-header{display:flex;align-items:center;gap:8px;padding:10px}
+.feed-av{width:36px;height:36px;border-radius:50%;background-size:cover;flex-shrink:0}
+.feed-user{flex:1}
+.feed-user strong{font-size:12px;display:block}
+.feed-user span{font-size:10px;color:var(--text3)}
+.feed-img{width:100%;aspect-ratio:1;background-size:cover;background-position:center}
+.feed-content{padding:10px}
+.feed-actions{display:flex;gap:14px;margin-bottom:8px}
+.feed-actions button{background:none;border:none;color:var(--text2);font-size:12px;display:flex;align-items:center;gap:4px;cursor:pointer}
+.feed-actions button.liked{color:var(--red)}
+.feed-content p{font-size:12px;line-height:1.4}
+
+/* PROFILE */
+.profile-hero{margin-bottom:14px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.profile-banner{height:80px;background:linear-gradient(135deg,var(--accent),var(--gold))}
+.profile-av-wrap{display:flex;flex-direction:column;align-items:center;margin-top:-36px;position:relative}
+.profile-av{width:72px;height:72px;border-radius:50%;border:3px solid var(--bg);overflow:hidden}
+.profile-av img{width:100%;height:100%;object-fit:cover}
+.profile-lv{position:absolute;top:0;left:calc(50% - 46px);width:22px;height:22px;background:var(--gold);color:#000;border:2px solid var(--bg);border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.profile-hero h2{text-align:center;font-size:16px;margin:8px 0 4px}
+.profile-type{display:flex;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--accent);margin-bottom:10px}
+.profile-featured-badges{display:flex;justify-content:center;gap:8px;padding-bottom:12px}
+.featured-badge{width:36px;height:36px;background:var(--glass);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.profile-stats{display:flex;justify-content:space-around;padding:14px;margin-bottom:12px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r)}
+.profile-stats div{text-align:center}
+.profile-stats strong{display:block;font-size:16px;font-weight:800}
+.profile-stats span{font-size:9px;color:var(--text2)}
+.xp-bar-wrap{padding:14px;margin-bottom:12px}
+.xp-bar-head{display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px}
+.xp-bar{height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--gold));border-radius:4px}
+.badges-section{padding:14px;margin-bottom:12px}
+.badges-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.badges-head h4{font-size:13px}
+.link{background:none;border:none;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer}
+.badges-scroll{display:flex;gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.badges-scroll::-webkit-scrollbar{display:none}
+.badge-item{flex-shrink:0;width:56px;text-align:center}
+.badge-icon{width:44px;height:44px;background:var(--glass);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 4px}
+.badge-item span{font-size:9px;color:var(--text2)}
+.profile-menu{display:flex;flex-direction:column;gap:6px}
+.pmenu{display:flex;align-items:center;gap:12px;padding:14px;border:none;width:100%;text-align:left;cursor:pointer;background:var(--glass);border:1px solid var(--border);border-radius:var(--r);color:var(--text)}
+.pmenu span:first-child{font-size:18px}
+.pmenu span:nth-child(2){flex:1;font-weight:500;font-size:13px}
+.pmenu span:last-child{color:var(--text3);font-size:12px}
+.pmenu.premium{border-color:rgba(255,209,102,0.3);background:rgba(255,209,102,0.1)}
+.pmenu.danger span:nth-child(2){color:var(--red)}
+
+/* COOKED HISTORY */
+.cooked-section{margin-top:16px}
+.cooked-section h3{font-size:13px;color:var(--text2);margin-bottom:10px}
+.cooked-item{display:flex;gap:10px;padding:10px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px}
+.cooked-img{width:60px;height:60px;border-radius:10px;background-size:cover;flex-shrink:0}
+.cooked-info{flex:1}
+.cooked-info h4{font-size:13px;margin-bottom:2px}
+.cooked-info p{font-size:10px;color:var(--text2)}
+.cooked-stars{color:var(--gold);font-size:12px;margin-top:4px}
+
+/* MODALS */
+.modal{position:fixed;inset:0;z-index:200;display:none;align-items:flex-end}
+.modal.active{display:flex}
+.modal-bg{position:absolute;inset:0;background:rgba(0,0,0,0.8)}
+.modal-sheet{position:relative;width:100%;max-height:85vh;background:var(--bg2);border:1px solid var(--border);border-bottom:none;border-radius:20px 20px 0 0;padding:20px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal-handle{width:36px;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin:0 auto 16px}
+.modal-sheet h2{font-size:18px;margin-bottom:16px}
+.modal.modal-full{align-items:stretch}
+.modal.modal-full .modal-page{flex:1;background:var(--bg);display:flex;flex-direction:column}
+.modal-top{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(5,5,7,0.95);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+.modal-top h2{flex:1;font-size:15px;font-weight:700;margin:0}
+.modal-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px}
+
+/* FRIDGE - MOBILE OPTIMIZED */
+.fridge-acts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.fridge-act{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;position:relative;cursor:pointer;border:none;background:var(--glass);border:1px solid var(--border);border-radius:var(--r);color:var(--text)}
+.fridge-act span:first-child{font-size:24px}
+.fridge-act span:nth-child(2){font-size:11px;font-weight:600}
+.ai-tag{position:absolute;top:6px;right:6px;background:var(--accent);color:#fff;padding:2px 6px;border-radius:6px;font-size:8px;font-weight:700}
+.fridge-cats{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:6px;-webkit-overflow-scrolling:touch}
+.fridge-cats::-webkit-scrollbar{display:none}
+.fcat{padding:7px 14px;background:var(--glass);border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:11px;white-space:nowrap;cursor:pointer;flex-shrink:0}
+.fcat.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.fridge-list{display:flex;flex-direction:column;gap:8px}
+.fridge-item{display:flex;align-items:center;gap:10px;padding:12px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r)}
+.fridge-item-icon{font-size:24px;flex-shrink:0}
+.fridge-item-info{flex:1;min-width:0}
+.fridge-item-name{font-weight:600;font-size:13px}
+.fridge-item-qty{font-size:11px;color:var(--text2)}
+.fridge-item-exp{padding:4px 8px;border-radius:6px;font-size:10px;font-weight:600;flex-shrink:0}
+.fridge-item-exp.ok{background:rgba(78,203,113,0.15);color:var(--green)}
+.fridge-item-exp.warn{background:rgba(255,165,2,0.15);color:#FFA502}
+.fridge-item-exp.bad{background:rgba(255,71,87,0.15);color:var(--red)}
+.fridge-item-del{background:none;border:none;opacity:.4;font-size:16px;cursor:pointer;padding:4px}
+
+/* BADGES MODAL */
+.badges-hint{text-align:center;color:var(--text2);font-size:11px;margin-bottom:12px}
+.badges-tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;-webkit-overflow-scrolling:touch}
+.badges-tabs::-webkit-scrollbar{display:none}
+.btab{padding:7px 12px;background:var(--glass);border:1px solid var(--border);border-radius:20px;color:var(--text2);font-size:10px;white-space:nowrap;cursor:pointer;flex-shrink:0}
+.btab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.badges-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.badge-card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:14px 8px;text-align:center;cursor:pointer}
+.badge-card.locked{opacity:.4}
+.badge-card.selected{border-color:var(--accent);background:rgba(255,107,53,0.1)}
+.badge-card-icon{font-size:28px;margin-bottom:6px}
+.badge-card-name{font-size:10px;font-weight:600}
+.badge-card-desc{font-size:9px;color:var(--text3);margin-top:2px}
+
+/* MENU OPTIONS */
+.menu-opt{display:flex;align-items:center;justify-content:space-between;padding:12px;background:var(--glass);border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px}
+.menu-opt-label{display:flex;align-items:center;gap:10px}
+.menu-opt-label span{font-size:20px}
+.menu-opt-label strong{font-size:13px}
+.menu-chips{display:flex;gap:6px}
+.menu-chip{padding:6px 12px;background:var(--glass);border:2px solid var(--border);border-radius:20px;font-size:11px;cursor:pointer;color:var(--text)}
+.menu-chip.active{border-color:var(--accent);background:rgba(255,107,53,0.1)}
+
+/* ALTERNATIVES */
+.alt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.alt-card{background:var(--glass);border:2px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer}
+.alt-card.selected{border-color:var(--accent)}
+.alt-img{height:80px;background-size:cover;background-position:center}
+.alt-info{padding:10px}
+.alt-info h4{font-size:12px;margin-bottom:2px}
+.alt-info p{font-size:10px;color:var(--text2)}
+
+/* COOKING MODE */
+.cook-mode{position:fixed;inset:0;background:var(--bg);z-index:300;display:none;flex-direction:column}
+.cook-mode.active{display:flex}
+.cook-header{display:flex;align-items:center;gap:12px;padding:14px;background:rgba(5,5,7,0.95);border-bottom:1px solid var(--border)}
+.cook-header h2{flex:1;font-size:15px}
+.cook-progress{display:flex;gap:4px;padding:0 14px;margin-bottom:16px}
+.cook-step-dot{flex:1;height:4px;background:rgba(255,255,255,0.1);border-radius:2px}
+.cook-step-dot.done{background:var(--green)}
+.cook-step-dot.active{background:var(--accent)}
+.cook-content{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column}
+.cook-step-num{font-size:12px;color:var(--accent);font-weight:700;margin-bottom:8px}
+.cook-step-text{font-size:16px;line-height:1.5;margin-bottom:20px}
+.cook-timer{text-align:center;margin:20px 0}
+.cook-timer-display{font-size:48px;font-weight:900;font-family:monospace;background:linear-gradient(135deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.cook-timer-label{font-size:12px;color:var(--text2);margin-top:8px}
+.cook-timer-btns{display:flex;justify-content:center;gap:12px;margin-top:16px}
+.cook-timer-btn{width:50px;height:50px;border-radius:50%;border:none;font-size:20px;cursor:pointer}
+.cook-timer-btn.play{background:var(--green);color:#fff}
+.cook-timer-btn.pause{background:var(--gold);color:#000}
+.cook-timer-btn.reset{background:var(--glass);border:1px solid var(--border);color:var(--text)}
+.cook-actions{padding:14px;display:flex;gap:10px;background:rgba(5,5,7,0.95);border-top:1px solid var(--border)}
+.cook-actions .btn{flex:1}
+
+/* PHOTO POPUP */
+.photo-popup{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:400;display:none;align-items:center;justify-content:center;padding:20px}
+.photo-popup.active{display:flex}
+.photo-popup-content{text-align:center;max-width:300px}
+.photo-popup-content span{font-size:48px;display:block;margin-bottom:16px}
+.photo-popup-content h3{font-size:18px;margin-bottom:8px}
+.photo-popup-content p{color:var(--text2);font-size:13px;margin-bottom:20px}
+.photo-popup-btns{display:flex;flex-direction:column;gap:10px}
+
+/* RATING MODAL */
+.rating-modal{text-align:center;padding:20px}
+.rating-modal h3{font-size:18px;margin-bottom:8px}
+.rating-modal p{color:var(--text2);font-size:13px;margin-bottom:20px}
+.rating-stars{display:flex;justify-content:center;gap:8px;margin-bottom:20px}
+.rating-star{font-size:36px;cursor:pointer;opacity:.3}
+.rating-star.active{opacity:1}
+
+/* TOASTS */
+.toasts{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:500;display:flex;flex-direction:column;gap:6px;width:90%;max-width:320px}
+.toast{padding:12px 20px;background:rgba(30,30,40,0.95);border:1px solid var(--border);border-radius:var(--r);font-size:13px;text-align:center}
+.toast.success{border-color:var(--green);color:var(--green)}
+.toast.error{border-color:var(--red);color:var(--red)}
+
+/* XP POPUP */
+.xp-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);display:none;align-items:center;gap:10px;padding:16px 32px;background:linear-gradient(135deg,var(--gold),var(--accent));border-radius:var(--r);z-index:500}
+.xp-popup.show{display:flex}
+.xp-popup span:first-child{font-size:28px}
+.xp-popup span:last-child{font-size:24px;font-weight:900;color:#fff}
+
+/* LEVEL UP */
+.levelup{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.9);z-index:500}
+.levelup.show{display:flex}
+.levelup-box{padding:30px;text-align:center}
+.levelup-box span{font-size:60px}
+.levelup-box h2{font-size:24px;margin:12px 0 8px;color:var(--gold)}
+.levelup-box p{color:var(--text2);margin-bottom:20px}
+</style>
 </head>
 <body>
-    <div id="app">
-        <!-- SPLASH -->
-        <div class="screen active" id="splash">
-            <div class="splash-glow"></div>
-            <div class="splash-content">
-                <div class="splash-logo">🍽️</div>
-                <h1>Yumr</h1>
-                <p>Swipe. Cook. Enjoy.</p>
-                <div class="splash-loader"><div class="loader-fill"></div></div>
-            </div>
-        </div>
-
-        <!-- ONBOARDING -->
-        <div class="screen" id="onboarding">
-            <div class="ob-slides">
-                <div class="ob-slide active">
-                    <div class="ob-visual"><div class="ob-card-demo"></div><span class="ob-swipe">👆</span></div>
-                    <h1>Swipe tes plats</h1>
-                    <p>Dis-nous ce que tu aimes en swipant.</p>
-                </div>
-                <div class="ob-slide">
-                    <div class="ob-visual"><div class="ob-icons"><span>🥗</span><span>🍝</span><span>🍰</span><span>🥩</span><span>🍣</span><span>🥘</span></div></div>
-                    <h1>Menus personnalisés</h1>
-                    <p>Chaque jour, des recettes adaptées à tes goûts.</p>
-                </div>
-                <div class="ob-slide">
-                    <div class="ob-visual"><div class="ob-trophy">🏆</div><span class="ob-xp">+50 XP</span></div>
-                    <h1>Gagne des XP</h1>
-                    <p>Cuisine, partage et progresse !</p>
-                </div>
-            </div>
-            <div class="ob-dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
-            <div class="ob-actions">
-                <button class="btn btn-primary btn-full" id="ob-next">Continuer</button>
-                <button class="btn btn-glass btn-full" id="ob-login">J'ai déjà un compte</button>
-            </div>
-        </div>
-
-        <!-- QUIZ CHOICE -->
-        <div class="screen" id="quiz-choice">
-            <button class="back-btn" id="qc-back">←</button>
-            <div class="qc-content">
-                <div class="qc-icon">🍽️</div>
-                <h1>Créons ton profil</h1>
-                <p>Combien de plats veux-tu évaluer ?</p>
-                <div class="qc-options">
-                    <button class="qc-opt" data-count="10"><span class="qc-num">10</span><span class="qc-label">Express</span><span class="qc-time">~2 min</span></button>
-                    <button class="qc-opt selected" data-count="20"><span class="qc-num">20</span><span class="qc-label">Recommandé</span><span class="qc-time">~4 min</span></button>
-                    <button class="qc-opt" data-count="50"><span class="qc-num">50</span><span class="qc-label">Complet</span><span class="qc-time">~10 min</span></button>
-                </div>
-                <button class="btn btn-primary btn-full" id="qc-start">C'est parti ! 🚀</button>
-            </div>
-        </div>
-
-        <!-- AUTH -->
-        <div class="screen" id="auth">
-            <button class="back-btn" id="auth-back">←</button>
-            <div class="auth-box">
-                <div class="auth-logo">🍽️</div>
-                <h1 id="auth-title">Connexion</h1>
-                <form id="auth-form">
-                    <div class="field" id="field-username"><label>Pseudo</label><input type="text" id="in-username" placeholder="Ton pseudo"></div>
-                    <div class="field"><label>Email</label><input type="email" id="in-email" placeholder="ton@email.com"></div>
-                    <div class="field"><label>Mot de passe</label><input type="password" id="in-pass" placeholder="••••••••"></div>
-                    <p class="auth-error" id="auth-error"></p>
-                    <button type="submit" class="btn btn-primary btn-full">Se connecter</button>
-                </form>
-                <p class="auth-switch"><span id="auth-switch-text">Pas encore de compte ?</span><button id="auth-toggle">S'inscrire</button></p>
-            </div>
-        </div>
-
-        <!-- SETUP -->
-        <div class="screen" id="setup">
-            <div class="setup-box">
-                <div class="setup-steps"><span class="step active">1</span><span class="step-line"></span><span class="step">2</span><span class="step-line"></span><span class="step">3</span></div>
-                <div class="setup-page active" id="setup-1">
-                    <span class="step-badge">Étape 1/3</span>
-                    <h1>Ton régime</h1>
-                    <div class="diet-grid">
-                        <label class="diet-opt"><input type="radio" name="diet" value="omnivore" checked><div class="diet-card"><span>🍖</span><span>Omnivore</span></div></label>
-                        <label class="diet-opt"><input type="radio" name="diet" value="vegetarian"><div class="diet-card"><span>🥬</span><span>Végétarien</span></div></label>
-                        <label class="diet-opt"><input type="radio" name="diet" value="vegan"><div class="diet-card"><span>🌱</span><span>Végan</span></div></label>
-                        <label class="diet-opt"><input type="radio" name="diet" value="flexitarian"><div class="diet-card"><span>🐟</span><span>Flexitarien</span></div></label>
-                    </div>
-                    <h3>Allergies</h3>
-                    <div class="allergy-wrap">
-                        <label class="chip-opt"><input type="checkbox" name="allergy" value="gluten"><span>🌾 Gluten</span></label>
-                        <label class="chip-opt"><input type="checkbox" name="allergy" value="lactose"><span>🥛 Lactose</span></label>
-                        <label class="chip-opt"><input type="checkbox" name="allergy" value="nuts"><span>🥜 Fruits à coque</span></label>
-                        <label class="chip-opt"><input type="checkbox" name="allergy" value="seafood"><span>🦐 Fruits de mer</span></label>
-                        <label class="chip-opt"><input type="checkbox" name="allergy" value="eggs"><span>🥚 Œufs</span></label>
-                        <label class="chip-opt"><input type="checkbox" name="allergy" value="soy"><span>🫘 Soja</span></label>
-                    </div>
-                    <div class="setup-actions"><span></span><button class="btn btn-primary" id="setup-next-1">Suivant →</button></div>
-                </div>
-                <div class="setup-page" id="setup-2">
-                    <span class="step-badge">Étape 2/3</span>
-                    <h1>Ton objectif</h1>
-                    <div class="goal-list">
-                        <label class="goal-opt"><input type="radio" name="goal" value="lose"><div class="goal-card"><span>⚖️</span><div><strong>Perdre du poids</strong><p>Recettes légères</p></div></div></label>
-                        <label class="goal-opt"><input type="radio" name="goal" value="maintain" checked><div class="goal-card"><span>💪</span><div><strong>Maintenir</strong><p>Équilibre parfait</p></div></div></label>
-                        <label class="goal-opt"><input type="radio" name="goal" value="gain"><div class="goal-card"><span>🏋️</span><div><strong>Prendre du muscle</strong><p>Riche en protéines</p></div></div></label>
-                        <label class="goal-opt"><input type="radio" name="goal" value="health"><div class="goal-card"><span>❤️</span><div><strong>Manger sain</strong><p>Nutriments</p></div></div></label>
-                    </div>
-                    <div class="setup-actions"><button class="btn btn-glass" id="setup-back-2">← Retour</button><button class="btn btn-primary" id="setup-next-2">Suivant →</button></div>
-                </div>
-                <div class="setup-page" id="setup-3">
-                    <span class="step-badge">Étape 3/3</span>
-                    <h1>Aliments à éviter ?</h1>
-                    <div class="dislike-search"><span>🔍</span><input type="text" id="dislike-search" placeholder="Rechercher..."></div>
-                    <div id="dislike-container"></div>
-                    <div class="setup-actions"><button class="btn btn-glass" id="setup-back-3">← Retour</button><button class="btn btn-primary" id="setup-finish">Terminer 🚀</button></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- QUIZ -->
-        <div class="screen" id="quiz">
-            <div class="quiz-header">
-                <button class="quiz-close" id="quiz-close">✕</button>
-                <div class="quiz-prog"><div class="quiz-prog-fill" id="quiz-prog-fill"></div></div>
-                <span class="quiz-count" id="quiz-count">1/20</span>
-                <div class="quiz-streak">🔥 <span id="q-streak">0</span></div>
-            </div>
-            <div class="quiz-area">
-                <div class="quiz-card" id="quiz-card">
-                    <div class="card-img" id="card-img"></div>
-                    <div class="card-body">
-                        <span class="card-emoji" id="card-emoji">🍕</span>
-                        <h2 id="card-q">Pizza Margherita</h2>
-                        <p class="card-desc" id="card-desc">Tomate, mozzarella, basilic</p>
-                    </div>
-                    <div class="overlay nope">NOPE</div>
-                    <div class="overlay love">LOVE</div>
-                </div>
-            </div>
-            <div class="quiz-btns">
-                <button class="qbtn nope" id="btn-nope">✕</button>
-                <button class="qbtn love" id="btn-love">♥</button>
-            </div>
-            <p class="quiz-hint">Swipe ou appuie</p>
-        </div>
-
-        <!-- RESULT -->
-        <div class="screen" id="result">
-            <div class="result-confetti" id="confetti"></div>
-            <div class="result-box">
-                <span class="result-badge">🎉 Profil créé !</span>
-                <div class="result-profile glass-card">
-                    <span class="profile-emoji" id="res-emoji">🍝</span>
-                    <h1 id="res-title">L'Italien</h1>
-                    <p id="res-desc">Tu adores les saveurs méditerranéennes</p>
-                    <div class="profile-tags" id="res-tags"></div>
-                </div>
-                <div class="result-xp"><span>✨</span><span>+100 XP</span></div>
-                <button class="btn btn-primary btn-full" id="res-continue">Créer mon compte</button>
-                <button class="btn btn-glass btn-full" id="res-skip">Continuer en invité</button>
-            </div>
-        </div>
-
-        <!-- MAIN -->
-        <div class="screen" id="main">
-            <header class="header">
-                <div class="h-left"><span>🍽️</span><span>Yumr</span></div>
-                <div class="h-right">
-                    <button class="h-btn" id="h-streak-btn">🔥 <span id="h-streak">1</span></button>
-                    <button class="h-btn" id="h-xp-btn">⭐ <span id="h-xp">0</span></button>
-                    <button class="h-btn icon" id="h-notif-btn">🔔<span class="notif-dot" id="notif-dot"></span></button>
-                </div>
-            </header>
-            <div class="main-scroll">
-                <div class="tab active" id="tab-home">
-                    <div class="greeting"><h1>Salut <span id="u-name">Chef</span> ! 👋</h1><p>Qu'est-ce qu'on cuisine ?</p></div>
-                    <div class="daily glass-card">
-                        <div class="daily-head"><div class="daily-info"><span>📅</span><div><h3>Menu du jour</h3><p>Personnalisé pour toi</p></div></div><button class="btn btn-primary btn-sm" id="btn-gen-menu">Générer</button></div>
-                        <div class="daily-preview" id="daily-preview"><p class="daily-empty">Clique sur Générer pour créer ton menu !</p></div>
-                    </div>
-                    <div class="quick-grid">
-                        <button class="quick" data-modal="m-fridge"><span>🧊</span><span>Mon Frigo</span><span class="qbadge" id="fridge-count">0</span></button>
-                        <button class="quick" data-modal="m-shopping"><span>🛒</span><span>Courses</span></button>
-                        <button class="quick" data-modal="m-prep"><span>📆</span><span>Meal Prep</span><span class="pro">PRO</span></button>
-                        <button class="quick" data-modal="m-coach"><span>🤖</span><span>Coach IA</span><span class="pro">PRO</span></button>
-                        <button class="quick" data-modal="m-resto"><span>🍴</span><span>Mode Resto</span><span class="pro">PRO</span></button>
-                        <button class="quick" data-modal="m-challenges"><span>🎯</span><span>Défis</span></button>
-                    </div>
-                    <div class="challenge glass-card">
-                        <div class="ch-head"><span class="ch-tag">🔥 Défi du jour</span><span class="ch-timer">23h</span></div>
-                        <h3>Cuisine un plat végétarien</h3>
-                        <p>+75 XP et badge "Green Chef"</p>
-                    </div>
-                    <div class="stats-section">
-                        <h3>📊 Stats</h3>
-                        <div class="stats-row">
-                            <div class="stat"><strong id="s-level">1</strong><span>Niveau</span></div>
-                            <div class="stat"><strong id="s-recipes">0</strong><span>Recettes</span></div>
-                            <div class="stat"><strong id="s-streak">1</strong><span>Streak</span></div>
-                            <div class="stat clickable" data-modal="m-badges"><strong id="s-badges">0</strong><span>Badges</span></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="tab" id="tab-explore">
-                    <h1>Explorer 🔍</h1>
-                    <div class="search"><span>🔍</span><input type="text" placeholder="Rechercher..." id="search-in"></div>
-                    <div class="explore-tabs"><button class="etab active" data-filter="all">Tout</button><button class="etab" data-filter="saved">❤️ Favoris</button></div>
-                    <div class="filters"><button class="filter active" data-cat="all">Tout</button><button class="filter" data-cat="starter">🥗 Entrées</button><button class="filter" data-cat="main">🍝 Plats</button><button class="filter" data-cat="dessert">🍰 Desserts</button></div>
-                    <div class="recipes" id="recipes"></div>
-                </div>
-                <div class="tab" id="tab-leagues">
-                    <h1>Ligues 🏆</h1>
-                    <div class="league-current glass-card">
-                        <span class="league-icon">🥉</span>
-                        <div class="league-info"><strong>Ligue Bronze</strong><span id="league-rank">Rang #45</span></div>
-                        <div class="league-timer"><span>Fin dans</span><strong>5j 12h</strong></div>
-                    </div>
-                    <div class="league-tabs"><button class="ltab active" data-lb="week">Classement</button><button class="ltab" data-lb="all">Ligues</button></div>
-                    <div id="league-content"></div>
-                </div>
-                <div class="tab" id="tab-feed">
-                    <h1>Communauté 🌍</h1>
-                    <div class="feed-search"><span>🔍</span><input type="text" placeholder="Rechercher un utilisateur..." id="user-search"></div>
-                    <div class="feed-tabs"><button class="ftab active" data-feed="all">Pour toi</button><button class="ftab" data-feed="following">Abonnements</button><button class="ftab" data-feed="mine">Mes posts</button></div>
-                    <div class="feed" id="feed"></div>
-                </div>
-                <div class="tab" id="tab-profile">
-                    <div class="profile-hero">
-                        <div class="profile-banner"><button class="banner-edit" id="edit-banner">📷</button></div>
-                        <div class="profile-av-wrap">
-                            <div class="profile-av"><img src="https://i.pravatar.cc/96?img=33" id="profile-img"></div>
-                            <span class="profile-lv" id="p-lv">1</span>
-                        </div>
-                        <h2 id="p-name">@chef</h2>
-                        <div class="profile-type"><span id="p-emoji">🍽️</span><span id="p-type">Foodie</span></div>
-                        <div class="profile-featured-badges" id="featured-badges"></div>
-                    </div>
-                    <div class="profile-stats">
-                        <div><strong id="ps-posts">0</strong><span>Posts</span></div>
-                        <div><strong id="ps-followers">0</strong><span>Abonnés</span></div>
-                        <div><strong id="ps-following">0</strong><span>Abonnements</span></div>
-                        <div><strong id="ps-xp">0</strong><span>XP</span></div>
-                    </div>
-                    <div class="xp-bar-wrap glass-card">
-                        <div class="xp-bar-head"><span>Niveau <strong id="xp-lv">1</strong></span><span><span id="xp-cur">0</span>/<span id="xp-max">100</span> XP</span></div>
-                        <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
-                    </div>
-                    <div class="badges-section glass-card">
-                        <div class="badges-head"><h4>🏅 Badges (<span id="badge-count">0</span>)</h4><button class="link" data-modal="m-badges">Voir tout</button></div>
-                        <div class="badges-scroll" id="badges-scroll"></div>
-                    </div>
-                    <div class="profile-menu">
-                        <button class="pmenu" data-modal="m-prefs"><span>⚙️</span><span>Préférences</span><span>›</span></button>
-                        <button class="pmenu" data-modal="m-settings"><span>🔧</span><span>Paramètres</span><span>›</span></button>
-                        <button class="pmenu premium" data-modal="m-premium"><span>👑</span><span>Premium</span><span>›</span></button>
-                        <button class="pmenu" data-modal="m-referral"><span>🎁</span><span>Parrainage</span><span class="ref-badge">+100 XP</span></button>
-                        <button class="pmenu" id="btn-share-profile"><span>📤</span><span>Partager</span><span>›</span></button>
-                        <button class="pmenu danger" id="btn-logout"><span>🚪</span><span>Déconnexion</span><span></span></button>
-                    </div>
-                </div>
-            </div>
-            <nav class="nav">
-                <button class="nav-btn active" data-tab="home"><span>🏠</span><span>Accueil</span></button>
-                <button class="nav-btn" data-tab="explore"><span>🔍</span><span>Explorer</span></button>
-                <button class="nav-btn center" id="nav-post"><div class="nav-plus">+</div></button>
-                <button class="nav-btn" data-tab="feed"><span>🌍</span><span>Feed</span></button>
-                <button class="nav-btn" data-tab="profile"><span>👤</span><span>Profil</span></button>
-            </nav>
-        </div>
-
-        <!-- MODALS -->
-        <div class="modal" id="m-streak"><div class="modal-bg" data-close="m-streak"></div><div class="modal-sheet"><div class="modal-handle"></div><div id="streak-content"></div></div></div>
-        <div class="modal" id="m-xp"><div class="modal-bg" data-close="m-xp"></div><div class="modal-sheet"><div id="xp-content"></div></div></div>
-        <div class="modal" id="m-notifs"><div class="modal-bg" data-close="m-notifs"></div><div class="modal-sheet modal-tall"><div class="modal-handle"></div><h2>🔔 Notifications</h2><div id="notifs-list"></div></div></div>
-        <div class="modal modal-full" id="m-menu"><div class="modal-page"><div class="modal-top"><button class="back-btn" data-close="m-menu">←</button><h2>🍽️ Menu du jour</h2><span></span></div><div class="modal-scroll" id="menu-content"></div></div></div>
-        <div class="modal modal-full" id="m-fridge"><div class="modal-page"><div class="modal-top"><button class="back-btn" data-close="m-fridge">←</button><h2>🧊 Mon Frigo</h2><button class="btn btn-sm btn-primary" id="btn-add-item">+</button></div><div class="modal-scroll" id="fridge-content"></div></div></div>
-        <div class="modal modal-full" id="m-shopping"><div class="modal-page"><div class="modal-top"><button class="back-btn" data-close="m-shopping">←</button><h2>🛒 Courses</h2><button class="btn btn-sm btn-glass" id="btn-clear-shop">Vider</button></div><div class="modal-scroll" id="shop-content"></div></div></div>
-        <div class="modal modal-full" id="m-badges"><div class="modal-page"><div class="modal-top"><button class="back-btn" data-close="m-badges">←</button><h2>🏅 Badges</h2><span id="badges-unlocked">0/50</span></div><div class="modal-scroll" id="badges-content"></div></div></div>
-        <div class="modal modal-full" id="m-prefs"><div class="modal-page"><div class="modal-top"><button class="back-btn" data-close="m-prefs">←</button><h2>⚙️ Préférences</h2><button class="btn btn-sm btn-primary" id="btn-save-prefs">Sauver</button></div><div class="modal-scroll" id="prefs-content"></div></div></div>
-        <div class="modal modal-full" id="m-settings"><div class="modal-page"><div class="modal-top"><button class="back-btn" data-close="m-settings">←</button><h2>🔧 Paramètres</h2><span></span></div><div class="modal-scroll" id="settings-content"></div></div></div>
-        <div class="modal modal-full" id="m-premium"><div class="modal-page premium-page"><div class="modal-top"><button class="back-btn" data-close="m-premium">←</button><h2>Yumr PRO</h2><span class="top-pro">PRO</span></div><div class="modal-scroll" id="premium-content"></div></div></div>
-        <div class="modal modal-full" id="m-referral"><div class="modal-page"><div class="modal-top"><button class="back-btn" data-close="m-referral">←</button><h2>🎁 Parrainage</h2><span></span></div><div class="modal-scroll" id="referral-content"></div></div></div>
-        <div class="modal modal-full" id="m-challenges"><div class="modal-page"><div class="modal-top"><button class="back-btn" data-close="m-challenges">←</button><h2>🎯 Défis</h2><span></span></div><div class="modal-scroll" id="challenges-content"></div></div></div>
-        <div class="modal modal-full" id="m-recipe"><div class="modal-page" id="recipe-page"></div></div>
-        <div class="modal modal-full" id="m-post"><div class="modal-page"><div class="modal-top"><button class="back-btn" data-close="m-post">←</button><h2>📸 Nouveau post</h2><span></span></div><div class="modal-scroll" id="post-content"></div></div></div>
-        <div class="modal modal-full" id="m-post-view"><div class="modal-page" id="post-view-page"></div></div>
-        <div class="modal modal-full" id="m-user"><div class="modal-page" id="user-page"></div></div>
-        <div class="modal" id="m-add-item"><div class="modal-bg" data-close="m-add-item"></div><div class="modal-sheet"><div class="modal-handle"></div><h2>Ajouter</h2><div id="add-item-form"></div></div></div>
-        <div class="modal" id="m-comments"><div class="modal-bg" data-close="m-comments"></div><div class="modal-sheet modal-tall"><div class="modal-handle"></div><h2>💬 Commentaires</h2><div id="comments-content"></div></div></div>
-        <div class="modal modal-full" id="m-prep"><div class="modal-page"><div class="modal-top"><button class="back-btn" data-close="m-prep">←</button><h2>📆 Meal Prep</h2><span class="top-pro">PRO</span></div><div class="modal-scroll"><div class="pro-intro"><span>📆</span><h3>Planifie ta semaine</h3><p>Génère tes menus pour toute la semaine.</p><button class="btn btn-primary" onclick="openModal('m-premium')">Essayer Premium</button></div></div></div></div>
-        <div class="modal modal-full" id="m-coach"><div class="modal-page"><div class="modal-top"><button class="back-btn" data-close="m-coach">←</button><h2>🤖 Coach IA</h2><span class="top-pro">PRO</span></div><div class="modal-scroll"><div class="pro-intro"><span>🤖</span><h3>Ton coach nutrition</h3><p>Conseils personnalisés.</p><button class="btn btn-primary" onclick="openModal('m-premium')">Essayer Premium</button></div></div></div></div>
-        <div class="modal modal-full" id="m-resto"><div class="modal-page"><div class="modal-top"><button class="back-btn" data-close="m-resto">←</button><h2>🍴 Mode Resto</h2><span class="top-pro">PRO</span></div><div class="modal-scroll"><div class="pro-intro"><span>🍴</span><h3>Au restaurant</h3><p>Scanne le menu et on te recommande.</p><button class="btn btn-primary" onclick="openModal('m-premium')">Essayer Premium</button></div></div></div></div>
-
-        <div class="toasts" id="toasts"></div>
-        <div class="xp-popup" id="xp-popup"><span>✨</span><span id="xp-amount">+50 XP</span></div>
-        <div class="levelup" id="levelup"><div class="levelup-box glass-card"><span>🎉</span><h2>Niveau <span id="new-lv">2</span> !</h2><p>Continue !</p><button class="btn btn-primary" id="close-lv">Super !</button></div></div>
+<div id="app">
+    <!-- SPLASH -->
+    <div class="screen active" id="splash">
+        <div class="splash-logo">🍽️</div>
+        <h1>Yumr</h1>
+        <p>Swipe. Cook. Enjoy.</p>
+        <div class="splash-loader"><div class="loader-fill"></div></div>
     </div>
-    <script src="app.js"></script>
+
+    <!-- ONBOARDING -->
+    <div class="screen" id="onboarding">
+        <div class="ob-slide active"><div class="ob-visual">👆</div><h1>Swipe tes plats</h1><p>Dis-nous ce que tu aimes en swipant.</p></div>
+        <div class="ob-slide"><div class="ob-visual">🍽️</div><h1>Menus personnalisés</h1><p>Chaque jour, des recettes adaptées.</p></div>
+        <div class="ob-slide"><div class="ob-visual">🏆</div><h1>Gagne des XP</h1><p>Cuisine, partage et progresse !</p></div>
+        <div class="ob-dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="ob-actions"><button class="btn btn-primary btn-full" id="ob-next">Continuer</button><button class="btn btn-glass btn-full" id="ob-login">J'ai déjà un compte</button></div>
+    </div>
+
+    <!-- QUIZ CHOICE -->
+    <div class="screen" id="quiz-choice">
+        <button class="back-btn" id="qc-back">←</button>
+        <div class="qc-content">
+            <div class="qc-icon">🍽️</div>
+            <h1>Créons ton profil</h1>
+            <p>Combien de plats veux-tu évaluer ?</p>
+            <div class="qc-options">
+                <button class="qc-opt" data-count="10"><span class="qc-num">10</span><span class="qc-label">Express</span><span class="qc-time">~2 min</span></button>
+                <button class="qc-opt selected" data-count="20"><span class="qc-num">20</span><span class="qc-label">Recommandé</span><span class="qc-time">~4 min</span></button>
+                <button class="qc-opt" data-count="50"><span class="qc-num">50</span><span class="qc-label">Complet</span><span class="qc-time">~10 min</span></button>
+            </div>
+            <button class="btn btn-primary btn-full" id="qc-start">C'est parti ! 🚀</button>
+        </div>
+    </div>
+
+    <!-- AUTH -->
+    <div class="screen" id="auth">
+        <button class="back-btn" id="auth-back">←</button>
+        <div class="auth-box">
+            <div class="auth-logo">🍽️</div>
+            <h1 id="auth-title">Connexion</h1>
+            <form id="auth-form">
+                <div class="field hidden" id="field-username"><label>Pseudo</label><input type="text" id="in-username" placeholder="Ton pseudo"></div>
+                <div class="field"><label>Email</label><input type="email" id="in-email" placeholder="ton@email.com"></div>
+                <div class="field"><label>Mot de passe</label><input type="password" id="in-pass" placeholder="••••••••"></div>
+                <p class="auth-error" id="auth-error"></p>
+                <button type="submit" class="btn btn-primary btn-full">Se connecter</button>
+            </form>
+            <p class="auth-switch"><span id="auth-switch-text">Pas encore de compte ?</span> <button id="auth-toggle">S'inscrire</button></p>
+        </div>
+    </div>
+
+    <!-- SETUP -->
+    <div class="screen" id="setup">
+        <div class="setup-steps"><span class="step active">1</span><span class="step-line"></span><span class="step">2</span><span class="step-line"></span><span class="step">3</span></div>
+        <div class="setup-page active" id="setup-1">
+            <span class="step-badge">Étape 1/3</span>
+            <h1>Ton régime</h1>
+            <div class="diet-grid">
+                <label class="diet-opt"><input type="radio" name="diet" value="omnivore" checked><div class="diet-card"><span>🍖</span><span>Omnivore</span></div></label>
+                <label class="diet-opt"><input type="radio" name="diet" value="vegetarian"><div class="diet-card"><span>🥬</span><span>Végétarien</span></div></label>
+                <label class="diet-opt"><input type="radio" name="diet" value="vegan"><div class="diet-card"><span>🌱</span><span>Végan</span></div></label>
+                <label class="diet-opt"><input type="radio" name="diet" value="flexitarian"><div class="diet-card"><span>🐟</span><span>Flexitarien</span></div></label>
+            </div>
+            <h3>Allergies</h3>
+            <div class="chip-wrap">
+                <label class="chip-opt"><input type="checkbox" name="allergy" value="gluten"><span>🌾 Gluten</span></label>
+                <label class="chip-opt"><input type="checkbox" name="allergy" value="lactose"><span>🥛 Lactose</span></label>
+                <label class="chip-opt"><input type="checkbox" name="allergy" value="nuts"><span>🥜 Fruits à coque</span></label>
+                <label class="chip-opt"><input type="checkbox" name="allergy" value="seafood"><span>🦐 Fruits de mer</span></label>
+            </div>
+            <div class="setup-actions"><span></span><button class="btn btn-primary" id="setup-next-1">Suivant →</button></div>
+        </div>
+        <div class="setup-page" id="setup-2">
+            <span class="step-badge">Étape 2/3</span>
+            <h1>Ton objectif</h1>
+            <div class="goal-list">
+                <label class="goal-opt"><input type="radio" name="goal" value="lose"><div class="goal-card"><span>⚖️</span><div><strong>Perdre du poids</strong><p>Recettes légères</p></div></div></label>
+                <label class="goal-opt"><input type="radio" name="goal" value="maintain" checked><div class="goal-card"><span>💪</span><div><strong>Maintenir</strong><p>Équilibre parfait</p></div></div></label>
+                <label class="goal-opt"><input type="radio" name="goal" value="gain"><div class="goal-card"><span>🏋️</span><div><strong>Prendre du muscle</strong><p>Riche en protéines</p></div></div></label>
+            </div>
+            <div class="setup-actions"><button class="btn btn-glass" id="setup-back-2">← Retour</button><button class="btn btn-primary" id="setup-next-2">Suivant →</button></div>
+        </div>
+        <div class="setup-page" id="setup-3">
+            <span class="step-badge">Étape 3/3</span>
+            <h1>Aliments à éviter ?</h1>
+            <div class="dislike-search"><span>🔍</span><input type="text" id="dislike-search" placeholder="Rechercher..."></div>
+            <div id="dislike-container"></div>
+            <div class="setup-actions"><button class="btn btn-glass" id="setup-back-3">← Retour</button><button class="btn btn-primary" id="setup-finish">Terminer 🚀</button></div>
+        </div>
+    </div>
+
+    <!-- QUIZ -->
+    <div class="screen" id="quiz">
+        <div class="quiz-header">
+            <button class="quiz-close" id="quiz-close">✕</button>
+            <div class="quiz-prog"><div class="quiz-prog-fill" id="quiz-prog-fill"></div></div>
+            <span class="quiz-count" id="quiz-count">1/20</span>
+            <div class="quiz-streak">🔥 <span id="q-streak">0</span></div>
+        </div>
+        <div class="quiz-area">
+            <div class="quiz-card" id="quiz-card">
+                <div class="card-img" id="card-img"></div>
+                <div class="card-body"><span class="card-emoji" id="card-emoji">🍕</span><h2 id="card-q">Pizza</h2><p class="card-desc" id="card-desc">Tomate, mozzarella</p></div>
+                <div class="overlay nope">NOPE</div>
+                <div class="overlay love">LOVE</div>
+            </div>
+        </div>
+        <div class="quiz-btns"><button class="qbtn nope" id="btn-nope">✕</button><button class="qbtn love" id="btn-love">♥</button></div>
+        <p class="quiz-hint">Swipe ou appuie</p>
+    </div>
+
+    <!-- RESULT -->
+    <div class="screen" id="result">
+        <span class="result-badge">🎉 Profil créé !</span>
+        <div class="result-profile glass-card">
+            <span class="profile-emoji" id="res-emoji">🍝</span>
+            <h1 id="res-title">L'Italien</h1>
+            <p id="res-desc">Tu adores les saveurs méditerranéennes</p>
+            <div class="profile-tags" id="res-tags"></div>
+        </div>
+        <div class="result-xp"><span>✨</span><span>+100 XP</span></div>
+        <button class="btn btn-primary btn-full" id="res-continue" style="max-width:300px">Créer mon compte</button>
+        <button class="btn btn-glass btn-full" id="res-skip" style="max-width:300px;margin-top:10px">Continuer en invité</button>
+    </div>
+
+    <!-- MAIN -->
+    <div class="screen" id="main">
+        <header class="header">
+            <div class="h-left"><span>🍽️</span> Yumr</div>
+            <div class="h-right">
+                <button class="h-btn" id="h-streak-btn">🔥 <span id="h-streak">1</span></button>
+                <button class="h-btn" id="h-xp-btn">⭐ <span id="h-xp">0</span></button>
+                <button class="h-btn icon" id="h-notif-btn">🔔<span class="notif-dot"></span></button>
+            </div>
+        </header>
+        <div class="main-scroll">
+            <div class="tab active" id="tab-home">
+                <div class="greeting"><h1>Salut <span id="u-name">Chef</span> ! 👋</h1><p>Qu'est-ce qu'on cuisine ?</p></div>
+                <div class="daily glass-card"><div class="daily-head"><div class="daily-info"><span>📅</span><div><h3>Menu du jour</h3><p>Personnalisé pour toi</p></div></div><button class="btn btn-primary btn-sm" id="btn-gen-menu">Générer</button></div><div class="daily-preview" id="daily-preview"><p class="daily-empty">Clique sur Générer pour créer ton menu !</p></div></div>
+                <div class="quick-grid">
+                    <button class="quick" data-modal="m-fridge"><span>🧊</span><span>Mon Frigo</span><span class="qbadge" id="fridge-count">0</span></button>
+                    <button class="quick" data-modal="m-shopping"><span>🛒</span><span>Courses</span></button>
+                    <button class="quick" data-modal="m-cooked"><span>👨‍🍳</span><span>Cuisinés</span><span class="qbadge" id="cooked-count">0</span></button>
+                    <button class="quick" data-modal="m-prep"><span>📆</span><span>Meal Prep</span><span class="pro">PRO</span></button>
+                    <button class="quick" data-modal="m-coach"><span>🤖</span><span>Coach IA</span><span class="pro">PRO</span></button>
+                    <button class="quick" data-modal="m-challenges"><span>🎯</span><span>Défis</span></button>
+                </div>
+                <div class="challenge glass-card"><div class="ch-head"><span class="ch-tag">🔥 Défi du jour</span><span class="ch-timer">23h</span></div><h3>Cuisine un plat végétarien</h3><p>+75 XP et badge "Green Chef"</p></div>
+                <div class="stats-section"><h3>📊 Stats</h3><div class="stats-row"><div class="stat"><strong id="s-level">1</strong><span>Niveau</span></div><div class="stat"><strong id="s-recipes">0</strong><span>Recettes</span></div><div class="stat"><strong id="s-streak">1</strong><span>Streak</span></div><div class="stat" data-modal="m-badges"><strong id="s-badges">0</strong><span>Badges</span></div></div></div>
+            </div>
+            <div class="tab" id="tab-explore">
+                <h2 style="margin-bottom:12px">Explorer 🔍</h2>
+                <div class="search"><span>🔍</span><input type="text" placeholder="Rechercher..." id="search-in"></div>
+                <div class="filters"><button class="filter active" data-cat="all">Tout</button><button class="filter" data-cat="starter">🥗 Entrées</button><button class="filter" data-cat="main">🍝 Plats</button><button class="filter" data-cat="dessert">🍰 Desserts</button></div>
+                <div class="recipes" id="recipes"></div>
+            </div>
+            <div class="tab" id="tab-leagues">
+                <h2 style="margin-bottom:12px">Ligues 🏆</h2>
+                <div class="league-current glass-card"><span class="league-icon">🥉</span><div class="league-info"><strong>Ligue Bronze</strong><span id="league-rank">Rang #45</span></div><div class="league-timer"><span>Fin dans</span><strong>5j 12h</strong></div></div>
+                <div class="league-tabs"><button class="ltab active" data-lb="week">Classement</button><button class="ltab" data-lb="all">Ligues</button></div>
+                <div id="league-content"></div>
+            </div>
+            <div class="tab" id="tab-feed">
+                <h2 style="margin-bottom:12px">Communauté 🌍</h2>
+                <div class="feed-search"><span>🔍</span><input type="text" placeholder="Rechercher un utilisateur..." id="user-search"></div>
+                <div class="feed-tabs"><button class="ftab active" data-feed="all">Pour toi</button><button class="ftab" data-feed="following">Abonnements</button></div>
+                <div class="feed" id="feed"></div>
+            </div>
+            <div class="tab" id="tab-profile">
+                <div class="profile-hero"><div class="profile-banner"></div><div class="profile-av-wrap"><div class="profile-av"><img src="https://i.pravatar.cc/72?img=33" id="profile-img"></div><span class="profile-lv" id="p-lv">1</span></div><h2 id="p-name">@chef</h2><div class="profile-type"><span id="p-emoji">🍽️</span><span id="p-type">Foodie</span></div><div class="profile-featured-badges" id="featured-badges"></div></div>
+                <div class="profile-stats"><div><strong id="ps-posts">0</strong><span>Posts</span></div><div><strong id="ps-followers">0</strong><span>Abonnés</span></div><div><strong id="ps-following">0</strong><span>Abonnements</span></div><div><strong id="ps-xp">0</strong><span>XP</span></div></div>
+                <div class="xp-bar-wrap glass-card"><div class="xp-bar-head"><span>Niveau <strong id="xp-lv">1</strong></span><span><span id="xp-cur">0</span>/<span id="xp-max">100</span> XP</span></div><div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div></div>
+                <div class="badges-section glass-card"><div class="badges-head"><h4>🏅 Badges (<span id="badge-count">0</span>)</h4><button class="link" data-modal="m-badges">Voir tout</button></div><div class="badges-scroll" id="badges-scroll"></div></div>
+                <div class="profile-menu">
+                    <button class="pmenu" data-modal="m-prefs"><span>⚙️</span><span>Préférences</span><span>›</span></button>
+                    <button class="pmenu" data-modal="m-settings"><span>🔧</span><span>Paramètres</span><span>›</span></button>
+                    <button class="pmenu premium" data-modal="m-premium"><span>👑</span><span>Premium</span><span>›</span></button>
+                    <button class="pmenu" data-modal="m-referral"><span>🎁</span><span>Parrainage</span><span>+100 XP</span></button>
+                    <button class="pmenu danger" id="btn-logout"><span>🚪</span><span>Déconnexion</span><span></span></button>
+                </div>
+            </div>
+        </div>
+        <nav class="nav">
+            <button class="nav-btn active" data-tab="home"><span>🏠</span><span>Accueil</span></button>
+            <button class="nav-btn" data-tab="explore"><span>🔍</span><span>Explorer</span></button>
+            <button class="nav-btn" data-tab="leagues"><span>🏆</span><span>Ligues</span></button>
+            <button class="nav-btn" data-tab="feed"><span>🌍</span><span>Feed</span></button>
+            <button class="nav-btn" data-tab="profile"><span>👤</span><span>Profil</span></button>
+        </nav>
+    </div>
+
+    <!-- MODALS -->
+    <div class="modal" id="m-fridge"><div class="modal-bg" data-close="m-fridge"></div><div class="modal-sheet"><div class="modal-handle"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><h2 style="margin:0">🧊 Mon Frigo</h2><button class="btn btn-sm btn-primary" id="btn-add-item">+ Ajouter</button></div><div id="fridge-content"></div></div></div>
+    <div class="modal" id="m-shopping"><div class="modal-bg" data-close="m-shopping"></div><div class="modal-sheet"><div class="modal-handle"></div><h2>🛒 Courses</h2><div id="shop-content"></div></div></div>
+    <div class="modal" id="m-cooked"><div class="modal-bg" data-close="m-cooked"></div><div class="modal-sheet"><div class="modal-handle"></div><h2>👨‍🍳 Mes recettes cuisinées</h2><div id="cooked-content"></div></div></div>
+    <div class="modal" id="m-badges"><div class="modal-bg" data-close="m-badges"></div><div class="modal-sheet" style="max-height:90vh"><div class="modal-handle"></div><h2>🏅 Badges</h2><div id="badges-content"></div></div></div>
+    <div class="modal" id="m-menu"><div class="modal-bg" data-close="m-menu"></div><div class="modal-sheet" style="max-height:90vh"><div class="modal-handle"></div><h2>🍽️ Menu du jour</h2><div id="menu-content"></div></div></div>
+    <div class="modal" id="m-add-item"><div class="modal-bg" data-close="m-add-item"></div><div class="modal-sheet"><div class="modal-handle"></div><h2>Ajouter un aliment</h2><div id="add-item-form"></div></div></div>
+    <div class="modal" id="m-prefs"><div class="modal-bg" data-close="m-prefs"></div><div class="modal-sheet"><div class="modal-handle"></div><h2>⚙️ Préférences</h2><div id="prefs-content"></div></div></div>
+    <div class="modal" id="m-settings"><div class="modal-bg" data-close="m-settings"></div><div class="modal-sheet"><div class="modal-handle"></div><h2>🔧 Paramètres</h2><div id="settings-content"></div></div></div>
+    <div class="modal" id="m-premium"><div class="modal-bg" data-close="m-premium"></div><div class="modal-sheet"><div class="modal-handle"></div><h2>👑 Premium</h2><div id="premium-content"></div></div></div>
+    <div class="modal" id="m-referral"><div class="modal-bg" data-close="m-referral"></div><div class="modal-sheet"><div class="modal-handle"></div><h2>🎁 Parrainage</h2><div id="referral-content"></div></div></div>
+    <div class="modal" id="m-challenges"><div class="modal-bg" data-close="m-challenges"></div><div class="modal-sheet"><div class="modal-handle"></div><h2>🎯 Défis</h2><div id="challenges-content"></div></div></div>
+    <div class="modal" id="m-prep"><div class="modal-bg" data-close="m-prep"></div><div class="modal-sheet"><div class="modal-handle"></div><div style="text-align:center;padding:30px"><span style="font-size:48px">📆</span><h3 style="margin:16px 0">Meal Prep</h3><p style="color:var(--text2);margin-bottom:16px">Planifie ta semaine</p><button class="btn btn-primary" onclick="openModal('m-premium')">Essayer Premium</button></div></div></div>
+    <div class="modal" id="m-coach"><div class="modal-bg" data-close="m-coach"></div><div class="modal-sheet"><div class="modal-handle"></div><div style="text-align:center;padding:30px"><span style="font-size:48px">🤖</span><h3 style="margin:16px 0">Coach IA</h3><p style="color:var(--text2);margin-bottom:16px">Conseils personnalisés</p><button class="btn btn-primary" onclick="openModal('m-premium')">Essayer Premium</button></div></div></div>
+    <div class="modal" id="m-rating"><div class="modal-bg"></div><div class="modal-sheet"><div class="modal-handle"></div><div id="rating-content"></div></div></div>
+
+    <!-- COOKING MODE -->
+    <div class="cook-mode" id="cook-mode">
+        <div class="cook-header"><button class="back-btn" id="cook-exit">←</button><h2 id="cook-title">Recette</h2><button class="btn btn-sm btn-glass" id="cook-home">🏠</button></div>
+        <div class="cook-progress" id="cook-progress"></div>
+        <div class="cook-content" id="cook-content"></div>
+        <div class="cook-actions"><button class="btn btn-glass" id="cook-prev">← Précédent</button><button class="btn btn-primary" id="cook-next">Suivant →</button></div>
+    </div>
+
+    <!-- PHOTO POPUP -->
+    <div class="photo-popup" id="photo-popup">
+        <div class="photo-popup-content">
+            <span>📸</span>
+            <h3>Prendre en photo ?</h3>
+            <p>Immortalise ton avancement et gagne des XP bonus !</p>
+            <div class="photo-popup-btns">
+                <button class="btn btn-primary btn-full" id="photo-yes">Prendre une photo (+10 XP)</button>
+                <button class="btn btn-glass btn-full" id="photo-no">Plus tard</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toasts" id="toasts"></div>
+    <div class="xp-popup" id="xp-popup"><span>✨</span><span id="xp-amount">+50 XP</span></div>
+    <div class="levelup" id="levelup"><div class="levelup-box glass-card"><span>🎉</span><h2>Niveau <span id="new-lv">2</span> !</h2><p>Continue !</p><button class="btn btn-primary" id="close-lv">Super !</button></div></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+// STATE
+const state={
+    user:null,token:localStorage.getItem('yumr_token'),isRegister:false,setupStep:1,quizTotal:20,currentQ:0,answers:[],quizStreak:0,
+    streak:parseInt(localStorage.getItem('yumr_streak')||'1'),xp:parseInt(localStorage.getItem('yumr_xp')||'0'),level:1,
+    fridge:[],favorites:JSON.parse(localStorage.getItem('yumr_fav')||'[]'),shopping:JSON.parse(localStorage.getItem('yumr_shop')||'[]'),
+    cooked:JSON.parse(localStorage.getItem('yumr_cooked')||'[]'),posts:[],badges:[],featuredBadges:[0,1,2],todayMenu:null,
+    cookingRecipe:null,cookingStep:0,timerInterval:null,timerSeconds:0,timerRunning:false
+};
+state.level=Math.floor(state.xp/100)+1;
+
+// DATA
+const FOODS={veggies:['Artichaut','Asperge','Aubergine','Betterave','Brocoli','Carotte','Céleri','Champignon','Chou','Chou-fleur','Concombre','Courgette','Épinard','Fenouil','Haricot vert','Navet','Oignon','Poireau','Poivron','Radis','Salade','Tomate'],fruits:['Abricot','Ananas','Avocat','Banane','Cerise','Citron','Fraise','Framboise','Kiwi','Mangue','Melon','Orange','Pêche','Poire','Pomme','Raisin'],proteins:['Agneau','Bœuf','Canard','Porc','Poulet','Veau','Cabillaud','Crevette','Saumon','Thon'],dairy:['Beurre','Brie','Camembert','Comté','Crème','Emmental','Feta','Lait','Mozzarella','Yaourt'],other:['Ail','Câpres','Coriandre','Curry','Gingembre','Moutarde','Olive','Piment']};
+const QUIZ_ITEMS=[{name:"Pizza Margherita",emoji:"🍕",desc:"Tomate, mozzarella",img:"https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400",tags:["italien"]},{name:"Sushi",emoji:"🍣",desc:"Poisson cru, riz",img:"https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=400",tags:["japonais"]},{name:"Burger",emoji:"🍔",desc:"Bœuf, cheddar",img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400",tags:["americain"]},{name:"Pad Thaï",emoji:"🍜",desc:"Nouilles, crevettes",img:"https://images.unsplash.com/photo-1559314809-0d155014e29e?w=400",tags:["thai"]},{name:"Salade César",emoji:"🥗",desc:"Romaine, parmesan",img:"https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=400",tags:["healthy"]},{name:"Tacos",emoji:"🌮",desc:"Porc, coriandre",img:"https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400",tags:["mexicain"]},{name:"Ramen",emoji:"🍜",desc:"Bouillon, œuf",img:"https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400",tags:["japonais"]},{name:"Croissant",emoji:"🥐",desc:"Pur beurre",img:"https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400",tags:["français"]},{name:"Poke bowl",emoji:"🥗",desc:"Saumon, avocat",img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400",tags:["healthy"]},{name:"Tiramisu",emoji:"🍰",desc:"Mascarpone, café",img:"https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400",tags:["dessert"]},{name:"Curry",emoji:"🍛",desc:"Poulet, épices",img:"https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=400",tags:["indien"]},{name:"Carbonara",emoji:"🍝",desc:"Guanciale, œuf",img:"https://images.unsplash.com/photo-1612874742237-6526221588e3?w=400",tags:["italien"]},{name:"Bibimbap",emoji:"🍚",desc:"Riz, légumes, bœuf",img:"https://images.unsplash.com/photo-1553163147-622ab57be1c7?w=400",tags:["coréen"]},{name:"Crêpe",emoji:"🥞",desc:"Nutella, banane",img:"https://images.unsplash.com/photo-1519676867240-f03562e64548?w=400",tags:["sucré"]},{name:"Falafel",emoji:"🧆",desc:"Pois chiches, houmous",img:"https://images.unsplash.com/photo-1593001874117-c99c800e3eb7?w=400",tags:["végé"]},{name:"Fish & Chips",emoji:"🐟",desc:"Cabillaud, frites",img:"https://images.unsplash.com/photo-1579208030886-b937da0925dc?w=400",tags:["anglais"]},{name:"Paella",emoji:"🥘",desc:"Fruits de mer, riz",img:"https://images.unsplash.com/photo-1534080564583-6be75777b70a?w=400",tags:["espagnol"]},{name:"Cheesecake",emoji:"🍰",desc:"Fromage, biscuit",img:"https://images.unsplash.com/photo-1524351199678-941a58a3df50?w=400",tags:["dessert"]},{name:"Pho",emoji:"🍲",desc:"Bouillon, nouilles",img:"https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=400",tags:["vietnamien"]},{name:"Avocado toast",emoji:"🥑",desc:"Pain, avocat, œuf",img:"https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=400",tags:["brunch"]}];
+const RECIPES=[
+    {id:1,name:"Poulet rôti aux herbes",type:"main",time:45,cost:"€€",img:"https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=400",ingredients:["1 poulet entier","Thym, romarin","50g beurre","4 gousses d'ail"],steps:["Préchauffer le four à 200°C","Badigeonner le poulet de beurre et d'herbes","Placer l'ail autour du poulet","Enfourner 45 minutes en arrosant régulièrement","Laisser reposer 10 min avant de servir"],stepTimers:[0,5,0,45,10],calories:450,ratings:[4,5,4,5,5]},
+    {id:2,name:"Salade César",type:"starter",time:15,cost:"€",img:"https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=400",ingredients:["1 laitue romaine","50g parmesan","Croûtons","Sauce César"],steps:["Laver et couper la salade","Préparer la sauce César","Faire griller les croûtons","Assembler et parsemer de parmesan"],stepTimers:[0,0,3,0],calories:280,ratings:[5,4,5]},
+    {id:3,name:"Tiramisu classique",type:"dessert",time:30,cost:"€€",img:"https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400",ingredients:["250g mascarpone","3 œufs","Café fort","Biscuits","Cacao"],steps:["Préparer un café fort et laisser refroidir","Séparer les blancs des jaunes","Monter les blancs en neige","Mélanger jaunes + sucre + mascarpone","Incorporer les blancs délicatement","Tremper les biscuits dans le café","Alterner couches de crème et biscuits","Saupoudrer de cacao et réfrigérer 4h"],stepTimers:[0,0,5,0,0,0,0,240],calories:420,ratings:[5,5,5,4,5]},
+    {id:4,name:"Pâtes carbonara",type:"main",time:20,cost:"€",img:"https://images.unsplash.com/photo-1612874742237-6526221588e3?w=400",ingredients:["400g spaghetti","150g guanciale","3 jaunes d'œufs","80g pecorino"],steps:["Cuire les pâtes al dente","Faire revenir le guanciale","Mélanger jaunes + pecorino","Égoutter les pâtes et mélanger hors du feu","Ajouter le guanciale et servir immédiatement"],stepTimers:[10,8,0,0,0],calories:520,ratings:[5,4,5,5]},
+    {id:5,name:"Buddha bowl",type:"main",time:25,cost:"€",img:"https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400",ingredients:["150g quinoa","Pois chiches","1 avocat","Légumes variés","Sauce tahini"],steps:["Cuire le quinoa","Rôtir les pois chiches avec épices","Préparer les légumes","Faire la sauce tahini","Assembler le bowl"],stepTimers:[15,15,0,0,0],calories:380,ratings:[4,5,4]},
+    {id:6,name:"Tarte aux pommes",type:"dessert",time:50,cost:"€",img:"https://images.unsplash.com/photo-1568571780765-9276ac8b75a2?w=400",ingredients:["1 pâte brisée","4 pommes","50g sucre","Cannelle","Beurre"],steps:["Préchauffer à 180°C","Étaler la pâte dans un moule","Éplucher et couper les pommes","Disposer les pommes en rosace","Saupoudrer de sucre et cannelle","Enfourner 35-40 minutes"],stepTimers:[0,0,0,0,0,40],calories:320,ratings:[5,5,4,5]}
+];
+const FRIDGE_INIT=[{id:1,name:"Tomates",icon:"🍅",qty:"500g",cat:"veggies",exp:new Date(Date.now()+5*86400000)},{id:2,name:"Poulet",icon:"🍗",qty:"400g",cat:"meat",exp:new Date(Date.now()+2*86400000)},{id:3,name:"Lait",icon:"🥛",qty:"1L",cat:"dairy",exp:new Date(Date.now()+7*86400000)},{id:4,name:"Œufs",icon:"🥚",qty:"6",cat:"other",exp:new Date(Date.now()+14*86400000)},{id:5,name:"Pommes",icon:"🍎",qty:"4",cat:"fruits",exp:new Date(Date.now()+10*86400000)}];
+const LEADERBOARD=[{rank:1,name:"MasterChef_",pts:2450,img:1},{rank:2,name:"CookingQueen",pts:2280,img:2},{rank:3,name:"FoodieKing",pts:2150,img:3},{rank:4,name:"ChefAlex",pts:1980,img:4},{rank:5,name:"TastyBites",pts:1850,img:5},{rank:6,name:"Moi",pts:1420,img:33,me:true}];
+const BADGES=[{id:0,name:"Premier plat",emoji:"🍳",desc:"Cuisine ta première recette",cat:"cooking",unlocked:false},{id:1,name:"Chef débutant",emoji:"👨‍🍳",desc:"Cuisine 5 recettes",cat:"cooking",unlocked:false},{id:2,name:"Cordon bleu",emoji:"🎖️",desc:"Cuisine 25 recettes",cat:"cooking",unlocked:false},{id:3,name:"Influenceur",emoji:"📸",desc:"Publie 10 posts",cat:"social",unlocked:false},{id:4,name:"Populaire",emoji:"❤️",desc:"50 likes",cat:"social",unlocked:false},{id:5,name:"Niveau 5",emoji:"5️⃣",desc:"Atteins niveau 5",cat:"progress",unlocked:false},{id:6,name:"Streak 7",emoji:"🔥",desc:"7 jours de streak",cat:"progress",unlocked:false},{id:7,name:"Noctambule",emoji:"🌙",desc:"Cuisine après minuit",cat:"secret",unlocked:false},{id:8,name:"Photographe",emoji:"📷",desc:"Prends 10 photos",cat:"secret",unlocked:false}];
+state.badges=BADGES;
+const POSTS=[{id:1,user:"ChefAlex",avatar:"https://i.pravatar.cc/36?img=4",img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400",caption:"Mon poke bowl 🥗 #healthy",likes:42,time:"2h"},{id:2,user:"FoodieKing",avatar:"https://i.pravatar.cc/36?img=3",img:"https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400",caption:"Pizza maison 🍕",likes:87,time:"5h"},{id:3,user:"CookingQueen",avatar:"https://i.pravatar.cc/36?img=2",img:"https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400",caption:"Dessert du dimanche 🍰",likes:156,time:"1j"}];
+state.posts=POSTS;
+const PROFILES=[{name:"L'Italien",emoji:"🍝",desc:"Saveurs méditerranéennes",tags:["Pasta","Fromage"]},{name:"L'Aventurier",emoji:"🌶️",desc:"Nouvelles saveurs",tags:["Épicé","Exotique"]},{name:"Le Healthy",emoji:"🥗",desc:"Alimentation saine",tags:["Healthy","Léger"]},{name:"Le Gourmand",emoji:"🍰",desc:"Fan de desserts",tags:["Sucré","Gourmand"]}];
+
+// HELPERS
+const $=id=>document.getElementById(id);
+const $$=sel=>document.querySelectorAll(sel);
+const show=el=>{if(el)el.classList.add('active');};
+const hide=el=>{if(el)el.classList.remove('active');};
+const showScreen=id=>{$$('.screen').forEach(s=>hide(s));show($(id));};
+const openModal=id=>{show($(id));document.body.style.overflow='hidden';};
+const closeModal=id=>{hide($(id));document.body.style.overflow='';};
+function toast(msg,type=''){const t=document.createElement('div');t.className=`toast ${type}`;t.textContent=msg;$('toasts').appendChild(t);setTimeout(()=>t.remove(),3000);}
+function showXP(amount){$('xp-amount').textContent=`+${amount} XP`;$('xp-popup').classList.add('show');setTimeout(()=>$('xp-popup').classList.remove('show'),1500);state.xp+=amount;localStorage.setItem('yumr_xp',state.xp);updateStats();checkLevelUp();}
+function checkLevelUp(){const newLevel=Math.floor(state.xp/100)+1;if(newLevel>state.level){state.level=newLevel;$('new-lv').textContent=state.level;$('levelup').classList.add('show');}}
+function updateStats(){if($('h-xp'))$('h-xp').textContent=state.xp;if($('h-streak'))$('h-streak').textContent=state.streak;if($('s-level'))$('s-level').textContent=state.level;if($('s-streak'))$('s-streak').textContent=state.streak;if($('s-recipes'))$('s-recipes').textContent=state.cooked.length;if($('s-badges'))$('s-badges').textContent=state.badges.filter(b=>b.unlocked).length;if($('p-lv'))$('p-lv').textContent=state.level;if($('xp-lv'))$('xp-lv').textContent=state.level;if($('ps-xp'))$('ps-xp').textContent=state.xp;const xpMod=state.xp%100;if($('xp-fill'))$('xp-fill').style.width=`${xpMod}%`;if($('xp-cur'))$('xp-cur').textContent=xpMod;if($('cooked-count'))$('cooked-count').textContent=state.cooked.length;}
+function getAvgRating(r){if(!r.ratings||!r.ratings.length)return 0;return(r.ratings.reduce((a,b)=>a+b,0)/r.ratings.length).toFixed(1);}
+
+// INIT
+if(state.token){state.user=JSON.parse(localStorage.getItem('yumr_user')||'{}');setTimeout(()=>initMainApp(),2000);}
+else{setTimeout(()=>showScreen('onboarding'),2000);}
+
+// ONBOARDING
+let obSlide=0;
+$('ob-next').onclick=()=>{obSlide++;if(obSlide>=3){showScreen('quiz-choice');}else{$$('.ob-slide').forEach((s,i)=>s.classList.toggle('active',i===obSlide));$$('.ob-dots .dot').forEach((d,i)=>d.classList.toggle('active',i===obSlide));}};
+$('ob-login').onclick=()=>{state.isRegister=false;showScreen('auth');updateAuthUI();};
+
+// QUIZ CHOICE
+$$('.qc-opt').forEach(o=>{o.onclick=()=>{$$('.qc-opt').forEach(x=>x.classList.remove('selected'));o.classList.add('selected');state.quizTotal=parseInt(o.dataset.count);};});
+$('qc-start').onclick=()=>startQuiz();
+$('qc-back').onclick=()=>showScreen('onboarding');
+
+// AUTH
+function updateAuthUI(){$('auth-title').textContent=state.isRegister?'Créer un compte':'Connexion';$('field-username').classList.toggle('hidden',!state.isRegister);$('auth-switch-text').textContent=state.isRegister?'Déjà un compte ?':'Pas de compte ?';$('auth-toggle').textContent=state.isRegister?'Se connecter':"S'inscrire";}
+$('auth-toggle').onclick=()=>{state.isRegister=!state.isRegister;updateAuthUI();};
+$('auth-back').onclick=()=>showScreen(state.profile?'result':'onboarding');
+$('auth-form').onsubmit=e=>{e.preventDefault();const email=$('in-email').value,pass=$('in-pass').value,username=$('in-username').value;if(!email||!pass){$('auth-error').textContent='Remplis tous les champs';return;}state.user={username:username||email.split('@')[0],email};localStorage.setItem('yumr_user',JSON.stringify(state.user));if(state.isRegister){showScreen('setup');}else{state.token='ok';localStorage.setItem('yumr_token',state.token);initMainApp();}};
+
+// SETUP
+function updateSetupSteps(){$$('.step').forEach((s,i)=>s.classList.toggle('active',i<state.setupStep));$$('.setup-page').forEach((p,i)=>p.classList.toggle('active',i===state.setupStep-1));}
+function renderDislikeSection(){let html='';Object.entries(FOODS).forEach(([key,items])=>{const icons={veggies:'🥬',fruits:'🍎',proteins:'🥩',dairy:'🧀',other:'🌶️'};const names={veggies:'Légumes',fruits:'Fruits',proteins:'Viandes/Poissons',dairy:'Produits laitiers',other:'Autres'};html+=`<div class="dislike-section"><div class="dislike-header"><h4>${icons[key]} ${names[key]}</h4><button class="select-all" data-group="${key}">Tout</button></div><div class="chip-wrap">${items.map(i=>`<label class="chip-opt"><input type="checkbox" value="${i}"><span>${i}</span></label>`).join('')}</div></div>`;});$('dislike-container').innerHTML=html;$$('.select-all').forEach(btn=>{btn.onclick=()=>{const checks=btn.closest('.dislike-section').querySelectorAll('input');const all=[...checks].every(c=>c.checked);checks.forEach(c=>c.checked=!all);};});}
+renderDislikeSection();
+$('dislike-search').oninput=e=>{const v=e.target.value.toLowerCase();$$('.chip-wrap label').forEach(l=>{l.style.display=l.textContent.toLowerCase().includes(v)?'':'none';});};
+$('setup-next-1').onclick=()=>{state.setupStep=2;updateSetupSteps();};
+$('setup-back-2').onclick=()=>{state.setupStep=1;updateSetupSteps();};
+$('setup-next-2').onclick=()=>{state.setupStep=3;updateSetupSteps();};
+$('setup-back-3').onclick=()=>{state.setupStep=2;updateSetupSteps();};
+$('setup-finish').onclick=()=>{state.token='ok';localStorage.setItem('yumr_token',state.token);initMainApp();};
+
+// QUIZ
+function startQuiz(){showScreen('quiz');state.currentQ=0;state.answers=[];state.quizStreak=0;loadQuestion();}
+function loadQuestion(){if(state.currentQ>=state.quizTotal){finishQuiz();return;}const item=QUIZ_ITEMS[state.currentQ%QUIZ_ITEMS.length];const card=$('quiz-card');card.classList.remove('left','right','hint-left','hint-right');card.style.transform='';$('card-img').style.backgroundImage=`url(${item.img})`;$('card-emoji').textContent=item.emoji;$('card-q').textContent=item.name;$('card-desc').textContent=item.desc;$('quiz-count').textContent=`${state.currentQ+1}/${state.quizTotal}`;$('quiz-prog-fill').style.width=`${(state.currentQ/state.quizTotal)*100}%`;$('q-streak').textContent=state.quizStreak;}
+function answerQuiz(liked){const card=$('quiz-card');card.classList.add(liked?'right':'left');state.answers.push({item:QUIZ_ITEMS[state.currentQ%QUIZ_ITEMS.length],liked});if(liked)state.quizStreak++;setTimeout(()=>{state.currentQ++;loadQuestion();},300);}
+let startX=0,currentX=0,isDragging=false;const card=$('quiz-card');
+card.ontouchstart=e=>{startX=e.touches[0].clientX;isDragging=true;};
+card.ontouchmove=e=>{if(!isDragging)return;currentX=e.touches[0].clientX;const diff=currentX-startX;card.style.transform=`translateX(${diff}px) rotate(${diff*0.05}deg)`;card.classList.toggle('hint-left',diff<-50);card.classList.toggle('hint-right',diff>50);};
+card.ontouchend=()=>{if(!isDragging)return;isDragging=false;const diff=currentX-startX;if(Math.abs(diff)>80){answerQuiz(diff>0);}else{card.style.transform='';card.classList.remove('hint-left','hint-right');}};
+$('btn-nope').onclick=()=>answerQuiz(false);
+$('btn-love').onclick=()=>answerQuiz(true);
+$('quiz-close').onclick=()=>{if(confirm('Quitter ?'))showScreen('onboarding');};
+function finishQuiz(){const likedTags=state.answers.filter(a=>a.liked).flatMap(a=>a.item.tags);state.profile=PROFILES[Math.floor(Math.random()*PROFILES.length)];showScreen('result');$('res-emoji').textContent=state.profile.emoji;$('res-title').textContent=state.profile.name;$('res-desc').textContent=state.profile.desc;$('res-tags').innerHTML=state.profile.tags.map(t=>`<span>${t}</span>`).join('');setTimeout(()=>showXP(100),500);}
+$('res-continue').onclick=()=>{state.isRegister=true;showScreen('auth');updateAuthUI();};
+$('res-skip').onclick=()=>{state.user={username:'Invité'};state.token='guest';localStorage.setItem('yumr_token',state.token);localStorage.setItem('yumr_user',JSON.stringify(state.user));initMainApp();};
+
+// MAIN APP
+function initMainApp(){showScreen('main');state.fridge=JSON.parse(localStorage.getItem('yumr_fridge'))||[...FRIDGE_INIT];if($('u-name'))$('u-name').textContent=state.user?.username||'Chef';if($('p-name'))$('p-name').textContent='@'+(state.user?.username||'chef').toLowerCase();updateStats();renderRecipes();renderFeed();renderLeagues();renderBadges();updateFridgeCount();}
+
+// NAV
+$$('.nav-btn[data-tab]').forEach(btn=>{btn.onclick=()=>{$$('.nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');$$('.tab').forEach(t=>t.classList.remove('active'));$(`tab-${btn.dataset.tab}`).classList.add('active');};});
+
+// MODALS
+$$('[data-modal]').forEach(btn=>{btn.onclick=()=>{openModal(btn.dataset.modal);initModal(btn.dataset.modal);};});
+$$('[data-close]').forEach(btn=>{btn.onclick=()=>closeModal(btn.dataset.close);});
+$$('.modal-bg').forEach(bg=>{bg.onclick=()=>{const modal=bg.closest('.modal');if(modal)closeModal(modal.id);};});
+$('close-lv').onclick=()=>$('levelup').classList.remove('show');
+$('h-streak-btn').onclick=()=>toast(`🔥 ${state.streak} jour(s) de streak !`);
+$('h-xp-btn').onclick=()=>toast(`⭐ ${state.xp} XP - Niveau ${state.level}`);
+
+function initModal(id){
+    if(id==='m-fridge')renderFridge();
+    if(id==='m-shopping')renderShopping();
+    if(id==='m-badges')renderBadgesModal();
+    if(id==='m-menu')renderMenuOptions();
+    if(id==='m-cooked')renderCooked();
+    if(id==='m-premium')renderPremium();
+    if(id==='m-referral')renderReferral();
+    if(id==='m-challenges')renderChallenges();
+}
+
+// FRIDGE
+function updateFridgeCount(){$('fridge-count').textContent=state.fridge.length;}
+function renderFridge(){const cats=[{id:'all',n:'Tout'},{id:'fruits',n:'🍎'},{id:'veggies',n:'🥬'},{id:'meat',n:'🥩'},{id:'dairy',n:'🧀'},{id:'other',n:'📦'}];$('fridge-content').innerHTML=`<div class="fridge-acts"><button class="fridge-act"><span>📸</span><span>Snap Frigo</span><span class="ai-tag">IA</span></button><button class="fridge-act"><span>🧾</span><span>Scanner ticket</span><span class="ai-tag">IA</span></button></div><div class="fridge-cats">${cats.map((c,i)=>`<button class="fcat ${i===0?'active':''}" data-cat="${c.id}">${c.n}</button>`).join('')}</div><div class="fridge-list" id="fridge-items"></div>`;renderFridgeItems('all');$$('.fcat').forEach(c=>{c.onclick=()=>{$$('.fcat').forEach(x=>x.classList.remove('active'));c.classList.add('active');renderFridgeItems(c.dataset.cat);};});}
+function renderFridgeItems(cat){const items=cat==='all'?state.fridge:state.fridge.filter(i=>i.cat===cat);$('fridge-items').innerHTML=items.length?items.map(i=>{const days=Math.ceil((new Date(i.exp)-Date.now())/86400000);const cls=days<=2?'bad':days<=5?'warn':'ok';return`<div class="fridge-item"><span class="fridge-item-icon">${i.icon}</span><div class="fridge-item-info"><div class="fridge-item-name">${i.name}</div><div class="fridge-item-qty">${i.qty}</div></div><span class="fridge-item-exp ${cls}">${days}j</span><button class="fridge-item-del" onclick="removeFridgeItem(${i.id})">🗑️</button></div>`;}).join(''):'<p style="text-align:center;color:var(--text3);padding:20px">Aucun aliment</p>';}
+window.removeFridgeItem=id=>{state.fridge=state.fridge.filter(i=>i.id!==id);localStorage.setItem('yumr_fridge',JSON.stringify(state.fridge));renderFridgeItems('all');updateFridgeCount();};
+$('btn-add-item').onclick=()=>{openModal('m-add-item');$('add-item-form').innerHTML=`<input type="text" id="new-name" class="input-field" placeholder="Nom" style="margin-bottom:10px"><input type="text" id="new-qty" class="input-field" placeholder="Quantité" style="margin-bottom:10px"><select id="new-cat" class="input-field" style="margin-bottom:10px"><option value="fruits">🍎 Fruits</option><option value="veggies">🥬 Légumes</option><option value="meat">🥩 Viandes</option><option value="dairy">🧀 Laitiers</option><option value="other">📦 Autres</option></select><button class="btn btn-primary btn-full" onclick="addFridgeItem()">Ajouter</button>`;};
+window.addFridgeItem=()=>{const name=$('new-name').value;if(!name)return;const icons={fruits:'🍎',veggies:'🥬',meat:'🥩',dairy:'🧀',other:'📦'};const cat=$('new-cat').value;state.fridge.push({id:Date.now(),name,icon:icons[cat],qty:$('new-qty').value||'1',cat,exp:new Date(Date.now()+7*86400000)});localStorage.setItem('yumr_fridge',JSON.stringify(state.fridge));closeModal('m-add-item');renderFridge();updateFridgeCount();toast('Ajouté !','success');};
+
+// SHOPPING
+function renderShopping(){$('shop-content').innerHTML=`<div style="display:flex;gap:8px;margin-bottom:12px"><input type="text" id="new-shop" class="input-field" placeholder="Ajouter..."><button class="btn btn-primary" onclick="addShopItem()">+</button></div><div id="shop-list">${state.shopping.map((s,i)=>`<div class="fridge-item"><input type="checkbox" ${s.done?'checked':''} onchange="toggleShop(${i})" style="width:18px;height:18px"><span style="flex:1;${s.done?'text-decoration:line-through;opacity:.5':''}">${s.name}</span><button class="fridge-item-del" onclick="removeShop(${i})">🗑️</button></div>`).join('')||'<p style="text-align:center;color:var(--text3)">Liste vide</p>'}</div>`;}
+window.addShopItem=()=>{const v=$('new-shop').value;if(!v)return;state.shopping.push({name:v,done:false});localStorage.setItem('yumr_shop',JSON.stringify(state.shopping));renderShopping();};
+window.toggleShop=i=>{state.shopping[i].done=!state.shopping[i].done;localStorage.setItem('yumr_shop',JSON.stringify(state.shopping));renderShopping();};
+window.removeShop=i=>{state.shopping.splice(i,1);localStorage.setItem('yumr_shop',JSON.stringify(state.shopping));renderShopping();};
+
+// COOKED
+function renderCooked(){$('cooked-content').innerHTML=state.cooked.length?state.cooked.map(c=>`<div class="cooked-item"><div class="cooked-img" style="background-image:url(${c.img})"></div><div class="cooked-info"><h4>${c.name}</h4><p>${c.date}</p><div class="cooked-stars">${'★'.repeat(c.rating)}${'☆'.repeat(5-c.rating)}</div></div></div>`).join(''):'<p style="text-align:center;color:var(--text3);padding:20px">Aucune recette cuisinée</p>';}
+
+// RECIPES
+function renderRecipes(filter='all',search=''){let list=RECIPES;if(filter!=='all')list=list.filter(r=>r.type===filter);if(search)list=list.filter(r=>r.name.toLowerCase().includes(search.toLowerCase()));$('recipes').innerHTML=list.map(r=>{const avg=getAvgRating(r);return`<div class="recipe-card" onclick="openRecipe(${r.id})"><div class="recipe-img" style="background-image:url(${r.img})"><button class="recipe-save" onclick="event.stopPropagation();toggleFav(${r.id})">${state.favorites.includes(r.id)?'❤️':'🤍'}</button></div><div class="recipe-body"><p class="recipe-name">${r.name}</p><p class="recipe-meta"><span>⏱️ ${r.time}min</span>${avg>0?`<span class="recipe-rating">★ ${avg}</span>`:''}</p></div></div>`;}).join('');}
+window.toggleFav=id=>{if(state.favorites.includes(id)){state.favorites=state.favorites.filter(f=>f!==id);}else{state.favorites.push(id);}localStorage.setItem('yumr_fav',JSON.stringify(state.favorites));renderRecipes();};
+$$('.filter').forEach(f=>{f.onclick=()=>{$$('.filter').forEach(x=>x.classList.remove('active'));f.classList.add('active');renderRecipes(f.dataset.cat,$('search-in').value);};});
+$('search-in').oninput=e=>renderRecipes(document.querySelector('.filter.active')?.dataset.cat||'all',e.target.value);
+
+window.openRecipe=id=>{
+    const r=RECIPES.find(x=>x.id===id);if(!r)return;
+    const avg=getAvgRating(r);
+    const modal=document.createElement('div');modal.className='modal active';modal.id='m-recipe-view';modal.innerHTML=`<div class="modal-bg"></div><div class="modal-sheet" style="max-height:90vh"><div class="modal-handle"></div><div style="height:150px;background-size:cover;background-position:center;border-radius:var(--r);margin-bottom:12px;background-image:url(${r.img})"></div><h2>${r.name}</h2><div style="display:flex;gap:12px;margin:10px 0;font-size:12px;color:var(--text2)"><span>⏱️ ${r.time} min</span><span>💰 ${r.cost}</span><span>🔥 ${r.calories} kcal</span>${avg>0?`<span style="color:var(--gold)">★ ${avg}</span>`:''}</div><h4 style="margin:12px 0 8px">Ingrédients</h4><ul style="font-size:13px;padding-left:16px;color:var(--text2)">${r.ingredients.map(i=>`<li>${i}</li>`).join('')}</ul><button class="btn btn-primary btn-full" style="margin-top:16px" onclick="startCooking(${r.id})">🍳 Cuisiner (+50 XP)</button></div>`;
+    modal.querySelector('.modal-bg').onclick=()=>modal.remove();
+    document.body.appendChild(modal);
+};
+
+// COOKING MODE
+window.startCooking=id=>{
+    const r=RECIPES.find(x=>x.id===id);if(!r)return;
+    document.querySelector('#m-recipe-view')?.remove();
+    state.cookingRecipe=r;state.cookingStep=0;state.timerSeconds=0;state.timerRunning=false;
+    $('cook-mode').classList.add('active');
+    $('cook-title').textContent=r.name;
+    renderCookStep();
+};
+function renderCookStep(){
+    const r=state.cookingRecipe;
+    const step=state.cookingStep;
+    $('cook-progress').innerHTML=r.steps.map((_,i)=>`<div class="cook-step-dot ${i<step?'done':i===step?'active':''}"></div>`).join('');
+    const timer=r.stepTimers[step]||0;
+    state.timerSeconds=timer*60;
+    $('cook-content').innerHTML=`<div class="cook-step-num">Étape ${step+1}/${r.steps.length}</div><div class="cook-step-text">${r.steps[step]}</div>${timer>0?`<div class="cook-timer"><div class="cook-timer-display" id="timer-display">${formatTime(state.timerSeconds)}</div><div class="cook-timer-label">Timer: ${timer} min</div><div class="cook-timer-btns"><button class="cook-timer-btn play" id="timer-play">▶</button><button class="cook-timer-btn reset" id="timer-reset">↺</button></div></div>`:''}`;
+    if(timer>0){
+        $('timer-play').onclick=toggleTimer;
+        $('timer-reset').onclick=()=>{clearInterval(state.timerInterval);state.timerRunning=false;state.timerSeconds=timer*60;$('timer-display').textContent=formatTime(state.timerSeconds);$('timer-play').textContent='▶';$('timer-play').classList.remove('pause');$('timer-play').classList.add('play');};
+    }
+    $('cook-prev').style.visibility=step===0?'hidden':'visible';
+    $('cook-next').textContent=step===r.steps.length-1?'Terminer ✓':'Suivant →';
+}
+function formatTime(s){const m=Math.floor(s/60);const sec=s%60;return`${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;}
+function toggleTimer(){
+    if(state.timerRunning){clearInterval(state.timerInterval);state.timerRunning=false;$('timer-play').textContent='▶';$('timer-play').classList.remove('pause');$('timer-play').classList.add('play');}
+    else{state.timerRunning=true;$('timer-play').textContent='⏸';$('timer-play').classList.remove('play');$('timer-play').classList.add('pause');state.timerInterval=setInterval(()=>{state.timerSeconds--;$('timer-display').textContent=formatTime(state.timerSeconds);if(state.timerSeconds<=0){clearInterval(state.timerInterval);state.timerRunning=false;toast('⏰ Timer terminé !');$('timer-play').textContent='▶';}},1000);}
+}
+$('cook-prev').onclick=()=>{if(state.cookingStep>0){state.cookingStep--;renderCookStep();}};
+$('cook-next').onclick=()=>{
+    if(state.cookingStep<state.cookingRecipe.steps.length-1){
+        state.cookingStep++;
+        if(Math.random()>0.5)showPhotoPopup();
+        else renderCookStep();
+    }else{finishCooking();}
+};
+function showPhotoPopup(){$('photo-popup').classList.add('active');}
+$('photo-yes').onclick=()=>{$('photo-popup').classList.remove('active');showXP(10);toast('📸 Photo simulée !','success');renderCookStep();};
+$('photo-no').onclick=()=>{$('photo-popup').classList.remove('active');renderCookStep();};
+function finishCooking(){
+    $('cook-mode').classList.remove('active');
+    clearInterval(state.timerInterval);
+    openModal('m-rating');
+    $('rating-content').innerHTML=`<div class="rating-modal"><h3>🎉 Bravo !</h3><p>Comment était "${state.cookingRecipe.name}" ?</p><div class="rating-stars" id="rating-stars">${[1,2,3,4,5].map(i=>`<span class="rating-star" data-val="${i}">★</span>`).join('')}</div><button class="btn btn-primary btn-full" id="submit-rating">Valider</button></div>`;
+    let selectedRating=5;
+    $$('#rating-stars .rating-star').forEach(s=>{s.onclick=()=>{selectedRating=parseInt(s.dataset.val);$$('#rating-stars .rating-star').forEach((x,i)=>x.classList.toggle('active',i<selectedRating));};});
+    $$('#rating-stars .rating-star').forEach((x,i)=>x.classList.toggle('active',i<5));
+    $('submit-rating').onclick=()=>{
+        state.cooked.push({id:state.cookingRecipe.id,name:state.cookingRecipe.name,img:state.cookingRecipe.img,rating:selectedRating,date:new Date().toLocaleDateString('fr-FR')});
+        localStorage.setItem('yumr_cooked',JSON.stringify(state.cooked));
+        state.cookingRecipe.ratings.push(selectedRating);
+        state.badges[0].unlocked=true;
+        closeModal('m-rating');
+        showXP(50);
+        toast('Recette ajoutée !','success');
+        updateStats();
+        renderRecipes();
+    };
+}
+$('cook-exit').onclick=$('cook-home').onclick=()=>{if(confirm('Quitter la recette ?')){$('cook-mode').classList.remove('active');clearInterval(state.timerInterval);}};
+
+// MENU
+$('btn-gen-menu').onclick=()=>{openModal('m-menu');renderMenuOptions();};
+function renderMenuOptions(){
+    $('menu-content').innerHTML=`<div class="menu-opt"><div class="menu-opt-label"><span>🍽️</span><strong>Repas</strong></div><div class="menu-chips"><button class="menu-chip active" data-v="dejeuner">Déjeuner</button><button class="menu-chip" data-v="diner">Dîner</button></div></div><div class="menu-opt"><div class="menu-opt-label"><span>🥗</span><strong>Entrée</strong></div><div class="menu-chips"><button class="menu-chip active">Oui</button><button class="menu-chip">Non</button></div></div><div class="menu-opt"><div class="menu-opt-label"><span>🍝</span><strong>Plat</strong></div><div class="menu-chips"><button class="menu-chip active">Oui</button><button class="menu-chip">Non</button></div></div><div class="menu-opt"><div class="menu-opt-label"><span>🍰</span><strong>Dessert</strong></div><div class="menu-chips"><button class="menu-chip">Oui</button><button class="menu-chip active">Non</button></div></div><div class="menu-opt"><div class="menu-opt-label"><span>🍷</span><strong>Vin</strong></div><div class="menu-chips"><button class="menu-chip">Oui</button><button class="menu-chip active">Non</button></div></div><div class="menu-opt"><div class="menu-opt-label"><span>💰</span><strong>Budget</strong></div><div class="menu-chips"><button class="menu-chip">€</button><button class="menu-chip active">€€</button><button class="menu-chip">€€€</button></div></div><div class="menu-opt"><div class="menu-opt-label"><span>⏱️</span><strong>Temps</strong></div><div class="menu-chips"><button class="menu-chip">15min</button><button class="menu-chip active">30min</button><button class="menu-chip">1h+</button></div></div><button class="btn btn-primary btn-full" style="margin-top:16px" id="btn-menu-go">Générer le menu 🚀</button>`;
+    $$('.menu-chip').forEach(c=>{c.onclick=()=>{c.parentElement.querySelectorAll('.menu-chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');};});
+    $('btn-menu-go').onclick=generateMenu;
+}
+function generateMenu(){
+    const starter=RECIPES.find(r=>r.type==='starter');
+    const main=RECIPES[Math.floor(Math.random()*RECIPES.filter(r=>r.type==='main').length)];
+    const dessert=RECIPES.find(r=>r.type==='dessert');
+    state.todayMenu={starter,main,dessert};
+    state.menuAlternatives={main:RECIPES.filter(r=>r.type==='main').slice(0,4)};
+    $('menu-content').innerHTML=`<div style="text-align:center;margin-bottom:16px"><span style="font-size:40px">🎉</span><h3>Menu prêt !</h3></div>${[{l:'Entrée',r:starter},{l:'Plat',r:main},{l:'Dessert',r:dessert}].map(({l,r})=>`<div class="daily-item" onclick="openRecipe(${r.id})"><div class="daily-item-img" style="background-image:url(${r.img})"></div><div class="daily-item-info"><span class="daily-item-type">${l}</span><span class="daily-item-name">${r.name}</span></div></div>`).join('')}<button class="btn btn-glass btn-full" style="margin-top:12px" id="btn-alts">🔄 Voir 4 alternatives</button><button class="btn btn-primary btn-full" style="margin-top:8px" id="btn-use-menu">Utiliser ce menu</button>`;
+    $('btn-alts').onclick=showAlternatives;
+    $('btn-use-menu').onclick=()=>{closeModal('m-menu');renderDailyPreview();toast('Menu défini !','success');};
+}
+function showAlternatives(){
+    const alts=state.menuAlternatives.main;
+    $('menu-content').innerHTML=`<h3 style="margin-bottom:12px">Choisis ton plat</h3><div class="alt-grid">${alts.map(r=>`<div class="alt-card ${state.todayMenu.main.id===r.id?'selected':''}" onclick="selectAlt(${r.id})"><div class="alt-img" style="background-image:url(${r.img})"></div><div class="alt-info"><h4>${r.name}</h4><p>⏱️ ${r.time}min</p></div></div>`).join('')}</div><button class="btn btn-primary btn-full" style="margin-top:16px" onclick="confirmAlt()">Valider</button>`;
+}
+window.selectAlt=id=>{state.todayMenu.main=RECIPES.find(r=>r.id===id);$$('.alt-card').forEach(c=>c.classList.remove('selected'));document.querySelector(`.alt-card[onclick="selectAlt(${id})"]`)?.classList.add('selected');};
+window.confirmAlt=()=>{closeModal('m-menu');renderDailyPreview();toast('Menu mis à jour !','success');};
+function renderDailyPreview(){if(!state.todayMenu)return;$('daily-preview').innerHTML=[{l:'Entrée',r:state.todayMenu.starter},{l:'Plat',r:state.todayMenu.main},{l:'Dessert',r:state.todayMenu.dessert}].map(({l,r})=>`<div class="daily-item"><div class="daily-item-img" style="background-image:url(${r.img})"></div><div class="daily-item-info"><span class="daily-item-type">${l}</span><span class="daily-item-name">${r.name}</span></div><button class="btn btn-sm btn-primary" onclick="startCooking(${r.id})">Cuisiner</button></div>`).join('');}
+
+// LEAGUES
+function renderLeagues(){$('league-content').innerHTML=LEADERBOARD.map((p,i)=>`<div class="lb-item ${p.me?'me':''}"><span class="lb-rank ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i<3?['🥇','🥈','🥉'][i]:p.rank}</span><div class="lb-av" style="background-image:url(https://i.pravatar.cc/36?img=${p.img})"></div><span class="lb-name">${p.name}</span><span class="lb-pts">${p.pts} pts</span></div>`).join('');}
+$$('.ltab').forEach(t=>{t.onclick=()=>{$$('.ltab').forEach(x=>x.classList.remove('active'));t.classList.add('active');if(t.dataset.lb==='all'){$('league-content').innerHTML=[{e:'💎',n:'Master',s:'Top 1%'},{e:'💠',n:'Diamant',s:'Top 5%'},{e:'🏅',n:'Platine',s:'Top 15%'},{e:'🥇',n:'Or',s:'Top 30%'},{e:'🥈',n:'Argent',s:'Top 50%'},{e:'🥉',n:'Bronze',s:'Actuel',cur:true}].map(t=>`<div class="tier ${t.cur?'current':''}"><span>${t.e}</span><span>${t.n}</span><small>${t.s}</small></div>`).join('');}else{renderLeagues();}};});
+
+// FEED
+function renderFeed(){$('feed').innerHTML=state.posts.map(p=>`<div class="feed-post"><div class="feed-header"><div class="feed-av" style="background-image:url(${p.avatar})"></div><div class="feed-user"><strong>${p.user}</strong><span>${p.time}</span></div></div><div class="feed-img" style="background-image:url(${p.img})"></div><div class="feed-content"><div class="feed-actions"><button class="${p.liked?'liked':''}" onclick="likePost(${p.id})">❤️ ${p.likes}</button><button>💬 0</button></div><p><strong>${p.user}</strong> ${p.caption}</p></div></div>`).join('');}
+window.likePost=id=>{const p=state.posts.find(x=>x.id===id);if(p){p.liked=!p.liked;p.likes+=(p.liked?1:-1);renderFeed();if(p.liked)showXP(2);}};
+
+// BADGES
+function renderBadges(){const unlocked=state.badges.filter(b=>b.unlocked);$('badges-scroll').innerHTML=unlocked.length?unlocked.slice(0,5).map(b=>`<div class="badge-item"><div class="badge-icon">${b.emoji}</div><span>${b.name}</span></div>`).join(''):'<p style="color:var(--text3);font-size:11px">Aucun badge</p>';$('badge-count').textContent=unlocked.length;$('featured-badges').innerHTML=[0,1,2].map(i=>{const b=state.badges[state.featuredBadges[i]];return`<div class="featured-badge">${b?.unlocked?b.emoji:'🔒'}</div>`;}).join('');}
+function renderBadgesModal(){$('badges-content').innerHTML=`<p class="badges-hint">Appuie sur un badge pour le mettre en avant</p><div class="badges-tabs"><button class="btab active" data-cat="all">Tous</button><button class="btab" data-cat="cooking">🍳</button><button class="btab" data-cat="social">🌍</button><button class="btab" data-cat="progress">📈</button><button class="btab" data-cat="secret">🔮</button></div><div class="badges-grid" id="badges-grid-modal"></div>`;renderBadgeGrid('all');$$('.btab').forEach(t=>{t.onclick=()=>{$$('.btab').forEach(x=>x.classList.remove('active'));t.classList.add('active');renderBadgeGrid(t.dataset.cat);};});}
+function renderBadgeGrid(cat){const list=cat==='all'?state.badges:state.badges.filter(b=>b.cat===cat);$('badges-grid-modal').innerHTML=list.map(b=>`<div class="badge-card ${b.unlocked?'':'locked'} ${state.featuredBadges.includes(b.id)?'selected':''}" onclick="selectBadge(${b.id})"><div class="badge-card-icon">${b.unlocked?b.emoji:'🔒'}</div><p class="badge-card-name">${b.unlocked?b.name:'???'}</p><p class="badge-card-desc">${b.desc}</p></div>`).join('');}
+window.selectBadge=id=>{if(!state.badges.find(b=>b.id===id)?.unlocked){toast('Badge non débloqué');return;}if(state.featuredBadges.includes(id)){state.featuredBadges=state.featuredBadges.filter(x=>x!==id);}else if(state.featuredBadges.length<3){state.featuredBadges.push(id);}else{state.featuredBadges.shift();state.featuredBadges.push(id);}renderBadgeGrid(document.querySelector('.btab.active')?.dataset.cat||'all');renderBadges();};
+
+// PREMIUM
+function renderPremium(){$('premium-content').innerHTML=`<div style="text-align:center;margin-bottom:20px"><span style="font-size:48px">👑</span><h3 style="margin:12px 0;color:var(--gold)">Yumr PRO</h3></div>${[{e:'🤖',t:'Coach IA'},{e:'📆',t:'Meal Prep'},{e:'📊',t:'Stats avancées'},{e:'🚫',t:'Sans pub'}].map(f=>`<div style="display:flex;gap:12px;padding:12px;background:var(--glass);border-radius:var(--r);margin-bottom:8px"><span style="font-size:24px">${f.e}</span><span style="font-size:14px">${f.t}</span></div>`).join('')}<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0"><div style="padding:16px;text-align:center;background:var(--glass);border:2px solid var(--border);border-radius:var(--r)"><small style="color:var(--text2)">Mensuel</small><strong style="display:block;font-size:22px;margin:4px 0">4,99€</strong></div><div style="padding:16px;text-align:center;background:rgba(255,209,102,0.1);border:2px solid var(--gold);border-radius:var(--r)"><small style="color:var(--gold)">Annuel -40%</small><strong style="display:block;font-size:22px;margin:4px 0">2,99€</strong></div></div><button class="btn btn-primary btn-full">Essayer 7 jours gratuits</button>`;}
+
+// REFERRAL
+function renderReferral(){const code='YUMR'+Math.random().toString(36).substring(2,6).toUpperCase();$('referral-content').innerHTML=`<div style="text-align:center"><span style="font-size:48px">🎁</span><h3 style="margin:12px 0">Parraine un ami</h3><p style="color:var(--text2);margin-bottom:20px">Gagne 100 XP par ami !</p><div style="background:var(--glass);padding:16px;border-radius:var(--r);margin-bottom:16px"><p style="font-size:11px;color:var(--text3)">Ton code</p><p style="font-size:24px;font-weight:800;color:var(--accent);letter-spacing:2px">${code}</p></div><button class="btn btn-primary btn-full" onclick="navigator.clipboard.writeText('${code}');toast('Copié !','success')">📋 Copier</button></div>`;}
+
+// CHALLENGES
+function renderChallenges(){$('challenges-content').innerHTML=`<div class="challenge glass-card" style="margin-bottom:12px"><div class="ch-head"><span class="ch-tag">🔥 Aujourd'hui</span><span class="ch-timer">23h</span></div><h3>Plat végétarien</h3><p>+75 XP</p></div>${[{t:'5 recettes/semaine',p:2,xp:150},{t:'Publie 3 posts',p:1,xp:100}].map(c=>`<div class="glass-card" style="padding:12px;margin-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:13px">${c.t}</span><span style="font-size:11px;color:var(--accent)">${c.p}/5</span></div><div style="height:4px;background:rgba(255,255,255,0.1);border-radius:2px"><div style="height:100%;width:${c.p*20}%;background:var(--accent);border-radius:2px"></div></div></div>`).join('')}`;}
+
+// LOGOUT
+$('btn-logout').onclick=()=>{if(confirm('Déconnexion ?')){localStorage.removeItem('yumr_token');location.reload();}};
+
+// GLOBAL
+window.openModal=openModal;window.closeModal=closeModal;window.toast=toast;
+});
+</script>
 </body>
 </html>
