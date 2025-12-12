@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -23,519 +22,516 @@
             </div>
         </div>
 
-```
-    <!-- ONBOARDING -->
-    <div id="onboarding" class="screen">
-        <div class="ob-slides" id="ob-slides">
-            <div class="ob-slide active">
-                <div class="ob-visual"><div class="ob-card-demo"><div class="ob-swipe">💚</div></div></div>
-                <h1>Swipe tes préférences</h1>
-                <p>Révèle ton profil culinaire unique</p>
+        <!-- ONBOARDING -->
+        <div id="onboarding" class="screen">
+            <div class="ob-slides" id="ob-slides">
+                <div class="ob-slide active">
+                    <div class="ob-visual"><div class="ob-card-demo"><div class="ob-swipe">💚</div></div></div>
+                    <h1>Swipe tes préférences</h1>
+                    <p>Révèle ton profil culinaire unique</p>
+                </div>
+                <div class="ob-slide">
+                    <div class="ob-visual"><div class="ob-icons">🍕🥗🍣🍔🥘🍰</div></div>
+                    <h1>Menus personnalisés</h1>
+                    <p>Adaptés à tes goûts et ton frigo</p>
+                </div>
+                <div class="ob-slide">
+                    <div class="ob-visual"><div class="ob-trophy">🏆</div><div class="ob-xp">+50 XP</div></div>
+                    <h1>Deviens le meilleur</h1>
+                    <p>Ligues, badges et défis t'attendent</p>
+                </div>
             </div>
-            <div class="ob-slide">
-                <div class="ob-visual"><div class="ob-icons">🍕🥗🍣🍔🥘🍰</div></div>
-                <h1>Menus personnalisés</h1>
-                <p>Adaptés à tes goûts et ton frigo</p>
-            </div>
-            <div class="ob-slide">
-                <div class="ob-visual"><div class="ob-trophy">🏆</div><div class="ob-xp">+50 XP</div></div>
-                <h1>Deviens le meilleur</h1>
-                <p>Ligues, badges et défis t'attendent</p>
+            <div class="ob-dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
+            <div class="ob-actions">
+                <button class="btn btn-primary btn-glow" id="ob-next">Continuer</button>
+                <button class="btn btn-link" id="ob-login">J'ai déjà un compte</button>
             </div>
         </div>
-        <div class="ob-dots"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
-        <div class="ob-actions">
-            <button class="btn btn-primary btn-glow" id="ob-next">Continuer</button>
-            <button class="btn btn-link" id="ob-login">J'ai déjà un compte</button>
-        </div>
-    </div>
 
-    <!-- AUTH -->
-    <div id="auth" class="screen">
-        <button class="back-btn" id="auth-back">←</button>
-        <div class="auth-box">
-            <div class="auth-logo">🍽️</div>
-            <h1 id="auth-title">Connexion</h1>
-            <form id="auth-form">
-                <div class="field" id="field-username" style="display:none">
-                    <input type="text" id="auth-username" placeholder="Pseudo">
-                </div>
-                <div class="field"><input type="email" id="auth-email" placeholder="Email" required></div>
-                <div class="field"><input type="password" id="auth-password" placeholder="Mot de passe" required></div>
-                <div class="auth-error" id="auth-error"></div>
-                <button type="submit" class="btn btn-primary btn-full btn-glow" id="auth-submit">Se connecter</button>
-            </form>
-            <p class="auth-switch" id="auth-switch">Pas de compte ? <button id="auth-toggle">Créer</button></p>
-        </div>
-    </div>
-
-    <!-- SETUP -->
-    <div id="setup" class="screen">
-        <button class="back-btn" id="setup-back">←</button>
-        <div class="setup-box">
-            <div class="setup-steps"><span class="step active">1</span><span class="step-line"></span><span class="step">2</span><span class="step-line"></span><span class="step">3</span></div>
-            
-            <div class="setup-page active" data-step="1">
-                <span class="step-badge">1/3</span>
-                <h1>Durée du quiz</h1>
-                <div class="duration-grid">
-                    <label class="dur-opt"><input type="radio" name="dur" value="10"><div class="dur-card glass">⚡<strong>10</strong><span>Express</span><small>~2min</small></div></label>
-                    <label class="dur-opt"><input type="radio" name="dur" value="30" checked><div class="dur-card glass rec">⭐<strong>30</strong><span>Classique</span><small>~5min</small></div></label>
-                    <label class="dur-opt"><input type="radio" name="dur" value="50"><div class="dur-card glass">🏆<strong>50</strong><span>Complet</span><small>~10min</small></div></label>
-                </div>
-            </div>
-            
-            <div class="setup-page" data-step="2">
-                <span class="step-badge">2/3</span>
-                <h1>Alimentation</h1>
-                <h3>Régime</h3>
-                <div class="diet-grid">
-                    <label class="diet-opt"><input type="radio" name="diet" value="omnivore" checked><div class="diet-card glass">🥩<span>Omnivore</span></div></label>
-                    <label class="diet-opt"><input type="radio" name="diet" value="flexitarian"><div class="diet-card glass">🥗<span>Flexi</span></div></label>
-                    <label class="diet-opt"><input type="radio" name="diet" value="vegetarian"><div class="diet-card glass">🥬<span>Végé</span></div></label>
-                    <label class="diet-opt"><input type="radio" name="diet" value="vegan"><div class="diet-card glass">🌱<span>Végan</span></div></label>
-                </div>
-                <h3>Allergies</h3>
-                <div class="allergy-wrap">
-                    <label class="allergy"><input type="checkbox" value="gluten"><span>🌾 Gluten</span></label>
-                    <label class="allergy"><input type="checkbox" value="lactose"><span>🥛 Lactose</span></label>
-                    <label class="allergy"><input type="checkbox" value="nuts"><span>🥜 Arachides</span></label>
-                    <label class="allergy"><input type="checkbox" value="shellfish"><span>🦐 Crustacés</span></label>
-                    <label class="allergy"><input type="checkbox" value="eggs"><span>🥚 Œufs</span></label>
-                    <label class="allergy"><input type="checkbox" value="soy"><span>🫘 Soja</span></label>
-                </div>
-            </div>
-            
-            <div class="setup-page" data-step="3">
-                <span class="step-badge">3/3</span>
-                <h1>Objectifs</h1>
-                <div class="goal-list">
-                    <label class="goal-opt"><input type="radio" name="goal" value="none" checked><div class="goal-card glass">😋<div><strong>Juste me régaler</strong></div></div></label>
-                    <label class="goal-opt"><input type="radio" name="goal" value="lose"><div class="goal-card glass">🏃<div><strong>Perte de poids</strong></div></div></label>
-                    <label class="goal-opt"><input type="radio" name="goal" value="gain"><div class="goal-card glass">💪<div><strong>Prise de masse</strong></div></div></label>
-                    <label class="goal-opt"><input type="radio" name="goal" value="cut"><div class="goal-card glass">🔥<div><strong>Sèche</strong></div></div></label>
-                </div>
-                <h3>Conditions <small>(optionnel)</small></h3>
-                <div class="cond-wrap">
-                    <label class="cond"><input type="checkbox" value="diabetes"><span>🩺 Diabète</span></label>
-                    <label class="cond"><input type="checkbox" value="cholesterol"><span>❤️ Cholestérol</span></label>
-                    <label class="cond"><input type="checkbox" value="hypertension"><span>💓 Hypertension</span></label>
-                </div>
-            </div>
-            
-            <div class="setup-actions">
-                <button class="btn btn-ghost" id="setup-prev" style="visibility:hidden">Retour</button>
-                <button class="btn btn-primary btn-glow" id="setup-next">Continuer</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- QUIZ -->
-    <div id="quiz" class="screen">
-        <div class="quiz-header">
-            <button class="quiz-close" id="quiz-close">✕</button>
-            <div class="quiz-prog"><div class="quiz-prog-fill" id="quiz-prog"></div></div>
-            <span class="quiz-count" id="quiz-count">1/30</span>
-            <div class="quiz-streak glass">🔥<span id="quiz-streak">0</span></div>
-        </div>
-        <div class="quiz-area">
-            <div class="quiz-card" id="quiz-card">
-                <div class="card-img" id="card-img"></div>
-                <div class="card-body">
-                    <span class="card-emoji" id="card-emoji">🍕</span>
-                    <h2 id="card-q">Tu aimes les pizzas ?</h2>
-                </div>
-                <div class="overlay nope">NOPE</div>
-                <div class="overlay love">LOVE</div>
-            </div>
-        </div>
-        <div class="quiz-btns">
-            <button class="qbtn nope" id="q-nope">👎</button>
-            <button class="qbtn love" id="q-love">💚</button>
-        </div>
-        <p class="quiz-hint">Swipe ou appuie</p>
-    </div>
-
-    <!-- RESULT -->
-    <div id="result" class="screen">
-        <div class="result-confetti" id="confetti"></div>
-        <div class="result-box">
-            <span class="result-badge">🎉 Félicitations !</span>
-            <div class="result-profile glass">
-                <div class="profile-glow"></div>
-                <span class="profile-emoji" id="res-emoji">🍳</span>
-                <h1 id="res-name">Le Gourmet</h1>
-                <p id="res-desc">Tu apprécies la bonne cuisine.</p>
-                <div class="profile-tags" id="res-tags"></div>
-            </div>
-            <div class="result-xp glass">✨ +50 XP</div>
-            <div class="result-features">
-                <h3>Crée ton compte pour :</h3>
-                <ul>
-                    <li>📅 Ton menu du jour</li>
-                    <li>🧊 Ton frigo intelligent</li>
-                    <li>🛒 Liste de courses auto</li>
-                    <li>🏆 Ligues et classements</li>
-                    <li>🤖 Coach nutrition IA</li>
-                </ul>
-            </div>
-            <button class="btn btn-primary btn-full btn-glow" id="res-signup">Créer mon compte</button>
-            <button class="btn btn-ghost btn-full" id="res-skip">Continuer en invité</button>
-        </div>
-    </div>
-
-    <!-- MAIN -->
-    <div id="main" class="screen">
-        <header class="header glass-blur">
-            <div class="h-left">🍽️ <span>Yumr</span></div>
-            <div class="h-right">
-                <div class="h-streak glass">🔥<span id="h-streak">0</span></div>
-                <div class="h-xp glass">✨<span id="h-xp">0</span></div>
-                <button class="h-notif" id="h-notif">🔔<span class="notif-dot"></span></button>
-            </div>
-        </header>
-
-        <main class="main-scroll">
-            <!-- HOME -->
-            <section class="tab active" id="tab-home">
-                <div class="greeting"><h1>Salut <span id="u-name">Chef</span> ! 👋</h1><p>Prêt à cuisiner ?</p></div>
-                
-                <div class="daily glass" id="daily-card">
-                    <div class="daily-head">
-                        <div class="daily-info">🍽️<div><h3>Menu du jour</h3><p id="daily-status">Génère ton menu</p></div></div>
-                        <button class="btn btn-primary btn-sm" id="btn-menu">Générer</button>
+        <!-- AUTH -->
+        <div id="auth" class="screen">
+            <button class="back-btn" id="auth-back">←</button>
+            <div class="auth-box">
+                <div class="auth-logo">🍽️</div>
+                <h1 id="auth-title">Connexion</h1>
+                <form id="auth-form">
+                    <div class="field" id="field-username" style="display:none">
+                        <input type="text" id="auth-username" placeholder="Pseudo">
                     </div>
-                    <div class="daily-preview" id="daily-preview"></div>
-                </div>
+                    <div class="field"><input type="email" id="auth-email" placeholder="Email" required></div>
+                    <div class="field"><input type="password" id="auth-password" placeholder="Mot de passe" required></div>
+                    <div class="auth-error" id="auth-error"></div>
+                    <button type="submit" class="btn btn-primary btn-full btn-glow" id="auth-submit">Se connecter</button>
+                </form>
+                <p class="auth-switch" id="auth-switch">Pas de compte ? <button id="auth-toggle">Créer</button></p>
+            </div>
+        </div>
+
+        <!-- SETUP -->
+        <div id="setup" class="screen">
+            <button class="back-btn" id="setup-back">←</button>
+            <div class="setup-box">
+                <div class="setup-steps"><span class="step active">1</span><span class="step-line"></span><span class="step">2</span><span class="step-line"></span><span class="step">3</span></div>
                 
-                <div class="quick-grid">
-                    <button class="quick glass" id="q-fridge">🧊<span>Mon Frigo</span><span class="qbadge" id="fridge-count">0</span></button>
-                    <button class="quick glass" id="q-shop">🛒<span>Courses</span></button>
-                    <button class="quick glass" id="q-prep">📅<span>Meal Prep</span><span class="pro">PRO</span></button>
-                    <button class="quick glass" id="q-coach">🤖<span>Coach IA</span><span class="pro">PRO</span></button>
-                    <button class="quick glass" id="q-resto">🍴<span>Mode Resto</span><span class="pro">PRO</span></button>
-                    <button class="quick glass" id="q-challenge">🎯<span>Défis</span></button>
-                </div>
-                
-                <div class="challenge glass">
-                    <div class="ch-head"><span class="ch-tag">🎯 Défi semaine</span><span class="ch-timer">5j</span></div>
-                    <h3>Carbonara revisitée</h3>
-                    <p>Poste ta version → jusqu'à 500 XP</p>
-                    <div class="ch-foot">
-                        <div class="ch-avatars"><img src="https://i.pravatar.cc/32?img=1"><img src="https://i.pravatar.cc/32?img=2"><img src="https://i.pravatar.cc/32?img=3"><span>+247</span></div>
-                        <button class="btn btn-outline btn-xs">Participer</button>
+                <div class="setup-page active" data-step="1">
+                    <span class="step-badge">1/3</span>
+                    <h1>Durée du quiz</h1>
+                    <div class="duration-grid">
+                        <label class="dur-opt"><input type="radio" name="dur" value="10"><div class="dur-card glass">⚡<strong>10</strong><span>Express</span><small>~2min</small></div></label>
+                        <label class="dur-opt"><input type="radio" name="dur" value="30" checked><div class="dur-card glass rec">⭐<strong>30</strong><span>Classique</span><small>~5min</small></div></label>
+                        <label class="dur-opt"><input type="radio" name="dur" value="50"><div class="dur-card glass">🏆<strong>50</strong><span>Complet</span><small>~10min</small></div></label>
                     </div>
                 </div>
                 
-                <div class="stats-section">
-                    <h3>📊 Tes stats</h3>
-                    <div class="stats-row">
-                        <div class="stat glass"><strong id="s-level">1</strong><span>Niveau</span></div>
-                        <div class="stat glass"><strong id="s-recipes">0</strong><span>Recettes</span></div>
-                        <div class="stat glass"><strong id="s-streak">0</strong><span>Streak</span></div>
-                        <div class="stat glass clickable" id="s-rank-btn"><strong id="s-rank">#--</strong><span>Rang</span></div>
+                <div class="setup-page" data-step="2">
+                    <span class="step-badge">2/3</span>
+                    <h1>Alimentation</h1>
+                    <h3>Régime</h3>
+                    <div class="diet-grid">
+                        <label class="diet-opt"><input type="radio" name="diet" value="omnivore" checked><div class="diet-card glass">🥩<span>Omnivore</span></div></label>
+                        <label class="diet-opt"><input type="radio" name="diet" value="flexitarian"><div class="diet-card glass">🥗<span>Flexi</span></div></label>
+                        <label class="diet-opt"><input type="radio" name="diet" value="vegetarian"><div class="diet-card glass">🥬<span>Végé</span></div></label>
+                        <label class="diet-opt"><input type="radio" name="diet" value="vegan"><div class="diet-card glass">🌱<span>Végan</span></div></label>
+                    </div>
+                    <h3>Allergies</h3>
+                    <div class="allergy-wrap">
+                        <label class="allergy"><input type="checkbox" value="gluten"><span>🌾 Gluten</span></label>
+                        <label class="allergy"><input type="checkbox" value="lactose"><span>🥛 Lactose</span></label>
+                        <label class="allergy"><input type="checkbox" value="nuts"><span>🥜 Arachides</span></label>
+                        <label class="allergy"><input type="checkbox" value="shellfish"><span>🦐 Crustacés</span></label>
+                        <label class="allergy"><input type="checkbox" value="eggs"><span>🥚 Œufs</span></label>
+                        <label class="allergy"><input type="checkbox" value="soy"><span>🫘 Soja</span></label>
                     </div>
                 </div>
-            </section>
-
-            <!-- EXPLORE -->
-            <section class="tab" id="tab-explore">
-                <h1>🔍 Explorer</h1>
-                <div class="search glass"><span>🔍</span><input type="text" id="search-in" placeholder="Rechercher..."></div>
-                <div class="explore-tabs">
-                    <button class="etab active" data-t="all">🍝 Recettes</button>
-                    <button class="etab" data-t="hot">🔥 Tendances</button>
-                    <button class="etab" data-t="saved">💾 Sauvés</button>
-                </div>
-                <div class="filters">
-                    <button class="filter active" data-f="all">Tout</button>
-                    <button class="filter" data-f="starter">🥗 Entrées</button>
-                    <button class="filter" data-f="main">🍖 Plats</button>
-                    <button class="filter" data-f="dessert">🍰 Desserts</button>
-                    <button class="filter" data-f="quick">⚡ Rapide</button>
-                </div>
-                <div class="recipes" id="recipes"></div>
-            </section>
-
-            <!-- POST -->
-            <section class="tab" id="tab-post">
-                <h1>📸 Partager</h1>
-                <div class="upload glass" id="upload-zone">
-                    <div class="upload-inner">📷<p>Ajoute une photo</p></div>
-                    <img id="post-img" src="" alt="">
-                    <input type="file" id="post-file" accept="image/*" hidden>
-                </div>
-                <div class="post-form">
-                    <textarea id="post-caption" placeholder="Décris ton plat 🍽️"></textarea>
-                    <select id="post-recipe"><option value="">Lier une recette</option></select>
-                    <div class="post-tags"><button>#homemade</button><button>#yumr</button><button>#foodie</button></div>
-                    <button class="btn btn-primary btn-full btn-glow" id="btn-post">Publier <span class="xp-badge">+30 XP</span></button>
-                </div>
-            </section>
-
-            <!-- LEAGUES -->
-            <section class="tab" id="tab-leagues">
-                <h1>🏆 Ligues</h1>
-                <div class="league-current glass">
-                    <span class="league-icon" id="l-icon">🥈</span>
-                    <div class="league-info"><strong id="l-name">Argent</strong><span>Position: <b id="l-pos">#12</b></span></div>
-                    <div class="league-timer">Reset<strong id="l-reset">2j 14h</strong></div>
-                </div>
-                <div class="league-tabs">
-                    <button class="ltab active" data-v="rank">Classement</button>
-                    <button class="ltab" data-v="all">Toutes</button>
-                </div>
-                <div class="leaderboard" id="leaderboard"></div>
-                <div class="league-all" id="league-all">
-                    <div class="tier glass">👑<span>Champion</span></div>
-                    <div class="tier glass">💎<span>Diamant</span></div>
-                    <div class="tier glass">🥇<span>Or</span></div>
-                    <div class="tier glass current">🥈<span>Argent</span><small>← Toi</small></div>
-                    <div class="tier glass">🥉<span>Bronze</span></div>
-                </div>
-                <div class="rewards glass">
-                    <h4>🎁 Récompenses</h4>
-                    <div class="rew-row"><span>🥇 Top 1</span><span>+500 XP</span></div>
-                    <div class="rew-row"><span>🥈 Top 3</span><span>+300 XP</span></div>
-                    <div class="rew-row"><span>🥉 Top 10</span><span>+100 XP</span></div>
-                </div>
-            </section>
-
-            <!-- PROFILE -->
-            <section class="tab" id="tab-profile">
-                <div class="profile-hero glass">
-                    <div class="profile-cover"></div>
-                    <div class="profile-av-wrap">
-                        <div class="profile-av"><img src="https://i.pravatar.cc/100?img=8" id="av-img" alt=""></div>
-                        <button class="av-edit" id="av-edit">📷</button>
-                        <input type="file" id="av-file" accept="image/*" hidden>
-                        <span class="profile-lv" id="p-lv">12</span>
+                
+                <div class="setup-page" data-step="3">
+                    <span class="step-badge">3/3</span>
+                    <h1>Objectifs</h1>
+                    <div class="goal-list">
+                        <label class="goal-opt"><input type="radio" name="goal" value="none" checked><div class="goal-card glass">😋<div><strong>Juste me régaler</strong></div></div></label>
+                        <label class="goal-opt"><input type="radio" name="goal" value="lose"><div class="goal-card glass">🏃<div><strong>Perte de poids</strong></div></div></label>
+                        <label class="goal-opt"><input type="radio" name="goal" value="gain"><div class="goal-card glass">💪<div><strong>Prise de masse</strong></div></div></label>
+                        <label class="goal-opt"><input type="radio" name="goal" value="cut"><div class="goal-card glass">🔥<div><strong>Sèche</strong></div></div></label>
                     </div>
-                    <h2 id="p-name">@username</h2>
-                    <div class="profile-type glass-sm"><span id="p-emoji">🍳</span><span id="p-type">Gourmet</span></div>
+                    <h3>Conditions <small>(optionnel)</small></h3>
+                    <div class="cond-wrap">
+                        <label class="cond"><input type="checkbox" value="diabetes"><span>🩺 Diabète</span></label>
+                        <label class="cond"><input type="checkbox" value="cholesterol"><span>❤️ Cholestérol</span></label>
+                        <label class="cond"><input type="checkbox" value="hypertension"><span>💓 Hypertension</span></label>
+                    </div>
                 </div>
-                <div class="profile-stats glass">
-                    <div><strong id="ps-xp">0</strong><span>XP</span></div>
-                    <div><strong id="ps-rec">0</strong><span>Recettes</span></div>
-                    <div><strong id="ps-streak">0</strong><span>Streak</span></div>
-                    <div><strong id="ps-badges">0</strong><span>Badges</span></div>
-                </div>
-                <div class="xp-bar-wrap glass">
-                    <div class="xp-bar-head"><span>Niveau <b id="xp-lv">12</b></span><span><b id="xp-cur">450</b>/<b id="xp-max">500</b></span></div>
-                    <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
-                </div>
-                <div class="badges-section glass">
-                    <div class="badges-head"><h4>🏅 Badges</h4><button class="link" id="badges-all">Voir tout →</button></div>
-                    <div class="badges-scroll" id="badges-scroll"></div>
-                </div>
-                <div class="profile-menu">
-                    <button class="pmenu glass" id="btn-prefs">⚙️<span>Préférences</span><span>→</span></button>
-                    <button class="pmenu glass" id="btn-fridge">🧊<span>Mon Frigo</span><span>→</span></button>
-                    <button class="pmenu glass" id="btn-ref">🎁<span>Parrainer</span><span class="ref-badge">+200 XP</span></button>
-                    <button class="pmenu glass premium" id="btn-premium">⭐<span>Premium</span><span class="pro">PRO</span></button>
-                    <button class="pmenu glass" id="btn-settings">🔧<span>Paramètres</span><span>→</span></button>
-                    <button class="pmenu glass danger" id="btn-logout">🚪<span>Déconnexion</span></button>
-                </div>
-            </section>
-        </main>
-
-        <nav class="nav glass-blur">
-            <button class="nav-btn active" data-tab="home">🏠<span>Home</span></button>
-            <button class="nav-btn" data-tab="explore">🔍<span>Explorer</span></button>
-            <button class="nav-btn center" data-tab="post"><span class="nav-plus">➕</span></button>
-            <button class="nav-btn" data-tab="leagues">🏆<span>Ligues</span></button>
-            <button class="nav-btn" data-tab="profile">👤<span>Profil</span></button>
-        </nav>
-    </div>
-
-    <!-- MODALS -->
-    <!-- Menu Modal -->
-    <div class="modal" id="m-menu">
-        <div class="modal-bg"></div>
-        <div class="modal-sheet glass">
-            <div class="modal-handle"></div>
-            <h2>🍽️ Options du menu</h2>
-            <div class="m-body">
-                <div class="opt-group"><label>💰 Budget</label><div class="opt-btns budget-btns"><button class="active" data-v="low">€</button><button data-v="medium">€€</button><button data-v="high">€€€</button></div></div>
-                <div class="opt-group"><label>👥 Personnes</label><div class="stepper"><button class="st-minus">−</button><span id="st-persons">2</span><button class="st-plus">+</button></div></div>
-                <div class="opt-group"><label>⏱️ Temps max</label><div class="opt-btns time-btns"><button data-v="15">15min</button><button class="active" data-v="30">30min</button><button data-v="60">1h</button><button data-v="0">∞</button></div></div>
-                <div class="opt-group"><label class="toggle-row"><span>🧊 Utiliser mon frigo</span><input type="checkbox" id="opt-fridge"><span class="toggle"></span></label></div>
-                <div class="opt-group"><label class="toggle-row"><span>🧀 Inclure fromage</span><input type="checkbox" id="opt-cheese"><span class="toggle"></span></label></div>
-                <div class="opt-group"><label class="toggle-row"><span>🍷 Suggérer un vin</span><input type="checkbox" id="opt-wine"><span class="toggle"></span></label></div>
-            </div>
-            <button class="btn btn-primary btn-full btn-glow" id="confirm-menu">✨ Générer</button>
-        </div>
-    </div>
-
-    <!-- Fridge Modal -->
-    <div class="modal modal-full" id="m-fridge">
-        <div class="modal-page">
-            <div class="modal-top glass-blur"><button class="back-btn" data-close="m-fridge">←</button><h2>🧊 Mon Frigo</h2><button class="btn btn-primary btn-xs" id="add-ing">+ Ajouter</button></div>
-            <div class="modal-scroll">
-                <div class="fridge-acts">
-                    <button class="fridge-act glass" id="scan-fridge">📷<span>Snap Frigo</span><span class="ai">IA</span></button>
-                    <button class="fridge-act glass" id="scan-ticket">🧾<span>Scanner ticket</span></button>
-                </div>
-                <div class="fridge-cats">
-                    <button class="fcat active" data-c="all">Tout</button>
-                    <button class="fcat" data-c="fruits">🍎</button>
-                    <button class="fcat" data-c="legumes">🥬</button>
-                    <button class="fcat" data-c="viandes">🥩</button>
-                    <button class="fcat" data-c="laitiers">🧀</button>
-                    <button class="fcat" data-c="epicerie">🥫</button>
-                    <button class="fcat" data-c="surgeles">❄️</button>
-                </div>
-                <div class="fridge-list" id="fridge-list"></div>
-                <div class="fridge-exp glass" id="fridge-exp">
-                    <h4>⚠️ Bientôt périmé</h4>
-                    <div id="exp-list"></div>
-                    <button class="btn btn-outline btn-sm btn-full" id="tgtg">🍀 Too Good To Go</button>
+                
+                <div class="setup-actions">
+                    <button class="btn btn-ghost" id="setup-prev" style="visibility:hidden">Retour</button>
+                    <button class="btn btn-primary btn-glow" id="setup-next">Continuer</button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Add Ingredient Modal -->
-    <div class="modal" id="m-ing">
-        <div class="modal-bg"></div>
-        <div class="modal-sheet glass">
-            <div class="modal-handle"></div>
-            <h2>➕ Ajouter</h2>
-            <div class="m-body">
-                <div class="field"><label>Nom</label><input type="text" id="ing-name" placeholder="Tomates"></div>
-                <div class="field-row">
-                    <div class="field"><label>Quantité</label><input type="text" id="ing-qty" placeholder="500g"></div>
-                    <div class="field"><label>Catégorie</label><select id="ing-cat"><option value="fruits">🍎 Fruits</option><option value="legumes">🥬 Légumes</option><option value="viandes">🥩 Viandes</option><option value="laitiers">🧀 Laitiers</option><option value="epicerie">🥫 Épicerie</option><option value="surgeles">❄️ Surgelés</option></select></div>
+        <!-- QUIZ -->
+        <div id="quiz" class="screen">
+            <div class="quiz-header">
+                <button class="quiz-close" id="quiz-close">✕</button>
+                <div class="quiz-prog"><div class="quiz-prog-fill" id="quiz-prog"></div></div>
+                <span class="quiz-count" id="quiz-count">1/30</span>
+                <div class="quiz-streak glass">🔥<span id="quiz-streak">0</span></div>
+            </div>
+            <div class="quiz-area">
+                <div class="quiz-card" id="quiz-card">
+                    <div class="card-img" id="card-img"></div>
+                    <div class="card-body">
+                        <span class="card-emoji" id="card-emoji">🍕</span>
+                        <h2 id="card-q">Tu aimes les pizzas ?</h2>
+                    </div>
+                    <div class="overlay nope">NOPE</div>
+                    <div class="overlay love">LOVE</div>
                 </div>
-                <div class="field"><label>Péremption</label><input type="date" id="ing-exp"></div>
             </div>
-            <button class="btn btn-primary btn-full" id="save-ing">Ajouter</button>
-        </div>
-    </div>
-
-    <!-- Recipe Modal -->
-    <div class="modal modal-full" id="m-recipe"><div class="recipe-page" id="recipe-page"></div></div>
-
-    <!-- Shopping Modal -->
-    <div class="modal modal-full" id="m-shop">
-        <div class="modal-page">
-            <div class="modal-top glass-blur"><button class="back-btn" data-close="m-shop">←</button><h2>🛒 Courses</h2><button class="btn btn-ghost btn-xs" id="share-list">📤</button></div>
-            <div class="modal-scroll">
-                <div class="shop-summary glass"><div><strong id="shop-count">0</strong><span>articles</span></div><div><strong id="shop-cost">~0€</strong><span>estimé</span></div></div>
-                <div class="shop-list" id="shop-list"></div>
-                <button class="btn btn-primary btn-full btn-glow" id="btn-order">🛒 Commander (bientôt)</button>
+            <div class="quiz-btns">
+                <button class="qbtn nope" id="q-nope">👎</button>
+                <button class="qbtn love" id="q-love">💚</button>
             </div>
+            <p class="quiz-hint">Swipe ou appuie</p>
         </div>
-    </div>
 
-    <!-- Meal Prep Modal -->
-    <div class="modal modal-full" id="m-prep">
-        <div class="modal-page">
-            <div class="modal-top glass-blur"><button class="back-btn" data-close="m-prep">←</button><h2>📅 Meal Prep</h2><span class="top-pro">PRO</span></div>
-            <div class="modal-scroll" style="position:relative">
-                <div class="prep-intro glass"><h3>Planifie ta semaine</h3><p>5-7 jours de menus + liste optimisée</p></div>
-                <div class="prep-opts">
-                    <div class="opt-group"><label>📆 Jours</label><div class="opt-btns"><button class="active" data-v="5">5 jours</button><button data-v="7">7 jours</button></div></div>
-                    <div class="opt-group"><label>🍽️ Repas</label><div class="meals-checks"><label><input type="checkbox" checked>🌅 Petit-déj</label><label><input type="checkbox" checked>☀️ Déjeuner</label><label><input type="checkbox" checked>🌙 Dîner</label></div></div>
+        <!-- RESULT -->
+        <div id="result" class="screen">
+            <div class="result-confetti" id="confetti"></div>
+            <div class="result-box">
+                <span class="result-badge">🎉 Félicitations !</span>
+                <div class="result-profile glass">
+                    <div class="profile-glow"></div>
+                    <span class="profile-emoji" id="res-emoji">🍳</span>
+                    <h1 id="res-name">Le Gourmet</h1>
+                    <p id="res-desc">Tu apprécies la bonne cuisine.</p>
+                    <div class="profile-tags" id="res-tags"></div>
                 </div>
-                <button class="btn btn-primary btn-full btn-glow">✨ Générer</button>
-                <div class="lock-overlay glass"><span>🔒</span><p>Premium</p><button class="btn btn-primary btn-sm" id="unlock-prep">Débloquer</button></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Coach Modal -->
-    <div class="modal modal-full" id="m-coach">
-        <div class="modal-page">
-            <div class="modal-top glass-blur"><button class="back-btn" data-close="m-coach">←</button><h2>🤖 Coach IA</h2><span class="top-pro">PRO</span></div>
-            <div class="coach-chat" id="coach-chat">
-                <div class="coach-msg bot"><div class="coach-av">🤖</div><div class="coach-bubble glass"><p>Salut ! Je suis ton coach nutrition. Comment je peux t'aider ?</p><div class="coach-sugg"><button>J'ai une compét dans 3 semaines</button><button>Je veux perdre 5kg</button><button>Repas low-carb ce soir ?</button></div></div></div>
-            </div>
-            <div class="coach-input glass-blur"><input type="text" id="coach-in" placeholder="Ta question..."><button class="btn btn-primary btn-icon">→</button></div>
-            <div class="lock-overlay glass" style="position:absolute;inset:60px 0 0 0"><span>🔒</span><p>Premium</p><button class="btn btn-primary btn-sm" id="unlock-coach">Débloquer</button></div>
-        </div>
-    </div>
-
-    <!-- Resto Modal -->
-    <div class="modal modal-full" id="m-resto">
-        <div class="modal-page">
-            <div class="modal-top glass-blur"><button class="back-btn" data-close="m-resto">←</button><h2>🍴 Mode Resto</h2><span class="top-pro">PRO</span></div>
-            <div class="modal-scroll" style="position:relative">
-                <div class="resto-intro glass"><span>📷</span><h3>Scanne un menu</h3><p>L'IA te dit quels plats correspondent à ton régime</p><button class="btn btn-primary btn-glow">Scanner</button></div>
-                <div class="resto-legend"><div>✅ Compatible</div><div>⚠️ Attention</div><div>❌ À éviter</div></div>
-                <div class="lock-overlay glass"><span>🔒</span><p>Premium</p><button class="btn btn-primary btn-sm" id="unlock-resto">Débloquer</button></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Badges Modal -->
-    <div class="modal modal-full" id="m-badges">
-        <div class="modal-page">
-            <div class="modal-top glass-blur"><button class="back-btn" data-close="m-badges">←</button><h2>🏅 Badges</h2><div></div></div>
-            <div class="badges-grid" id="badges-grid"></div>
-        </div>
-    </div>
-
-    <!-- Premium Modal -->
-    <div class="modal modal-full" id="m-prem">
-        <div class="premium-page">
-            <div class="modal-top glass-blur"><button class="back-btn" data-close="m-prem">←</button><h2>⭐ Premium</h2><div></div></div>
-            <div class="prem-scroll">
-                <div class="prem-hero"><span>👑</span><h1>Yumr Pro</h1><p>Débloque tout</p></div>
-                <div class="prem-features">
-                    <div class="prem-f glass">🍽️<div><strong>Menus illimités</strong><span>Régénère autant que tu veux</span></div></div>
-                    <div class="prem-f glass">🤖<div><strong>Coach Nutrition IA</strong><span>Conseils personnalisés 24/7</span></div></div>
-                    <div class="prem-f glass">📷<div><strong>Snap Frigo IA</strong><span>Scanne tes ingrédients</span></div></div>
-                    <div class="prem-f glass">🍴<div><strong>Mode Restaurant</strong><span>Analyse les menus</span></div></div>
-                    <div class="prem-f glass">📅<div><strong>Meal Prep</strong><span>Planifie ta semaine</span></div></div>
-                    <div class="prem-f glass">📊<div><strong>Macros détaillés</strong><span>Calories, protéines...</span></div></div>
+                <div class="result-xp glass">✨ +50 XP</div>
+                <div class="result-features">
+                    <h3>Crée ton compte pour :</h3>
+                    <ul>
+                        <li>📅 Ton menu du jour</li>
+                        <li>🧊 Ton frigo intelligent</li>
+                        <li>🛒 Liste de courses auto</li>
+                        <li>🏆 Ligues et classements</li>
+                        <li>🤖 Coach nutrition IA</li>
+                    </ul>
                 </div>
-                <div class="prem-plans">
-                    <div class="plan glass" data-p="month"><span>Mensuel</span><strong>4.99€</strong><small>/mois</small></div>
-                    <div class="plan glass pop" data-p="year"><span class="plan-badge">-33%</span><span>Annuel</span><strong>39.99€</strong><small>/an</small><span class="plan-sub">= 3.33€/mois</span></div>
+                <button class="btn btn-primary btn-full btn-glow" id="res-signup">Créer mon compte</button>
+                <button class="btn btn-ghost btn-full" id="res-skip">Continuer en invité</button>
+            </div>
+        </div>
+
+        <!-- MAIN -->
+        <div id="main" class="screen">
+            <header class="header glass-blur">
+                <div class="h-left">🍽️ <span>Yumr</span></div>
+                <div class="h-right">
+                    <div class="h-streak glass">🔥<span id="h-streak">0</span></div>
+                    <div class="h-xp glass">✨<span id="h-xp">0</span></div>
+                    <button class="h-notif" id="h-notif">🔔<span class="notif-dot"></span></button>
                 </div>
-                <button class="btn btn-primary btn-full btn-glow" id="btn-sub">Essai gratuit 7 jours</button>
-                <p class="prem-note">Annule à tout moment</p>
+            </header>
+
+            <main class="main-scroll">
+                <!-- HOME -->
+                <section class="tab active" id="tab-home">
+                    <div class="greeting"><h1>Salut <span id="u-name">Chef</span> ! 👋</h1><p>Prêt à cuisiner ?</p></div>
+                    
+                    <div class="daily glass" id="daily-card">
+                        <div class="daily-head">
+                            <div class="daily-info">🍽️<div><h3>Menu du jour</h3><p id="daily-status">Génère ton menu</p></div></div>
+                            <button class="btn btn-primary btn-sm" id="btn-menu">Générer</button>
+                        </div>
+                        <div class="daily-preview" id="daily-preview"></div>
+                    </div>
+                    
+                    <div class="quick-grid">
+                        <button class="quick glass" id="q-fridge">🧊<span>Mon Frigo</span><span class="qbadge" id="fridge-count">0</span></button>
+                        <button class="quick glass" id="q-shop">🛒<span>Courses</span></button>
+                        <button class="quick glass" id="q-prep">📅<span>Meal Prep</span><span class="pro">PRO</span></button>
+                        <button class="quick glass" id="q-coach">🤖<span>Coach IA</span><span class="pro">PRO</span></button>
+                        <button class="quick glass" id="q-resto">🍴<span>Mode Resto</span><span class="pro">PRO</span></button>
+                        <button class="quick glass" id="q-challenge">🎯<span>Défis</span></button>
+                    </div>
+                    
+                    <div class="challenge glass">
+                        <div class="ch-head"><span class="ch-tag">🎯 Défi semaine</span><span class="ch-timer">5j</span></div>
+                        <h3>Carbonara revisitée</h3>
+                        <p>Poste ta version → jusqu'à 500 XP</p>
+                        <div class="ch-foot">
+                            <div class="ch-avatars"><img src="https://i.pravatar.cc/32?img=1"><img src="https://i.pravatar.cc/32?img=2"><img src="https://i.pravatar.cc/32?img=3"><span>+247</span></div>
+                            <button class="btn btn-outline btn-xs">Participer</button>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-section">
+                        <h3>📊 Tes stats</h3>
+                        <div class="stats-row">
+                            <div class="stat glass"><strong id="s-level">1</strong><span>Niveau</span></div>
+                            <div class="stat glass"><strong id="s-recipes">0</strong><span>Recettes</span></div>
+                            <div class="stat glass"><strong id="s-streak">0</strong><span>Streak</span></div>
+                            <div class="stat glass clickable" id="s-rank-btn"><strong id="s-rank">#--</strong><span>Rang</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EXPLORE -->
+                <section class="tab" id="tab-explore">
+                    <h1>🔍 Explorer</h1>
+                    <div class="search glass"><span>🔍</span><input type="text" id="search-in" placeholder="Rechercher..."></div>
+                    <div class="explore-tabs">
+                        <button class="etab active" data-t="all">🍝 Recettes</button>
+                        <button class="etab" data-t="hot">🔥 Tendances</button>
+                        <button class="etab" data-t="saved">💾 Sauvés</button>
+                    </div>
+                    <div class="filters">
+                        <button class="filter active" data-f="all">Tout</button>
+                        <button class="filter" data-f="starter">🥗 Entrées</button>
+                        <button class="filter" data-f="main">🍖 Plats</button>
+                        <button class="filter" data-f="dessert">🍰 Desserts</button>
+                        <button class="filter" data-f="quick">⚡ Rapide</button>
+                    </div>
+                    <div class="recipes" id="recipes"></div>
+                </section>
+
+                <!-- POST -->
+                <section class="tab" id="tab-post">
+                    <h1>📸 Partager</h1>
+                    <div class="upload glass" id="upload-zone">
+                        <div class="upload-inner">📷<p>Ajoute une photo</p></div>
+                        <img id="post-img" src="" alt="">
+                        <input type="file" id="post-file" accept="image/*" hidden>
+                    </div>
+                    <div class="post-form">
+                        <textarea id="post-caption" placeholder="Décris ton plat 🍽️"></textarea>
+                        <select id="post-recipe"><option value="">Lier une recette</option></select>
+                        <div class="post-tags"><button>#homemade</button><button>#yumr</button><button>#foodie</button></div>
+                        <button class="btn btn-primary btn-full btn-glow" id="btn-post">Publier <span class="xp-badge">+30 XP</span></button>
+                    </div>
+                </section>
+
+                <!-- LEAGUES -->
+                <section class="tab" id="tab-leagues">
+                    <h1>🏆 Ligues</h1>
+                    <div class="league-current glass">
+                        <span class="league-icon" id="l-icon">🥈</span>
+                        <div class="league-info"><strong id="l-name">Argent</strong><span>Position: <b id="l-pos">#12</b></span></div>
+                        <div class="league-timer">Reset<strong id="l-reset">2j 14h</strong></div>
+                    </div>
+                    <div class="league-tabs">
+                        <button class="ltab active" data-v="rank">Classement</button>
+                        <button class="ltab" data-v="all">Toutes</button>
+                    </div>
+                    <div class="leaderboard" id="leaderboard"></div>
+                    <div class="league-all" id="league-all">
+                        <div class="tier glass">👑<span>Champion</span></div>
+                        <div class="tier glass">💎<span>Diamant</span></div>
+                        <div class="tier glass">🥇<span>Or</span></div>
+                        <div class="tier glass current">🥈<span>Argent</span><small>← Toi</small></div>
+                        <div class="tier glass">🥉<span>Bronze</span></div>
+                    </div>
+                    <div class="rewards glass">
+                        <h4>🎁 Récompenses</h4>
+                        <div class="rew-row"><span>🥇 Top 1</span><span>+500 XP</span></div>
+                        <div class="rew-row"><span>🥈 Top 3</span><span>+300 XP</span></div>
+                        <div class="rew-row"><span>🥉 Top 10</span><span>+100 XP</span></div>
+                    </div>
+                </section>
+
+                <!-- PROFILE -->
+                <section class="tab" id="tab-profile">
+                    <div class="profile-hero glass">
+                        <div class="profile-cover"></div>
+                        <div class="profile-av-wrap">
+                            <div class="profile-av"><img src="https://i.pravatar.cc/100?img=8" id="av-img" alt=""></div>
+                            <button class="av-edit" id="av-edit">📷</button>
+                            <input type="file" id="av-file" accept="image/*" hidden>
+                            <span class="profile-lv" id="p-lv">12</span>
+                        </div>
+                        <h2 id="p-name">@username</h2>
+                        <div class="profile-type glass-sm"><span id="p-emoji">🍳</span><span id="p-type">Gourmet</span></div>
+                    </div>
+                    <div class="profile-stats glass">
+                        <div><strong id="ps-xp">0</strong><span>XP</span></div>
+                        <div><strong id="ps-rec">0</strong><span>Recettes</span></div>
+                        <div><strong id="ps-streak">0</strong><span>Streak</span></div>
+                        <div><strong id="ps-badges">0</strong><span>Badges</span></div>
+                    </div>
+                    <div class="xp-bar-wrap glass">
+                        <div class="xp-bar-head"><span>Niveau <b id="xp-lv">12</b></span><span><b id="xp-cur">450</b>/<b id="xp-max">500</b></span></div>
+                        <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
+                    </div>
+                    <div class="badges-section glass">
+                        <div class="badges-head"><h4>🏅 Badges</h4><button class="link" id="badges-all">Voir tout →</button></div>
+                        <div class="badges-scroll" id="badges-scroll"></div>
+                    </div>
+                    <div class="profile-menu">
+                        <button class="pmenu glass" id="btn-prefs">⚙️<span>Préférences</span><span>→</span></button>
+                        <button class="pmenu glass" id="btn-fridge">🧊<span>Mon Frigo</span><span>→</span></button>
+                        <button class="pmenu glass" id="btn-ref">🎁<span>Parrainer</span><span class="ref-badge">+200 XP</span></button>
+                        <button class="pmenu glass premium" id="btn-premium">⭐<span>Premium</span><span class="pro">PRO</span></button>
+                        <button class="pmenu glass" id="btn-settings">🔧<span>Paramètres</span><span>→</span></button>
+                        <button class="pmenu glass danger" id="btn-logout">🚪<span>Déconnexion</span></button>
+                    </div>
+                </section>
+            </main>
+
+            <nav class="nav glass-blur">
+                <button class="nav-btn active" data-tab="home">🏠<span>Home</span></button>
+                <button class="nav-btn" data-tab="explore">🔍<span>Explorer</span></button>
+                <button class="nav-btn center" data-tab="post"><span class="nav-plus">➕</span></button>
+                <button class="nav-btn" data-tab="leagues">🏆<span>Ligues</span></button>
+                <button class="nav-btn" data-tab="profile">👤<span>Profil</span></button>
+            </nav>
+        </div>
+
+        <!-- MODALS -->
+        <!-- Menu Modal -->
+        <div class="modal" id="m-menu">
+            <div class="modal-bg"></div>
+            <div class="modal-sheet glass">
+                <div class="modal-handle"></div>
+                <h2>🍽️ Options du menu</h2>
+                <div class="m-body">
+                    <div class="opt-group"><label>💰 Budget</label><div class="opt-btns budget-btns"><button class="active" data-v="low">€</button><button data-v="medium">€€</button><button data-v="high">€€€</button></div></div>
+                    <div class="opt-group"><label>👥 Personnes</label><div class="stepper"><button class="st-minus">−</button><span id="st-persons">2</span><button class="st-plus">+</button></div></div>
+                    <div class="opt-group"><label>⏱️ Temps max</label><div class="opt-btns time-btns"><button data-v="15">15min</button><button class="active" data-v="30">30min</button><button data-v="60">1h</button><button data-v="0">∞</button></div></div>
+                    <div class="opt-group"><label class="toggle-row"><span>🧊 Utiliser mon frigo</span><input type="checkbox" id="opt-fridge"><span class="toggle"></span></label></div>
+                    <div class="opt-group"><label class="toggle-row"><span>🧀 Inclure fromage</span><input type="checkbox" id="opt-cheese"><span class="toggle"></span></label></div>
+                    <div class="opt-group"><label class="toggle-row"><span>🍷 Suggérer un vin</span><input type="checkbox" id="opt-wine"><span class="toggle"></span></label></div>
+                </div>
+                <button class="btn btn-primary btn-full btn-glow" id="confirm-menu">✨ Générer</button>
             </div>
         </div>
-    </div>
 
-    <!-- Referral Modal -->
-    <div class="modal" id="m-ref">
-        <div class="modal-bg"></div>
-        <div class="modal-sheet glass">
-            <div class="modal-handle"></div>
-            <h2>🎁 Parrainage</h2>
-            <div class="m-body">
-                <div class="ref-reward glass">🎉<p><strong>+200 XP</strong> par ami invité !</p></div>
-                <div class="ref-code glass"><span>Ton code</span><strong id="ref-code">CHEF2024</strong><button class="btn btn-primary btn-sm" id="copy-code">Copier</button></div>
-                <div class="ref-stats"><div><strong id="ref-inv">0</strong><span>Invités</span></div><div><strong id="ref-xp">0</strong><span>XP gagnés</span></div></div>
-                <button class="btn btn-outline btn-full" id="share-ref">📤 Partager</button>
+        <!-- Fridge Modal -->
+        <div class="modal modal-full" id="m-fridge">
+            <div class="modal-page">
+                <div class="modal-top glass-blur"><button class="back-btn" data-close="m-fridge">←</button><h2>🧊 Mon Frigo</h2><button class="btn btn-primary btn-xs" id="add-ing">+ Ajouter</button></div>
+                <div class="modal-scroll">
+                    <div class="fridge-acts">
+                        <button class="fridge-act glass" id="scan-fridge">📷<span>Snap Frigo</span><span class="ai">IA</span></button>
+                        <button class="fridge-act glass" id="scan-ticket">🧾<span>Scanner ticket</span></button>
+                    </div>
+                    <div class="fridge-cats">
+                        <button class="fcat active" data-c="all">Tout</button>
+                        <button class="fcat" data-c="fruits">🍎</button>
+                        <button class="fcat" data-c="legumes">🥬</button>
+                        <button class="fcat" data-c="viandes">🥩</button>
+                        <button class="fcat" data-c="laitiers">🧀</button>
+                        <button class="fcat" data-c="epicerie">🥫</button>
+                        <button class="fcat" data-c="surgeles">❄️</button>
+                    </div>
+                    <div class="fridge-list" id="fridge-list"></div>
+                    <div class="fridge-exp glass" id="fridge-exp">
+                        <h4>⚠️ Bientôt périmé</h4>
+                        <div id="exp-list"></div>
+                        <button class="btn btn-outline btn-sm btn-full" id="tgtg">🍀 Too Good To Go</button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Prefs Modal -->
-    <div class="modal modal-full" id="m-prefs">
-        <div class="modal-page">
-            <div class="modal-top glass-blur"><button class="back-btn" data-close="m-prefs">←</button><h2>⚙️ Préférences</h2><button class="btn btn-primary btn-xs" id="save-prefs">Sauver</button></div>
-            <div class="modal-scroll">
-                <div class="pref-section"><h3>🍽️ Régime</h3><div class="diet-grid"><label class="diet-opt"><input type="radio" name="p-diet" value="omnivore" checked><div class="diet-card glass">🥩<span>Omnivore</span></div></label><label class="diet-opt"><input type="radio" name="p-diet" value="flexitarian"><div class="diet-card glass">🥗<span>Flexi</span></div></label><label class="diet-opt"><input type="radio" name="p-diet" value="vegetarian"><div class="diet-card glass">🥬<span>Végé</span></div></label><label class="diet-opt"><input type="radio" name="p-diet" value="vegan"><div class="diet-card glass">🌱<span>Végan</span></div></label></div></div>
-                <div class="pref-section"><h3>⚠️ Allergies</h3><div class="allergy-wrap"><label class="allergy"><input type="checkbox" value="gluten"><span>🌾 Gluten</span></label><label class="allergy"><input type="checkbox" value="lactose"><span>🥛 Lactose</span></label><label class="allergy"><input type="checkbox" value="nuts"><span>🥜 Arachides</span></label><label class="allergy"><input type="checkbox" value="shellfish"><span>🦐 Crustacés</span></label></div></div>
-                <div class="pref-section"><h3>💪 Objectif</h3><div class="goal-list"><label class="goal-opt"><input type="radio" name="p-goal" value="none" checked><div class="goal-card glass">😋<div><strong>Aucun</strong></div></div></label><label class="goal-opt"><input type="radio" name="p-goal" value="lose"><div class="goal-card glass">🏃<div><strong>Perte de poids</strong></div></div></label><label class="goal-opt"><input type="radio" name="p-goal" value="gain"><div class="goal-card glass">💪<div><strong>Prise de masse</strong></div></div></label></div></div>
+        <!-- Add Ingredient Modal -->
+        <div class="modal" id="m-ing">
+            <div class="modal-bg"></div>
+            <div class="modal-sheet glass">
+                <div class="modal-handle"></div>
+                <h2>➕ Ajouter</h2>
+                <div class="m-body">
+                    <div class="field"><label>Nom</label><input type="text" id="ing-name" placeholder="Tomates"></div>
+                    <div class="field-row">
+                        <div class="field"><label>Quantité</label><input type="text" id="ing-qty" placeholder="500g"></div>
+                        <div class="field"><label>Catégorie</label><select id="ing-cat"><option value="fruits">🍎 Fruits</option><option value="legumes">🥬 Légumes</option><option value="viandes">🥩 Viandes</option><option value="laitiers">🧀 Laitiers</option><option value="epicerie">🥫 Épicerie</option><option value="surgeles">❄️ Surgelés</option></select></div>
+                    </div>
+                    <div class="field"><label>Péremption</label><input type="date" id="ing-exp"></div>
+                </div>
+                <button class="btn btn-primary btn-full" id="save-ing">Ajouter</button>
             </div>
         </div>
+
+        <!-- Recipe Modal -->
+        <div class="modal modal-full" id="m-recipe"><div class="recipe-page" id="recipe-page"></div></div>
+
+        <!-- Shopping Modal -->
+        <div class="modal modal-full" id="m-shop">
+            <div class="modal-page">
+                <div class="modal-top glass-blur"><button class="back-btn" data-close="m-shop">←</button><h2>🛒 Courses</h2><button class="btn btn-ghost btn-xs" id="share-list">📤</button></div>
+                <div class="modal-scroll">
+                    <div class="shop-summary glass"><div><strong id="shop-count">0</strong><span>articles</span></div><div><strong id="shop-cost">~0€</strong><span>estimé</span></div></div>
+                    <div class="shop-list" id="shop-list"></div>
+                    <button class="btn btn-primary btn-full btn-glow" id="btn-order">🛒 Commander (bientôt)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Meal Prep Modal -->
+        <div class="modal modal-full" id="m-prep">
+            <div class="modal-page">
+                <div class="modal-top glass-blur"><button class="back-btn" data-close="m-prep">←</button><h2>📅 Meal Prep</h2><span class="top-pro">PRO</span></div>
+                <div class="modal-scroll" style="position:relative">
+                    <div class="prep-intro glass"><h3>Planifie ta semaine</h3><p>5-7 jours de menus + liste optimisée</p></div>
+                    <div class="prep-opts">
+                        <div class="opt-group"><label>📆 Jours</label><div class="opt-btns"><button class="active" data-v="5">5 jours</button><button data-v="7">7 jours</button></div></div>
+                        <div class="opt-group"><label>🍽️ Repas</label><div class="meals-checks"><label><input type="checkbox" checked>🌅 Petit-déj</label><label><input type="checkbox" checked>☀️ Déjeuner</label><label><input type="checkbox" checked>🌙 Dîner</label></div></div>
+                    </div>
+                    <button class="btn btn-primary btn-full btn-glow">✨ Générer</button>
+                    <div class="lock-overlay glass"><span>🔒</span><p>Premium</p><button class="btn btn-primary btn-sm" id="unlock-prep">Débloquer</button></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coach Modal -->
+        <div class="modal modal-full" id="m-coach">
+            <div class="modal-page">
+                <div class="modal-top glass-blur"><button class="back-btn" data-close="m-coach">←</button><h2>🤖 Coach IA</h2><span class="top-pro">PRO</span></div>
+                <div class="coach-chat" id="coach-chat">
+                    <div class="coach-msg bot"><div class="coach-av">🤖</div><div class="coach-bubble glass"><p>Salut ! Je suis ton coach nutrition. Comment je peux t'aider ?</p><div class="coach-sugg"><button>J'ai une compét dans 3 semaines</button><button>Je veux perdre 5kg</button><button>Repas low-carb ce soir ?</button></div></div></div>
+                </div>
+                <div class="coach-input glass-blur"><input type="text" id="coach-in" placeholder="Ta question..."><button class="btn btn-primary btn-icon">→</button></div>
+                <div class="lock-overlay glass" style="position:absolute;inset:60px 0 0 0"><span>🔒</span><p>Premium</p><button class="btn btn-primary btn-sm" id="unlock-coach">Débloquer</button></div>
+            </div>
+        </div>
+
+        <!-- Resto Modal -->
+        <div class="modal modal-full" id="m-resto">
+            <div class="modal-page">
+                <div class="modal-top glass-blur"><button class="back-btn" data-close="m-resto">←</button><h2>🍴 Mode Resto</h2><span class="top-pro">PRO</span></div>
+                <div class="modal-scroll" style="position:relative">
+                    <div class="resto-intro glass"><span>📷</span><h3>Scanne un menu</h3><p>L'IA te dit quels plats correspondent à ton régime</p><button class="btn btn-primary btn-glow">Scanner</button></div>
+                    <div class="resto-legend"><div>✅ Compatible</div><div>⚠️ Attention</div><div>❌ À éviter</div></div>
+                    <div class="lock-overlay glass"><span>🔒</span><p>Premium</p><button class="btn btn-primary btn-sm" id="unlock-resto">Débloquer</button></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badges Modal -->
+        <div class="modal modal-full" id="m-badges">
+            <div class="modal-page">
+                <div class="modal-top glass-blur"><button class="back-btn" data-close="m-badges">←</button><h2>🏅 Badges</h2><div></div></div>
+                <div class="badges-grid" id="badges-grid"></div>
+            </div>
+        </div>
+
+        <!-- Premium Modal -->
+        <div class="modal modal-full" id="m-prem">
+            <div class="premium-page">
+                <div class="modal-top glass-blur"><button class="back-btn" data-close="m-prem">←</button><h2>⭐ Premium</h2><div></div></div>
+                <div class="prem-scroll">
+                    <div class="prem-hero"><span>👑</span><h1>Yumr Pro</h1><p>Débloque tout</p></div>
+                    <div class="prem-features">
+                        <div class="prem-f glass">🍽️<div><strong>Menus illimités</strong><span>Régénère autant que tu veux</span></div></div>
+                        <div class="prem-f glass">🤖<div><strong>Coach Nutrition IA</strong><span>Conseils personnalisés 24/7</span></div></div>
+                        <div class="prem-f glass">📷<div><strong>Snap Frigo IA</strong><span>Scanne tes ingrédients</span></div></div>
+                        <div class="prem-f glass">🍴<div><strong>Mode Restaurant</strong><span>Analyse les menus</span></div></div>
+                        <div class="prem-f glass">📅<div><strong>Meal Prep</strong><span>Planifie ta semaine</span></div></div>
+                        <div class="prem-f glass">📊<div><strong>Macros détaillés</strong><span>Calories, protéines...</span></div></div>
+                    </div>
+                    <div class="prem-plans">
+                        <div class="plan glass" data-p="month"><span>Mensuel</span><strong>4.99€</strong><small>/mois</small></div>
+                        <div class="plan glass pop" data-p="year"><span class="plan-badge">-33%</span><span>Annuel</span><strong>39.99€</strong><small>/an</small><span class="plan-sub">= 3.33€/mois</span></div>
+                    </div>
+                    <button class="btn btn-primary btn-full btn-glow" id="btn-sub">Essai gratuit 7 jours</button>
+                    <p class="prem-note">Annule à tout moment</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Referral Modal -->
+        <div class="modal" id="m-ref">
+            <div class="modal-bg"></div>
+            <div class="modal-sheet glass">
+                <div class="modal-handle"></div>
+                <h2>🎁 Parrainage</h2>
+                <div class="m-body">
+                    <div class="ref-reward glass">🎉<p><strong>+200 XP</strong> par ami invité !</p></div>
+                    <div class="ref-code glass"><span>Ton code</span><strong id="ref-code">CHEF2024</strong><button class="btn btn-primary btn-sm" id="copy-code">Copier</button></div>
+                    <div class="ref-stats"><div><strong id="ref-inv">0</strong><span>Invités</span></div><div><strong id="ref-xp">0</strong><span>XP gagnés</span></div></div>
+                    <button class="btn btn-outline btn-full" id="share-ref">📤 Partager</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prefs Modal -->
+        <div class="modal modal-full" id="m-prefs">
+            <div class="modal-page">
+                <div class="modal-top glass-blur"><button class="back-btn" data-close="m-prefs">←</button><h2>⚙️ Préférences</h2><button class="btn btn-primary btn-xs" id="save-prefs">Sauver</button></div>
+                <div class="modal-scroll">
+                    <div class="pref-section"><h3>🍽️ Régime</h3><div class="diet-grid"><label class="diet-opt"><input type="radio" name="p-diet" value="omnivore" checked><div class="diet-card glass">🥩<span>Omnivore</span></div></label><label class="diet-opt"><input type="radio" name="p-diet" value="flexitarian"><div class="diet-card glass">🥗<span>Flexi</span></div></label><label class="diet-opt"><input type="radio" name="p-diet" value="vegetarian"><div class="diet-card glass">🥬<span>Végé</span></div></label><label class="diet-opt"><input type="radio" name="p-diet" value="vegan"><div class="diet-card glass">🌱<span>Végan</span></div></label></div></div>
+                    <div class="pref-section"><h3>⚠️ Allergies</h3><div class="allergy-wrap"><label class="allergy"><input type="checkbox" value="gluten"><span>🌾 Gluten</span></label><label class="allergy"><input type="checkbox" value="lactose"><span>🥛 Lactose</span></label><label class="allergy"><input type="checkbox" value="nuts"><span>🥜 Arachides</span></label><label class="allergy"><input type="checkbox" value="shellfish"><span>🦐 Crustacés</span></label></div></div>
+                    <div class="pref-section"><h3>💪 Objectif</h3><div class="goal-list"><label class="goal-opt"><input type="radio" name="p-goal" value="none" checked><div class="goal-card glass">😋<div><strong>Aucun</strong></div></div></label><label class="goal-opt"><input type="radio" name="p-goal" value="lose"><div class="goal-card glass">🏃<div><strong>Perte de poids</strong></div></div></label><label class="goal-opt"><input type="radio" name="p-goal" value="gain"><div class="goal-card glass">💪<div><strong>Prise de masse</strong></div></div></label></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toasts -->
+        <div class="toasts" id="toasts"></div>
+        <!-- XP Popup -->
+        <div class="xp-popup" id="xp-popup"><span>✨</span><span id="xp-amount">+50 XP</span></div>
+        <!-- Level Up -->
+        <div class="levelup" id="levelup"><div class="levelup-box glass">🎉<h2>Niveau <span id="new-lv">2</span> !</h2><p>Continue comme ça !</p><button class="btn btn-primary" id="close-lv">Super !</button></div></div>
     </div>
-
-    <!-- Toasts -->
-    <div class="toasts" id="toasts"></div>
-    <!-- XP Popup -->
-    <div class="xp-popup" id="xp-popup"><span>✨</span><span id="xp-amount">+50 XP</span></div>
-    <!-- Level Up -->
-    <div class="levelup" id="levelup"><div class="levelup-box glass">🎉<h2>Niveau <span id="new-lv">2</span> !</h2><p>Continue comme ça !</p><button class="btn btn-primary" id="close-lv">Super !</button></div></div>
-</div>
-<script src="app.js"></script>
-```
-
+    <script src="app.js"></script>
 </body>
 </html>
