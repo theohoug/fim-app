@@ -34,6 +34,11 @@ html, body {
     overflow: hidden;
 }
 
+#app {
+    height: 100%;
+    overflow: hidden;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background: var(--bg);
@@ -47,10 +52,11 @@ body {
     height: 100%;
     flex-direction: column;
     position: relative;
+    overflow: hidden;
 }
 
 .screen.active {
-    display: flex;
+    display: flex !important;
 }
 
 .glass-card {
@@ -859,6 +865,10 @@ body {
    ============================================ */
 #main {
     background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
 }
 
 .header {
@@ -918,6 +928,7 @@ body {
 
 .main-scroll {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding-bottom: calc(var(--nav) + 10px);
@@ -926,6 +937,7 @@ body {
 .tab {
     display: none;
     padding: 16px;
+    min-height: min-content;
 }
 
 .tab.active {
