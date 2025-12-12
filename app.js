@@ -1,67 +1,114 @@
 /* =====================================================
-   FOODMATCHS V3 - PREMIUM APP
+   YUMR - Swipe. Cook. Enjoy.
+   Premium Culinary App
    ===================================================== */
 
 const API_URL = 'https://foodmatchs-api-production.up.railway.app/api';
 
-// Food images from Unsplash
-const FOOD_IMAGES = {
-    starter: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop',
-    main: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop',
-    dessert: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400&h=300&fit=crop',
-    cheese: 'https://images.unsplash.com/photo-1452195100486-9cc805987862?w=400&h=300&fit=crop',
-    wine: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=300&fit=crop',
-    default: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop'
-};
+// =====================================================
+// MOCK DATA
+// =====================================================
 
-const QUIZ_IMAGES = [
-    'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=250&fit=crop', // Pizza
-    'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400&h=250&fit=crop', // Pancakes
-    'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=400&h=250&fit=crop', // Salad
-    'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400&h=250&fit=crop', // Cake
-    'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=400&h=250&fit=crop', // Pasta
-    'https://images.unsplash.com/photo-1484980972926-edee96e0960d?w=400&h=250&fit=crop', // Sushi
-    'https://images.unsplash.com/photo-1551782450-a2132b4ba21d?w=400&h=250&fit=crop', // Burger
-    'https://images.unsplash.com/photo-1559847844-5315695dadae?w=400&h=250&fit=crop', // Croissant
-    'https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=400&h=250&fit=crop', // Tacos
-    'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=400&h=250&fit=crop', // Steak
+const MOCK_FRIDGE = [
+    { id: '1', name: 'Œufs', quantity: '6', category: 'laitiers', icon: '🥚', expirationDate: '2024-12-15' },
+    { id: '2', name: 'Poulet', quantity: '500g', category: 'viandes', icon: '🍗', expirationDate: '2024-12-13' },
+    { id: '3', name: 'Tomates', quantity: '4', category: 'legumes', icon: '🍅', expirationDate: '2024-12-14' },
+    { id: '4', name: 'Parmesan', quantity: '150g', category: 'laitiers', icon: '🧀', expirationDate: '2024-12-20' },
+    { id: '5', name: 'Pâtes', quantity: '500g', category: 'epicerie', icon: '🍝', expirationDate: '2025-06-01' },
+    { id: '6', name: 'Crème fraîche', quantity: '20cl', category: 'laitiers', icon: '🥛', expirationDate: '2024-12-13' },
 ];
 
-// State
+const MOCK_LEADERBOARD = [
+    { rank: 1, name: 'ChefPro99', points: 2847, avatar: 'https://i.pravatar.cc/100?img=1' },
+    { rank: 2, name: 'MarieFood', points: 2634, avatar: 'https://i.pravatar.cc/100?img=2' },
+    { rank: 3, name: 'CuistoMax', points: 2521, avatar: 'https://i.pravatar.cc/100?img=3' },
+    { rank: 4, name: 'GourmetLucie', points: 2398, avatar: 'https://i.pravatar.cc/100?img=4' },
+    { rank: 5, name: 'ChefThomas', points: 2256, avatar: 'https://i.pravatar.cc/100?img=5' },
+    { rank: 6, name: 'FoodieParis', points: 2134, avatar: 'https://i.pravatar.cc/100?img=6' },
+    { rank: 7, name: 'CookMaster', points: 2089, avatar: 'https://i.pravatar.cc/100?img=7' },
+    { rank: 8, name: 'ChefSophie', points: 1987, avatar: 'https://i.pravatar.cc/100?img=8' },
+    { rank: 9, name: 'GastroNico', points: 1856, avatar: 'https://i.pravatar.cc/100?img=9' },
+    { rank: 10, name: 'YumrFan', points: 1743, avatar: 'https://i.pravatar.cc/100?img=10' },
+];
+
+const MOCK_BADGES = [
+    { id: 1, name: 'Premier Plat', icon: '🥇', desc: 'Cuisiner sa première recette', unlocked: true },
+    { id: 2, name: 'Streak 7j', icon: '🔥', desc: '7 jours consécutifs', unlocked: true },
+    { id: 3, name: 'Social Chef', icon: '👥', desc: '100 abonnés', unlocked: false },
+    { id: 4, name: 'Globe-trotter', icon: '🌍', desc: '10 cuisines différentes', unlocked: true },
+    { id: 5, name: 'Veggie Week', icon: '🌱', desc: '7 jours végétarien', unlocked: false },
+    { id: 6, name: 'Sommelier', icon: '🍷', desc: '50 accords mets-vins', unlocked: false },
+    { id: 7, name: 'Économe', icon: '💰', desc: '10 repas à moins de 5€', unlocked: true },
+    { id: 8, name: 'Batch Master', icon: '📅', desc: '4 meal preps complétés', unlocked: false },
+    { id: 9, name: 'Streak 30j', icon: '🔥🔥', desc: '30 jours consécutifs', unlocked: false },
+];
+
+const QUIZ_IMAGES = {
+    'pizza': 'photo-1565299624946-b28f40a0ae38',
+    'pasta': 'photo-1621996346565-e3dbc646d9a9',
+    'sushi': 'photo-1579871494447-9811cf80d66c',
+    'burger': 'photo-1568901346375-23c9450c58cd',
+    'salade': 'photo-1512621776951-a57141f2eefd',
+    'dessert': 'photo-1551024601-bec78aea704b',
+    'viande': 'photo-1600891964092-4316c288032e',
+    'poisson': 'photo-1534604973900-c43ab4c2e0ab',
+    'asiatique': 'photo-1569718212165-3a8278d5f624',
+    'mexicain': 'photo-1565299585323-38d6b0865b47',
+    'default': 'photo-1504674900247-0877df9cc836'
+};
+
+const RECIPE_IMAGES = {
+    'starter': 'photo-1512621776951-a57141f2eefd',
+    'main': 'photo-1546069901-ba9599a7e63c',
+    'dessert': 'photo-1551024601-bec78aea704b',
+    'cheese': 'photo-1452195100486-9cc805987862',
+    'wine': 'photo-1510812431401-41d2bd2722f3'
+};
+
+// =====================================================
+// STATE
+// =====================================================
+
 const state = {
     user: null,
     token: null,
     questionCount: 30,
     diet: 'omnivore',
     allergies: [],
+    goal: 'none',
     questions: [],
     answers: [],
     currentQuestion: 0,
     calculatedProfile: null,
     recipes: [],
-    favorites: JSON.parse(localStorage.getItem('fm_favorites') || '[]'),
-    fridgeItems: [],
+    favorites: JSON.parse(localStorage.getItem('yumr_favorites') || '[]'),
+    fridge: [...MOCK_FRIDGE],
     todayMenu: null,
-    portions: 2
+    menuOptions: {
+        budget: 'medium',
+        persons: 2,
+        maxTime: 30,
+        useFridge: false,
+        cheese: false,
+        wine: false
+    },
+    currentSlide: 1
 };
 
-// Helpers
-const $ = sel => document.querySelector(sel);
-const $$ = sel => document.querySelectorAll(sel);
+// =====================================================
+// HELPERS
+// =====================================================
 
-async function api(endpoint, options = {}) {
-    const headers = { 'Content-Type': 'application/json', ...options.headers };
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+async function api(endpoint, opts = {}) {
+    const headers = { 'Content-Type': 'application/json', ...opts.headers };
     if (state.token) headers['Authorization'] = `Bearer ${state.token}`;
-    
-    try {
-        const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Erreur');
-        return data;
-    } catch (err) {
-        console.error('API:', err);
-        throw err;
-    }
+    const res = await fetch(`${API_URL}${endpoint}`, { ...opts, headers });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur');
+    return data;
 }
 
 function showScreen(id) {
@@ -71,14 +118,14 @@ function showScreen(id) {
 }
 
 function showTab(tab) {
-    $$('.tab-content').forEach(t => t.classList.remove('active'));
+    $$('.tab-page').forEach(t => t.classList.remove('active'));
     $$('.nav-item').forEach(b => b.classList.remove('active'));
     $(`#tab-${tab}`)?.classList.add('active');
     $(`.nav-item[data-tab="${tab}"]`)?.classList.add('active');
     
     if (tab === 'explore') loadRecipes();
-    if (tab === 'favorites') loadFavorites();
-    if (tab === 'fridge') loadFridge();
+    if (tab === 'leagues') loadLeaderboard();
+    if (tab === 'profile') updateProfileUI();
 }
 
 function showModal(id) { $(`#${id}`).classList.add('active'); }
@@ -89,23 +136,54 @@ function toast(msg, type = '') {
     t.className = `toast ${type}`;
     t.textContent = msg;
     $('#toast-container').appendChild(t);
-    setTimeout(() => t.remove(), 3500);
+    setTimeout(() => t.remove(), 3000);
+}
+
+function showXP(amount) {
+    const popup = $('#xp-popup');
+    $('.xp-popup-text').textContent = `+${amount} XP`;
+    popup.classList.add('show');
+    setTimeout(() => popup.classList.remove('show'), 2000);
+}
+
+function getQuizImage(question) {
+    const text = (question.question || '').toLowerCase();
+    for (const [key, val] of Object.entries(QUIZ_IMAGES)) {
+        if (text.includes(key)) return `https://images.unsplash.com/${val}?w=400&h=250&fit=crop`;
+    }
+    return `https://images.unsplash.com/${QUIZ_IMAGES.default}?w=400&h=250&fit=crop`;
 }
 
 function getRecipeImage(recipe) {
-    if (recipe.image_url) return recipe.image_url;
-    return FOOD_IMAGES[recipe.type] || FOOD_IMAGES.default;
+    const type = recipe?.type || 'main';
+    const photoId = RECIPE_IMAGES[type] || RECIPE_IMAGES.main;
+    return `https://images.unsplash.com/${photoId}?w=400&h=300&fit=crop`;
 }
 
-// Init
+function getDaysUntilExpiry(date) {
+    const today = new Date();
+    const expiry = new Date(date);
+    const diff = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+    return diff;
+}
+
+// =====================================================
+// INITIALIZATION
+// =====================================================
+
 document.addEventListener('DOMContentLoaded', () => {
     initEventListeners();
-    checkAuth();
+    initSwipe();
+    
+    // Splash screen
+    setTimeout(() => {
+        checkAuth();
+    }, 2000);
 });
 
 function checkAuth() {
-    const token = localStorage.getItem('fm_token');
-    const user = localStorage.getItem('fm_user');
+    const token = localStorage.getItem('yumr_token');
+    const user = localStorage.getItem('yumr_user');
     
     if (token && user) {
         state.token = token;
@@ -116,124 +194,209 @@ function checkAuth() {
     }
 }
 
-// Event Listeners
+// =====================================================
+// EVENT LISTENERS
+// =====================================================
+
 function initEventListeners() {
-    // Welcome
-    $('#start-quiz-btn').onclick = () => showScreen('quiz-setup-screen');
-    $('#already-account-btn').onclick = () => showScreen('login-screen');
+    // Welcome screen
+    $('#welcome-start-btn').onclick = () => showScreen('quiz-setup-screen');
+    $('#welcome-login-btn').onclick = () => showScreen('login-screen');
+    
+    // Welcome slides
+    $$('.dot').forEach(dot => {
+        dot.onclick = () => goToSlide(parseInt(dot.dataset.slide));
+    });
     
     // Login
     $('#login-back-btn').onclick = () => showScreen('welcome-screen');
     $('#login-form').onsubmit = handleLogin;
     
-    // Quiz Setup
+    // Quiz setup
     $('#quiz-setup-back-btn').onclick = () => showScreen('welcome-screen');
-    
-    $$('input[name="question-count"]').forEach(input => {
-        input.onchange = () => state.questionCount = parseInt(input.value);
+    $$('input[name="quiz-count"]').forEach(i => i.onchange = () => state.questionCount = +i.value);
+    $$('input[name="diet"]').forEach(i => i.onchange = () => state.diet = i.value);
+    $$('.allergy-chip input').forEach(i => i.onchange = () => {
+        state.allergies = [...$$('.allergy-chip input:checked')].map(c => c.value);
     });
-    
-    $$('input[name="diet"]').forEach(input => {
-        input.onchange = () => state.diet = input.value;
-    });
-    
-    $$('.allergy-chips input').forEach(input => {
-        input.onchange = () => {
-            state.allergies = Array.from($$('.allergy-chips input:checked')).map(c => c.value);
-        };
-    });
-    
-    $('#start-quiz-questions-btn').onclick = startQuiz;
+    $$('input[name="goal"]').forEach(i => i.onchange = () => state.goal = i.value);
+    $('#start-quiz-btn').onclick = startQuiz;
     
     // Quiz
-    $('#quiz-back-btn').onclick = () => {
-        if (confirm('Quitter le quiz ?')) showScreen('quiz-setup-screen');
-    };
-    $('#quiz-btn-no').onclick = () => answerQuestion(false);
-    $('#quiz-btn-yes').onclick = () => answerQuestion(true);
+    $('#quiz-close-btn').onclick = () => { if (confirm('Quitter le quiz ?')) showScreen('quiz-setup-screen'); };
+    $('#quiz-nope-btn').onclick = () => answerQuestion(false);
+    $('#quiz-love-btn').onclick = () => answerQuestion(true);
     
     // Result
     $('#create-account-btn').onclick = () => {
-        if (state.calculatedProfile) {
-            $('#register-profile-name').textContent = state.calculatedProfile.name;
-        }
+        if (state.calculatedProfile) $('#register-profile').textContent = state.calculatedProfile.name;
         showScreen('register-screen');
     };
-    $('#skip-account-btn').onclick = () => {
-        toast('Mode invité activé');
-        loadMainAppAsGuest();
-    };
+    $('#skip-account-btn').onclick = () => { toast('Mode invité'); loadMainAppAsGuest(); };
     
     // Register
     $('#register-back-btn').onclick = () => showScreen('result-screen');
     $('#register-form').onsubmit = handleRegister;
     
     // Navigation
-    $$('.nav-item').forEach(btn => {
-        btn.onclick = () => showTab(btn.dataset.tab);
+    $$('.nav-item').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+    
+    // Home - Menu generation
+    $('#generate-menu-btn').onclick = () => showModal('menu-options-modal');
+    
+    // Menu options
+    $$('.budget-btn').forEach(b => b.onclick = () => {
+        $$('.budget-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        state.menuOptions.budget = b.dataset.budget;
     });
     
-    // Home - Generate Menu
-    $('#generate-menu-btn').onclick = () => showModal('menu-modal');
-    
-    // Menu Modal
-    $$('.budget-btn').forEach(btn => {
-        btn.onclick = () => {
-            $$('.budget-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        };
+    $$('.time-btn').forEach(b => b.onclick = () => {
+        $$('.time-btn').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        state.menuOptions.maxTime = parseInt(b.dataset.time);
     });
     
-    $('#portions-minus').onclick = () => {
-        state.portions = Math.max(1, state.portions - 1);
-        $('#portions-value').textContent = state.portions;
+    $('#persons-minus').onclick = () => {
+        state.menuOptions.persons = Math.max(1, state.menuOptions.persons - 1);
+        $('#persons-value').textContent = state.menuOptions.persons;
     };
-    $('#portions-plus').onclick = () => {
-        state.portions = Math.min(12, state.portions + 1);
-        $('#portions-value').textContent = state.portions;
+    $('#persons-plus').onclick = () => {
+        state.menuOptions.persons = Math.min(12, state.menuOptions.persons + 1);
+        $('#persons-value').textContent = state.menuOptions.persons;
     };
+    
+    $('#use-fridge-toggle').onchange = e => state.menuOptions.useFridge = e.target.checked;
+    $('#cheese-toggle').onchange = e => state.menuOptions.cheese = e.target.checked;
+    $('#wine-toggle').onchange = e => state.menuOptions.wine = e.target.checked;
     
     $('#confirm-menu-btn').onclick = generateDailyMenu;
     
+    // Quick actions
+    $('#quick-fridge').onclick = () => { openFridge(); };
+    $('#menu-fridge').onclick = () => { openFridge(); };
+    $('#quick-shopping').onclick = () => showModal('shopping-modal');
+    $('#quick-mealprep').onclick = () => toast('Meal Prep - Bientôt disponible !');
+    $('#quick-coach').onclick = () => toast('Coach IA - Bientôt disponible !');
+    
     // Modal closes
-    $$('[data-close]').forEach(btn => {
-        btn.onclick = () => hideModal(btn.dataset.close);
-    });
-    $$('.modal-backdrop').forEach(el => {
-        el.onclick = () => el.closest('.modal').classList.remove('active');
+    $$('[data-close]').forEach(b => b.onclick = () => hideModal(b.dataset.close));
+    $$('.modal-overlay').forEach(el => el.onclick = () => el.closest('.modal').classList.remove('active'));
+    
+    // Fridge
+    $('#add-ingredient-btn').onclick = () => showModal('add-ingredient-modal');
+    $('#save-ingredient-btn').onclick = saveIngredient;
+    $('#scan-fridge-btn').onclick = () => toast('Snap Frigo IA - Bientôt disponible !');
+    $('#scan-receipt-btn').onclick = () => toast('Scan ticket - Bientôt disponible !');
+    $('#tgtg-btn').onclick = () => toast('Too Good To Go - Bientôt disponible !');
+    
+    $$('.fridge-cat').forEach(c => c.onclick = () => {
+        $$('.fridge-cat').forEach(x => x.classList.remove('active'));
+        c.classList.add('active');
+        displayFridge(c.dataset.cat);
     });
     
-    // Search
+    // Explore
     let searchTimeout;
-    $('#search-input').oninput = e => {
+    $('#search-recipes').oninput = e => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => loadRecipes(e.target.value), 300);
     };
     
-    // Filters
-    $$('.filter-chip').forEach(chip => {
-        chip.onclick = () => {
-            $$('.filter-chip').forEach(c => c.classList.remove('active'));
-            chip.classList.add('active');
-            loadRecipes('', chip.dataset.filter);
-        };
+    $$('.filter-chip').forEach(c => c.onclick = () => {
+        $$('.filter-chip').forEach(x => x.classList.remove('active'));
+        c.classList.add('active');
+        loadRecipes('', c.dataset.filter);
     });
     
-    // Fridge
-    $('#add-ingredient-btn').onclick = () => showModal('ingredient-modal');
-    $('#save-ingredient-btn').onclick = saveIngredient;
+    // Post
+    $('#upload-zone').onclick = () => $('#post-image-input').click();
+    $('#post-image-input').onchange = handlePostImage;
+    $('#publish-post-btn').onclick = publishPost;
+    
+    // Leagues
+    $('#view-league-btn').onclick = () => showTab('leagues');
     
     // Profile
     $('#avatar-edit-btn').onclick = () => $('#avatar-input').click();
     $('#avatar-input').onchange = handleAvatarUpload;
-    $('#menu-preferences').onclick = () => openPreferences();
-    $('#menu-achievements').onclick = () => openAchievements();
-    $('#view-achievements-btn').onclick = () => openAchievements();
+    $('#menu-preferences').onclick = () => toast('Préférences - Ouvrir les paramètres');
+    $('#menu-premium').onclick = () => showModal('premium-modal');
+    $('#menu-referral').onclick = () => toast('Code parrainage copié !', 'success');
+    $('#menu-settings').onclick = () => toast('Paramètres - Bientôt disponible');
     $('#menu-logout').onclick = logout;
-    $('#save-preferences-btn').onclick = savePreferences;
+    $('#view-all-badges').onclick = () => showModal('badges-modal');
+    
+    // Premium
+    $('#subscribe-btn').onclick = () => toast('Essai gratuit activé !', 'success');
 }
 
-// Auth
+// Welcome slides
+function goToSlide(num) {
+    state.currentSlide = num;
+    $$('.welcome-slide').forEach(s => s.classList.remove('active'));
+    $$('.dot').forEach(d => d.classList.remove('active'));
+    $(`.welcome-slide[data-slide="${num}"]`).classList.add('active');
+    $(`.dot[data-slide="${num}"]`).classList.add('active');
+}
+
+// =====================================================
+// SWIPE
+// =====================================================
+
+function initSwipe() {
+    const card = $('#quiz-card');
+    if (!card) return;
+    
+    let startX = 0, currentX = 0, isDragging = false;
+    
+    const onStart = (x) => {
+        startX = x;
+        currentX = x;
+        isDragging = true;
+        card.classList.add('dragging');
+    };
+    
+    const onMove = (x) => {
+        if (!isDragging) return;
+        currentX = x;
+        const diff = currentX - startX;
+        card.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
+        
+        card.classList.remove('hint-left', 'hint-right');
+        if (diff < -50) card.classList.add('hint-left');
+        if (diff > 50) card.classList.add('hint-right');
+    };
+    
+    const onEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        card.classList.remove('dragging');
+        
+        const diff = currentX - startX;
+        if (diff < -100) {
+            answerQuestion(false);
+        } else if (diff > 100) {
+            answerQuestion(true);
+        } else {
+            card.style.transform = '';
+            card.classList.remove('hint-left', 'hint-right');
+        }
+    };
+    
+    card.addEventListener('touchstart', e => onStart(e.touches[0].clientX), { passive: true });
+    card.addEventListener('touchmove', e => onMove(e.touches[0].clientX), { passive: true });
+    card.addEventListener('touchend', onEnd);
+    
+    card.addEventListener('mousedown', e => onStart(e.clientX));
+    document.addEventListener('mousemove', e => onMove(e.clientX));
+    document.addEventListener('mouseup', onEnd);
+}
+
+// =====================================================
+// AUTH
+// =====================================================
+
 async function handleLogin(e) {
     e.preventDefault();
     try {
@@ -247,13 +410,12 @@ async function handleLogin(e) {
         
         state.token = data.token;
         state.user = data.user;
-        localStorage.setItem('fm_token', data.token);
-        localStorage.setItem('fm_user', JSON.stringify(data.user));
+        localStorage.setItem('yumr_token', data.token);
+        localStorage.setItem('yumr_user', JSON.stringify(data.user));
         loadMainApp();
     } catch (err) {
-        const el = $('#login-error');
-        el.textContent = err.message;
-        el.classList.add('visible');
+        $('#login-error').textContent = err.message;
+        $('#login-error').classList.add('show');
     }
 }
 
@@ -271,52 +433,47 @@ async function handleRegister(e) {
         
         state.token = data.token;
         state.user = data.user;
-        localStorage.setItem('fm_token', data.token);
-        localStorage.setItem('fm_user', JSON.stringify(data.user));
+        localStorage.setItem('yumr_token', data.token);
+        localStorage.setItem('yumr_user', JSON.stringify(data.user));
         
-        // Save quiz answers
+        // Save quiz + preferences
         if (state.answers.length > 0) {
             try {
                 await api('/quiz/submit', {
                     method: 'POST',
-                    body: JSON.stringify({ answers: state.answers })
+                    body: JSON.stringify({
+                        answers: state.answers,
+                        diet: state.diet,
+                        allergens: JSON.stringify(state.allergies)
+                    })
                 });
             } catch (err) { console.error(err); }
         }
         
-        // Save preferences
-        try {
-            await api('/auth/preferences', {
-                method: 'PUT',
-                body: JSON.stringify({
-                    diet: state.diet,
-                    allergens: JSON.stringify(state.allergies)
-                })
-            });
-        } catch (err) { console.error(err); }
-        
-        toast('Compte créé !', 'success');
+        toast('Bienvenue sur Yumr! 🎉', 'success');
+        showXP(50);
         loadMainApp();
     } catch (err) {
-        const el = $('#register-error');
-        el.textContent = err.message;
-        el.classList.add('visible');
+        $('#register-error').textContent = err.message;
+        $('#register-error').classList.add('show');
     }
 }
 
 function logout() {
     state.user = null;
     state.token = null;
-    localStorage.removeItem('fm_token');
-    localStorage.removeItem('fm_user');
+    localStorage.removeItem('yumr_token');
+    localStorage.removeItem('yumr_user');
     showScreen('welcome-screen');
 }
 
-// Quiz
+// =====================================================
+// QUIZ
+// =====================================================
+
 async function startQuiz() {
     try {
-        const questions = await api(`/quiz/questions?count=${state.questionCount}`);
-        state.questions = questions;
+        state.questions = await api(`/quiz/questions?count=${state.questionCount}`);
         state.answers = [];
         state.currentQuestion = 0;
         showScreen('quiz-screen');
@@ -331,16 +488,16 @@ function displayQuestion() {
     if (!q) return;
     
     const card = $('#quiz-card');
-    card.classList.remove('swipe-left', 'swipe-right');
+    card.classList.remove('swipe-left', 'swipe-right', 'hint-left', 'hint-right');
+    card.style.transform = '';
     
-    const imgUrl = QUIZ_IMAGES[state.currentQuestion % QUIZ_IMAGES.length];
-    $('#quiz-card-image').style.backgroundImage = `url(${imgUrl})`;
-    $('#quiz-emoji').textContent = q.emoji || '🍽️';
-    $('#quiz-question').textContent = q.question;
+    $('#quiz-card-image').style.backgroundImage = `url(${getQuizImage(q)})`;
+    $('#quiz-card-emoji').textContent = q.emoji || '🍽️';
+    $('#quiz-card-question').textContent = q.question;
     
-    const progress = ((state.currentQuestion + 1) / state.questions.length) * 100;
-    $('#quiz-progress-fill').style.width = `${progress}%`;
-    $('#quiz-count').textContent = `${state.currentQuestion + 1}/${state.questions.length}`;
+    const pct = ((state.currentQuestion + 1) / state.questions.length) * 100;
+    $('#quiz-progress-fill').style.width = `${pct}%`;
+    $('#quiz-counter').textContent = `${state.currentQuestion + 1}/${state.questions.length}`;
 }
 
 function answerQuestion(liked) {
@@ -349,6 +506,10 @@ function answerQuestion(liked) {
     
     const card = $('#quiz-card');
     card.classList.add(liked ? 'swipe-right' : 'swipe-left');
+    
+    // Update streak display
+    const streak = state.answers.filter(a => a.liked).length;
+    $('#quiz-streak').textContent = streak;
     
     setTimeout(() => {
         state.currentQuestion++;
@@ -381,10 +542,50 @@ function displayResult(profile) {
     $('#result-description').textContent = profile.description || '';
     
     const traits = (profile.traits || '').split(',').filter(t => t.trim());
-    $('#result-tags').innerHTML = traits.map(t => `<span class="tag">${t.trim()}</span>`).join('');
+    $('#result-traits').innerHTML = traits.map(t => `<span>${t.trim()}</span>`).join('');
+    
+    // Add confetti effect
+    createConfetti();
 }
 
-// Main App
+function createConfetti() {
+    const container = $('#result-confetti');
+    container.innerHTML = '';
+    const colors = ['#FF6B35', '#FFD166', '#4ECB71', '#FF4757'];
+    
+    for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.cssText = `
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            left: ${Math.random() * 100}%;
+            top: -10px;
+            border-radius: 2px;
+            animation: confettiFall ${2 + Math.random() * 2}s linear forwards;
+            animation-delay: ${Math.random() * 0.5}s;
+        `;
+        container.appendChild(confetti);
+    }
+    
+    // Add CSS animation
+    if (!document.querySelector('#confetti-style')) {
+        const style = document.createElement('style');
+        style.id = 'confetti-style';
+        style.textContent = `
+            @keyframes confettiFall {
+                to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// =====================================================
+// MAIN APP
+// =====================================================
+
 async function loadMainApp() {
     showScreen('main-app');
     showTab('home');
@@ -394,64 +595,86 @@ async function loadMainApp() {
         state.user = userData;
         updateUserUI();
     } catch (err) {
-        logout();
+        loadMainAppAsGuest();
         return;
     }
     
     checkDailyMenu();
     loadStats();
+    loadBadges();
 }
 
 function loadMainAppAsGuest() {
     showScreen('main-app');
     showTab('home');
-    state.user = { username: 'Invité' };
+    state.user = { username: 'Invité', level: 1, total_xp: 0 };
     updateUserUI();
 }
 
 function updateUserUI() {
-    $('#home-username').textContent = state.user.username || 'Chef';
-    $('#header-streak').textContent = state.user.current_streak || 0;
-    $('#stat-level').textContent = state.user.level || 1;
-    $('#stat-xp').textContent = state.user.total_xp || 0;
-    $('#stat-streak').textContent = state.user.current_streak || 0;
+    const u = state.user;
     
-    $('#profile-username').textContent = `@${state.user.username || 'user'}`;
-    $('#profile-followers').textContent = state.user.followers_count || 0;
-    $('#profile-following').textContent = state.user.following_count || 0;
-    $('#profile-saved').textContent = state.favorites.length;
+    // Header
+    $('#header-streak').textContent = u.current_streak || 0;
+    $('#header-xp').textContent = u.total_xp || 0;
     
-    if (state.user.avatar_url) {
-        $('#avatar-img').src = state.user.avatar_url;
-    }
+    // Home
+    $('#home-username').textContent = u.username || 'Chef';
+    $('#stat-streak').textContent = u.current_streak || 0;
+    $('#stat-xp-week').textContent = u.total_xp || 0;
+    $('#stat-recipes').textContent = u.recipes_count || 0;
+    
+    // Fridge count
+    $('#fridge-count').textContent = state.fridge.length;
+    
+    // Profile
+    $('#profile-username').textContent = `@${u.username || 'user'}`;
+    $('#profile-level').textContent = u.level || 1;
+    $('#profile-xp').textContent = u.total_xp || 0;
+    $('#profile-recipes').textContent = u.recipes_count || 0;
+    $('#profile-streak-max').textContent = u.longest_streak || 0;
     
     // Culinary profile
-    const cp = state.user.culinary_profile || state.calculatedProfile;
+    const cp = u.culinary_profile || state.calculatedProfile;
     if (cp) {
-        $('#profile-culinary').innerHTML = `
-            <div class="profile-culinary-emoji">${cp.emoji || '🍳'}</div>
-            <div class="profile-culinary-info">
-                <h3>${cp.name || 'Gourmet'}</h3>
-                <p>${cp.description || ''}</p>
-            </div>
-        `;
-        $('#profile-culinary').classList.remove('hidden');
+        $('.culinary-emoji').textContent = cp.emoji || '🍳';
+        $('.culinary-name').textContent = cp.name || 'Gourmet';
     }
+    
+    // XP bar
+    const level = u.level || 1;
+    const xp = u.total_xp || 0;
+    const currentLevelXP = Math.floor(100 * Math.pow(1.5, level - 1));
+    const nextLevelXP = Math.floor(100 * Math.pow(1.5, level));
+    const progress = ((xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
+    
+    $('#current-level').textContent = level;
+    $('#current-xp').textContent = xp;
+    $('#next-level-xp').textContent = nextLevelXP;
+    $('#xp-bar-fill').style.width = `${Math.min(100, Math.max(0, progress))}%`;
+}
+
+function updateProfileUI() {
+    updateUserUI();
+    loadBadges();
 }
 
 async function loadStats() {
     if (!state.token) return;
     try {
         const stats = await api('/gamification/stats');
-        $('#stat-level').textContent = stats.level || 1;
-        $('#stat-xp').textContent = stats.total_xp || 0;
-        $('#stat-streak').textContent = stats.current_streak || 0;
-        $('#stat-achievements').textContent = stats.achievements_unlocked || 0;
-        $('#header-streak').textContent = stats.current_streak || 0;
+        state.user.level = stats.level;
+        state.user.total_xp = stats.total_xp;
+        state.user.current_streak = stats.current_streak;
+        state.user.longest_streak = stats.longest_streak;
+        updateUserUI();
     } catch (err) { console.error(err); }
 }
 
-// Daily Menu
+// =====================================================
+// DAILY MENU
+// =====================================================
+
 async function checkDailyMenu() {
     if (!state.token) return;
     try {
@@ -469,26 +692,26 @@ async function generateDailyMenu() {
         return;
     }
     
-    const budget = $('.budget-btn.active')?.dataset.budget || 'medium';
-    const includeCheese = $('#option-cheese').checked;
-    const includeWine = $('#option-wine').checked;
+    const opts = state.menuOptions;
     
     try {
         const data = await api('/quiz/daily', {
             method: 'POST',
             body: JSON.stringify({
-                budget,
-                servings: state.portions,
-                include_cheese: includeCheese,
-                include_wine: includeWine
+                budget: opts.budget,
+                servings: opts.persons,
+                include_cheese: opts.cheese,
+                include_wine: opts.wine
             })
         });
         
         state.todayMenu = data.menu;
-        hideModal('menu-modal');
+        hideModal('menu-options-modal');
         displayTodayMenu();
         
-        toast(`+${data.xp_gained} XP ! Streak: ${data.streak} 🔥`, 'success');
+        showXP(data.xp_gained || 20);
+        toast(`Streak: ${data.streak} 🔥`, 'success');
+        
         $('#header-streak').textContent = data.streak;
         $('#stat-streak').textContent = data.streak;
     } catch (err) {
@@ -497,30 +720,143 @@ async function generateDailyMenu() {
 }
 
 function displayTodayMenu() {
-    $('#daily-banner').classList.add('hidden');
-    $('#today-menu').classList.remove('hidden');
+    $('#daily-menu-status').textContent = 'Ton menu est prêt !';
+    $('#generate-menu-btn').textContent = 'Voir';
     
-    const typeLabels = { starter: 'Entrée', main: 'Plat', dessert: 'Dessert', cheese: 'Fromage', wine: 'Vin' };
+    const preview = $('#daily-menu-preview');
+    preview.classList.remove('hidden');
+    
+    const types = { starter: 'Entrée', main: 'Plat', dessert: 'Dessert', cheese: 'Fromage', wine: 'Vin' };
     const items = [];
     
-    ['starter', 'main', 'dessert', 'cheese', 'wine'].forEach(type => {
-        const meal = state.todayMenu[type];
-        if (meal) items.push({ type, label: typeLabels[type], meal });
+    ['starter', 'main', 'dessert', 'cheese', 'wine'].forEach(t => {
+        const meal = state.todayMenu[t];
+        if (meal) items.push({ type: t, label: types[t], meal });
     });
     
-    $('#menu-list').innerHTML = items.map(item => `
-        <div class="menu-item" onclick="openRecipe('${item.meal.id}')">
-            <div class="menu-item-image" style="background-image:url(${getRecipeImage(item.meal)})"></div>
+    preview.innerHTML = items.map(i => `
+        <div class="menu-item-row" onclick="openRecipe('${i.meal.id}')">
+            <div class="menu-item-img" style="background-image:url(${getRecipeImage(i.meal)})"></div>
             <div class="menu-item-info">
-                <span class="menu-item-type">${item.label}</span>
-                <span class="menu-item-name">${item.meal.name}</span>
+                <span class="menu-item-type">${i.label}</span>
+                <span class="menu-item-name">${i.meal.name}</span>
             </div>
-            <span class="menu-item-arrow">→</span>
+            <span style="color:var(--text-muted)">→</span>
         </div>
     `).join('');
 }
 
-// Recipes
+// =====================================================
+// FRIDGE
+// =====================================================
+
+function openFridge() {
+    showModal('fridge-modal');
+    displayFridge('all');
+    displayExpiringItems();
+}
+
+function displayFridge(category = 'all') {
+    const items = category === 'all' 
+        ? state.fridge 
+        : state.fridge.filter(i => i.category === category);
+    
+    if (!items.length) {
+        $('#fridge-list').innerHTML = `
+            <div style="text-align:center;padding:40px;color:var(--text-secondary)">
+                <p style="font-size:48px;margin-bottom:16px">🧊</p>
+                <p>Aucun ingrédient dans cette catégorie</p>
+            </div>
+        `;
+        return;
+    }
+    
+    $('#fridge-list').innerHTML = items.map(item => {
+        const days = getDaysUntilExpiry(item.expirationDate);
+        let expClass = 'ok';
+        let expText = `${days}j`;
+        
+        if (days < 0) { expClass = 'danger'; expText = 'Périmé'; }
+        else if (days <= 2) { expClass = 'danger'; }
+        else if (days <= 5) { expClass = 'warning'; }
+        
+        return `
+            <div class="fridge-item">
+                <span class="fridge-item-icon">${item.icon || '🥕'}</span>
+                <div class="fridge-item-info">
+                    <div class="fridge-item-name">${item.name}</div>
+                    <div class="fridge-item-qty">${item.quantity}</div>
+                </div>
+                <span class="fridge-item-exp ${expClass}">${expText}</span>
+                <button class="fridge-item-del" onclick="deleteFridgeItem('${item.id}')">🗑️</button>
+            </div>
+        `;
+    }).join('');
+}
+
+function displayExpiringItems() {
+    const expiring = state.fridge.filter(i => getDaysUntilExpiry(i.expirationDate) <= 3);
+    
+    if (!expiring.length) {
+        $('#fridge-expiring').classList.add('hidden');
+        return;
+    }
+    
+    $('#fridge-expiring').classList.remove('hidden');
+    $('#expiring-list').innerHTML = expiring.map(i => `
+        <div class="fridge-item" style="margin-bottom:8px">
+            <span class="fridge-item-icon">${i.icon}</span>
+            <div class="fridge-item-info">
+                <div class="fridge-item-name">${i.name}</div>
+            </div>
+            <span class="fridge-item-exp danger">${getDaysUntilExpiry(i.expirationDate)}j</span>
+        </div>
+    `).join('');
+}
+
+function saveIngredient() {
+    const name = $('#ingredient-name').value.trim();
+    if (!name) { toast('Nom requis', 'error'); return; }
+    
+    const newItem = {
+        id: Date.now().toString(),
+        name,
+        quantity: $('#ingredient-qty').value || '1',
+        category: $('#ingredient-category').value,
+        icon: getCategoryIcon($('#ingredient-category').value),
+        expirationDate: $('#ingredient-expiry').value || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    };
+    
+    state.fridge.push(newItem);
+    hideModal('add-ingredient-modal');
+    
+    // Reset form
+    $('#ingredient-name').value = '';
+    $('#ingredient-qty').value = '';
+    $('#ingredient-expiry').value = '';
+    
+    toast('Ingrédient ajouté !', 'success');
+    displayFridge('all');
+    displayExpiringItems();
+    $('#fridge-count').textContent = state.fridge.length;
+}
+
+function deleteFridgeItem(id) {
+    state.fridge = state.fridge.filter(i => i.id !== id);
+    displayFridge($('.fridge-cat.active')?.dataset.cat || 'all');
+    displayExpiringItems();
+    $('#fridge-count').textContent = state.fridge.length;
+}
+
+function getCategoryIcon(cat) {
+    const icons = { fruits: '🍎', legumes: '🥬', viandes: '🥩', laitiers: '🧀', epicerie: '🥫', surgeles: '🧊' };
+    return icons[cat] || '🥕';
+}
+
+// =====================================================
+// RECIPES
+// =====================================================
+
 async function loadRecipes(search = '', filter = 'all') {
     try {
         let endpoint = '/meals?limit=50';
@@ -530,25 +866,38 @@ async function loadRecipes(search = '', filter = 'all') {
         const data = await api(endpoint);
         state.recipes = data.meals || [];
         displayRecipes();
-    } catch (err) { console.error(err); }
+    } catch (err) {
+        console.error(err);
+        // Use mock data
+        state.recipes = [];
+        displayRecipes();
+    }
 }
 
 function displayRecipes() {
+    const grid = $('#recipes-grid');
+    
     if (!state.recipes.length) {
-        $('#recipes-grid').innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">🔍</div><h3>Aucun résultat</h3></div>';
+        grid.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-secondary)">
+                <p style="font-size:48px;margin-bottom:16px">🔍</p>
+                <h3 style="margin-bottom:8px">Aucun résultat</h3>
+                <p>Essaie une autre recherche</p>
+            </div>
+        `;
         return;
     }
     
-    $('#recipes-grid').innerHTML = state.recipes.map(r => {
-        const isFav = state.favorites.includes(r.id);
+    grid.innerHTML = state.recipes.map(r => {
+        const isSaved = state.favorites.includes(r.id);
         return `
-            <div class="recipe-card">
-                <div class="recipe-card-image" style="background-image:url(${getRecipeImage(r)})" onclick="openRecipe('${r.id}')">
-                    <button class="recipe-card-fav ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite('${r.id}')">
-                        ${isFav ? '❤️' : '🤍'}
+            <div class="recipe-card" onclick="openRecipe('${r.id}')">
+                <div class="recipe-card-img" style="background-image:url(${getRecipeImage(r)})">
+                    <button class="recipe-card-save ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); toggleFavorite('${r.id}')">
+                        ${isSaved ? '❤️' : '🤍'}
                     </button>
                 </div>
-                <div class="recipe-card-body" onclick="openRecipe('${r.id}')">
+                <div class="recipe-card-body">
                     <div class="recipe-card-name">${r.name}</div>
                     <div class="recipe-card-meta">
                         <span>⏱️ ${(r.prep_time || 0) + (r.cook_time || 0)}min</span>
@@ -560,7 +909,6 @@ function displayRecipes() {
     }).join('');
 }
 
-// Favorites
 function toggleFavorite(id) {
     const idx = state.favorites.indexOf(id);
     if (idx > -1) {
@@ -570,341 +918,151 @@ function toggleFavorite(id) {
         state.favorites.push(id);
         toast('Ajouté aux favoris !', 'success');
     }
-    localStorage.setItem('fm_favorites', JSON.stringify(state.favorites));
-    
-    // Save to server if logged in
-    if (state.token) {
-        api(`/meals/${id}/${idx > -1 ? 'unsave' : 'save'}`, { method: idx > -1 ? 'DELETE' : 'POST' }).catch(() => {});
-    }
-    
-    // Refresh current view
-    if ($('#tab-explore').classList.contains('active')) displayRecipes();
-    if ($('#tab-favorites').classList.contains('active')) loadFavorites();
-    
-    $('#profile-saved').textContent = state.favorites.length;
+    localStorage.setItem('yumr_favorites', JSON.stringify(state.favorites));
+    displayRecipes();
 }
 
-async function loadFavorites() {
-    if (!state.favorites.length) {
-        $('#favorites-grid').innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">❤️</div>
-                <h3>Aucun favori</h3>
-                <p>Explore les recettes et ajoute tes préférées</p>
-            </div>
-        `;
-        return;
-    }
-    
-    // Filter recipes that are in favorites
-    const favRecipes = state.recipes.filter(r => state.favorites.includes(r.id));
-    
-    if (!favRecipes.length) {
-        // Load from server
-        try {
-            const data = await api('/meals/user/saved');
-            if (data.meals?.length) {
-                displayFavorites(data.meals);
-                return;
-            }
-        } catch (err) {}
-        
-        // Fallback: load all recipes first
-        await loadRecipes();
-        const loaded = state.recipes.filter(r => state.favorites.includes(r.id));
-        displayFavorites(loaded);
-    } else {
-        displayFavorites(favRecipes);
-    }
-}
-
-function displayFavorites(recipes) {
-    if (!recipes.length) {
-        $('#favorites-grid').innerHTML = `
-            <div class="empty-state">
-                <div class="empty-icon">❤️</div>
-                <h3>Aucun favori</h3>
-                <p>Explore les recettes et ajoute tes préférées</p>
-            </div>
-        `;
-        return;
-    }
-    
-    $('#favorites-grid').innerHTML = recipes.map(r => `
-        <div class="recipe-card">
-            <div class="recipe-card-image" style="background-image:url(${getRecipeImage(r)})" onclick="openRecipe('${r.id}')">
-                <button class="recipe-card-fav active" onclick="event.stopPropagation(); toggleFavorite('${r.id}')">❤️</button>
-            </div>
-            <div class="recipe-card-body" onclick="openRecipe('${r.id}')">
-                <div class="recipe-card-name">${r.name}</div>
-                <div class="recipe-card-meta">
-                    <span>⏱️ ${(r.prep_time || 0) + (r.cook_time || 0)}min</span>
-                </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-// Recipe Detail
 async function openRecipe(id) {
     try {
-        const recipe = await api(`/meals/${id}`);
-        const isFav = state.favorites.includes(id);
+        const r = await api(`/meals/${id}`);
+        const isSaved = state.favorites.includes(id);
+        const types = { starter: 'Entrée', main: 'Plat', dessert: 'Dessert', cheese: 'Fromage', wine: 'Vin' };
         
-        const typeLabels = { starter: 'Entrée', main: 'Plat', dessert: 'Dessert', cheese: 'Fromage', wine: 'Vin' };
-        const diffLabels = ['', 'Facile', 'Moyen', 'Difficile', 'Expert'];
-        
-        const ingredients = recipe.ingredients || [];
-        const steps = recipe.recipe?.steps || [];
-        
-        $('#recipe-page').innerHTML = `
-            <button class="recipe-back" onclick="hideModal('recipe-modal')">←</button>
-            <button class="recipe-save ${isFav ? 'active' : ''}" onclick="toggleFavorite('${id}')">${isFav ? '❤️' : '🤍'}</button>
-            <div class="recipe-hero" style="background-image:url(${getRecipeImage(recipe)})"></div>
-            <div class="recipe-content">
-                <span class="recipe-type-badge">${typeLabels[recipe.type] || recipe.type}</span>
-                <h1 class="recipe-title">${recipe.name}</h1>
-                <p class="recipe-description">${recipe.description || ''}</p>
+        $('#recipe-detail-page').innerHTML = `
+            <div class="recipe-detail-hero" style="background-image:url(${getRecipeImage(r)})">
+                <button class="btn-back recipe-detail-back" onclick="hideModal('recipe-modal')">←</button>
+                <button class="recipe-detail-save ${isSaved ? 'saved' : ''}" onclick="toggleFavorite('${id}')">${isSaved ? '❤️' : '🤍'}</button>
+            </div>
+            <div class="recipe-detail-content">
+                <span class="recipe-detail-type">${types[r.type] || r.type}</span>
+                <h1 class="recipe-detail-title">${r.name}</h1>
+                <p class="recipe-detail-desc">${r.description || ''}</p>
                 
-                <div class="recipe-meta">
-                    <div class="recipe-meta-item">⏱️ ${(recipe.prep_time || 0) + (recipe.cook_time || 0)} min</div>
-                    <div class="recipe-meta-item">👨‍🍳 ${diffLabels[recipe.difficulty] || 'Moyen'}</div>
-                    <div class="recipe-meta-item">💰 ${'€'.repeat(recipe.budget === 'low' ? 1 : recipe.budget === 'high' ? 3 : 2)}</div>
-                    ${recipe.calories ? `<div class="recipe-meta-item">🔥 ${recipe.calories} kcal</div>` : ''}
+                <div class="recipe-detail-meta">
+                    <span class="recipe-meta-item">⏱️ ${(r.prep_time || 0) + (r.cook_time || 0)} min</span>
+                    <span class="recipe-meta-item">💰 ${'€'.repeat(r.budget === 'low' ? 1 : r.budget === 'high' ? 3 : 2)}</span>
+                    ${r.calories ? `<span class="recipe-meta-item">🔥 ${r.calories} kcal</span>` : ''}
                 </div>
                 
-                ${ingredients.length ? `
-                <div class="recipe-section">
-                    <h3>🥕 Ingrédients</h3>
-                    <ul>${ingredients.map(i => `<li><strong>${i.name}</strong> - ${i.qty}</li>`).join('')}</ul>
-                </div>
+                ${r.ingredients?.length ? `
+                    <div class="recipe-detail-section">
+                        <h3>🥕 Ingrédients</h3>
+                        <ul>${r.ingredients.map(i => `<li><strong>${i.name}</strong> - ${i.qty}</li>`).join('')}</ul>
+                    </div>
                 ` : ''}
                 
-                ${steps.length ? `
-                <div class="recipe-section">
-                    <h3>👨‍🍳 Préparation</h3>
-                    <ol>${steps.map(s => `<li>${s}</li>`).join('')}</ol>
-                </div>
-                ` : ''}
-                
-                ${recipe.wine_pairing ? `
-                <div class="recipe-section">
-                    <h3>🍷 Accord vin</h3>
-                    <p>${recipe.wine_pairing}</p>
-                </div>
+                ${r.recipe?.steps?.length ? `
+                    <div class="recipe-detail-section">
+                        <h3>👨‍🍳 Préparation</h3>
+                        <ol>${r.recipe.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+                    </div>
                 ` : ''}
             </div>
         `;
         
         showModal('recipe-modal');
     } catch (err) {
-        toast('Erreur chargement', 'error');
+        toast('Erreur chargement recette', 'error');
     }
 }
 
-// Fridge
-async function loadFridge() {
-    if (!state.token) {
-        $('#fridge-list').innerHTML = '<div class="empty-state"><div class="empty-icon">🔒</div><h3>Connecte-toi</h3><p>Cette fonctionnalité nécessite un compte</p></div>';
-        return;
-    }
+// =====================================================
+// LEADERBOARD
+// =====================================================
+
+function loadLeaderboard() {
+    const list = $('#leaderboard');
+    const myRank = 12; // Mock
     
-    try {
-        const items = await api('/fridge');
-        state.fridgeItems = items;
-        displayFridge();
-    } catch (err) {
-        console.error(err);
-        $('#fridge-list').innerHTML = '<div class="empty-state"><div class="empty-icon">🧊</div><h3>Frigo vide</h3></div>';
-    }
-}
-
-function displayFridge() {
-    if (!state.fridgeItems.length) {
-        $('#fridge-list').innerHTML = '<div class="empty-state"><div class="empty-icon">🧊</div><h3>Frigo vide</h3><p>Ajoute des ingrédients</p></div>';
-        $('#fridge-suggestions').classList.add('hidden');
-        return;
-    }
-    
-    $('#fridge-list').innerHTML = state.fridgeItems.map(item => {
-        let statusClass = 'ok';
-        let statusText = '';
-        if (item.days_until_expiry !== undefined) {
-            if (item.days_until_expiry < 0) {
-                statusClass = 'expired';
-                statusText = 'Périmé';
-            } else if (item.days_until_expiry <= 3) {
-                statusClass = 'warning';
-                statusText = `${item.days_until_expiry}j`;
-            } else {
-                statusText = `${item.days_until_expiry}j`;
-            }
-        }
-        
-        return `
-            <div class="fridge-item">
-                <span class="fridge-item-icon">🥕</span>
-                <div class="fridge-item-info">
-                    <div class="fridge-item-name">${item.name}</div>
-                    <div class="fridge-item-qty">${item.quantity} ${item.unit}</div>
-                </div>
-                ${statusText ? `<span class="fridge-item-expiry ${statusClass}">${statusText}</span>` : ''}
-                <button class="fridge-item-delete" onclick="deleteFridgeItem('${item.id}')">🗑️</button>
-            </div>
-        `;
-    }).join('');
-    
-    loadFridgeSuggestions();
-}
-
-async function loadFridgeSuggestions() {
-    try {
-        const data = await api('/fridge/recipes/suggestions');
-        if (data.recipes?.length) {
-            $('#fridge-suggestions').classList.remove('hidden');
-            $('#suggestions-list').innerHTML = data.recipes.slice(0, 5).map(r => `
-                <div class="menu-item" onclick="openRecipe('${r.id}')">
-                    <div class="menu-item-image" style="background-image:url(${getRecipeImage(r)})"></div>
-                    <div class="menu-item-info">
-                        <span class="menu-item-type">${r.match_percent}% match</span>
-                        <span class="menu-item-name">${r.name}</span>
-                    </div>
-                    <span class="menu-item-arrow">→</span>
-                </div>
-            `).join('');
-        }
-    } catch (err) {}
-}
-
-async function saveIngredient() {
-    const name = $('#ingredient-name').value.trim();
-    if (!name) { toast('Nom requis', 'error'); return; }
-    
-    try {
-        await api('/fridge', {
-            method: 'POST',
-            body: JSON.stringify({
-                name,
-                quantity: $('#ingredient-qty').value || 1,
-                unit: $('#ingredient-unit').value,
-                expiry_date: $('#ingredient-expiry').value || null
-            })
-        });
-        
-        hideModal('ingredient-modal');
-        $('#ingredient-name').value = '';
-        $('#ingredient-qty').value = '1';
-        $('#ingredient-expiry').value = '';
-        
-        toast('Ajouté !', 'success');
-        loadFridge();
-    } catch (err) {
-        toast(err.message, 'error');
-    }
-}
-
-async function deleteFridgeItem(id) {
-    try {
-        await api(`/fridge/${id}`, { method: 'DELETE' });
-        loadFridge();
-    } catch (err) {
-        toast('Erreur', 'error');
-    }
-}
-
-// Achievements
-async function openAchievements() {
-    showModal('achievements-modal');
-    
-    try {
-        const [all, mine] = await Promise.all([
-            api('/gamification/achievements'),
-            api('/gamification/achievements/me')
-        ]);
-        
-        const unlockedIds = new Set(mine.map(a => a.achievement_id));
-        
-        $('#achievements-grid').innerHTML = all.map(a => `
-            <div class="achievement-card ${unlockedIds.has(a.id) ? '' : 'locked'}">
-                <div class="achievement-icon">${a.icon || '🏆'}</div>
-                <div class="achievement-name">${a.name}</div>
-                <div class="achievement-desc">${a.description || ''}</div>
-            </div>
-        `).join('');
-    } catch (err) {
-        $('#achievements-grid').innerHTML = '<p style="text-align:center;padding:40px;color:var(--gray-500);">Erreur chargement</p>';
-    }
-}
-
-// Preferences
-function openPreferences() {
-    showModal('preferences-modal');
-    
-    $('#preferences-content').innerHTML = `
-        <div class="pref-section">
-            <h3>Régime alimentaire</h3>
-            <div class="diet-cards">
-                <label class="diet-card">
-                    <input type="radio" name="pref-diet" value="omnivore" ${state.user.diet === 'omnivore' || !state.user.diet ? 'checked' : ''}>
-                    <div class="diet-card-content"><span class="diet-icon">🥩</span><span>Omnivore</span></div>
-                </label>
-                <label class="diet-card">
-                    <input type="radio" name="pref-diet" value="vegetarian" ${state.user.diet === 'vegetarian' ? 'checked' : ''}>
-                    <div class="diet-card-content"><span class="diet-icon">🥬</span><span>Végétarien</span></div>
-                </label>
-                <label class="diet-card">
-                    <input type="radio" name="pref-diet" value="vegan" ${state.user.diet === 'vegan' ? 'checked' : ''}>
-                    <div class="diet-card-content"><span class="diet-icon">🌱</span><span>Vegan</span></div>
-                </label>
-            </div>
+    list.innerHTML = MOCK_LEADERBOARD.map((p, idx) => `
+        <div class="leaderboard-item ${idx + 1 === myRank ? 'me' : ''}">
+            <span class="lb-rank ${p.rank === 1 ? 'gold' : p.rank === 2 ? 'silver' : p.rank === 3 ? 'bronze' : ''}">#${p.rank}</span>
+            <div class="lb-avatar" style="background-image:url(${p.avatar})"></div>
+            <span class="lb-name">${p.name}</span>
+            <span class="lb-points">${p.points} pts</span>
         </div>
-        <div class="pref-section">
-            <h3>Allergies</h3>
-            <div class="allergy-chips">
-                <label class="chip"><input type="checkbox" value="gluten" ${state.user.allergens?.includes('gluten') ? 'checked' : ''}><span>🌾 Sans gluten</span></label>
-                <label class="chip"><input type="checkbox" value="lactose" ${state.user.allergens?.includes('lactose') ? 'checked' : ''}><span>🥛 Sans lactose</span></label>
-                <label class="chip"><input type="checkbox" value="nuts" ${state.user.allergens?.includes('nuts') ? 'checked' : ''}><span>🥜 Sans arachides</span></label>
-                <label class="chip"><input type="checkbox" value="seafood" ${state.user.allergens?.includes('seafood') ? 'checked' : ''}><span>🦐 Sans fruits de mer</span></label>
-            </div>
-        </div>
-    `;
-}
-
-async function savePreferences() {
-    const diet = $('input[name="pref-diet"]:checked')?.value || 'omnivore';
-    const allergens = Array.from($$('#preferences-content .allergy-chips input:checked')).map(c => c.value);
+    `).join('');
     
-    try {
-        await api('/auth/preferences', {
-            method: 'PUT',
-            body: JSON.stringify({ diet, allergens: JSON.stringify(allergens) })
-        });
-        
-        state.user.diet = diet;
-        state.user.allergens = allergens;
-        
-        hideModal('preferences-modal');
-        toast('Préférences sauvegardées !', 'success');
-    } catch (err) {
-        toast(err.message, 'error');
-    }
+    $('#league-position').textContent = `#${myRank}`;
 }
 
-// Avatar
-async function handleAvatarUpload(e) {
+// =====================================================
+// BADGES
+// =====================================================
+
+function loadBadges() {
+    // Preview (first 5)
+    $('#badges-preview').innerHTML = MOCK_BADGES.slice(0, 5).map(b => `
+        <div class="badge-item ${b.unlocked ? '' : 'locked'}">
+            <div class="badge-icon">${b.icon}</div>
+            <div class="badge-name">${b.name}</div>
+        </div>
+    `).join('');
+    
+    $('#profile-badges').textContent = MOCK_BADGES.filter(b => b.unlocked).length;
+    
+    // Full grid
+    $('#badges-grid').innerHTML = MOCK_BADGES.map(b => `
+        <div class="badge-card ${b.unlocked ? '' : 'locked'}">
+            <div class="badge-card-icon">${b.icon}</div>
+            <div class="badge-card-name">${b.name}</div>
+            <div class="badge-card-desc">${b.desc}</div>
+        </div>
+    `).join('');
+}
+
+// =====================================================
+// POST
+// =====================================================
+
+function handlePostImage(e) {
     const file = e.target.files[0];
     if (!file) return;
     
     const reader = new FileReader();
-    reader.onload = e => {
-        $('#avatar-img').src = e.target.result;
-        toast('Photo mise à jour', 'success');
+    reader.onload = ev => {
+        $('#post-preview').src = ev.target.result;
+        $('#post-preview').classList.remove('hidden');
+        $('#upload-zone').classList.add('hidden');
     };
     reader.readAsDataURL(file);
 }
 
-// Global functions
+function publishPost() {
+    if (!$('#post-preview').src) {
+        toast('Ajoute une photo', 'error');
+        return;
+    }
+    
+    showXP(30);
+    toast('Post publié ! 🎉', 'success');
+    
+    // Reset
+    $('#post-preview').src = '';
+    $('#post-preview').classList.add('hidden');
+    $('#upload-zone').classList.remove('hidden');
+    $('#post-caption').value = '';
+    
+    showTab('home');
+}
+
+// Avatar
+function handleAvatarUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = ev => {
+        $('#avatar-img').src = ev.target.result;
+        toast('Photo mise à jour !', 'success');
+    };
+    reader.readAsDataURL(file);
+}
+
+// =====================================================
+// GLOBAL FUNCTIONS
+// =====================================================
+
 window.openRecipe = openRecipe;
 window.toggleFavorite = toggleFavorite;
 window.deleteFridgeItem = deleteFridgeItem;
-window.showTab = showTab;
