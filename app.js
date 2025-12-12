@@ -1,5 +1,5 @@
 /**
- * YUMR V3 - ULTIMATE EDITION
+ * YUMR V3.1 - ULTIMATE
  * Logic: SPA Router, Physics Swipe, Gamification Engine
  */
 
@@ -32,6 +32,11 @@ const DATA = {
         { name: "Argent", color: "#E0E0E0", min: 100 },
         { name: "Or", color: "#FFD700", min: 300 },
         { name: "Diamant", color: "#B9F2FF", min: 600 }
+    ],
+    onboarding: [
+        { icon: "🔥", title: "Cuisine & Progresse", text: "Gagne de l'XP à chaque plat cuisiné et monte dans le classement." },
+        { icon: "🥙", title: "Découvre tes Goûts", text: "Swipe des plats pour créer ton profil culinaire unique." },
+        { icon: "🏆", title: "Défie tes Amis", text: "Rejoins des ligues et deviens le meilleur chef de la semaine." }
     ]
 };
 
@@ -39,35 +44,30 @@ const DATA = {
 // 2. STATE MANAGEMENT
 // =======================
 const State = {
-    user: {
-        username: null,
-        xp: 0,
-        level: 1,
-        streak: 1,
-        cooked: 0,
-        badges: []
-    },
+    user: { username: null, xp: 0, level: 1, streak: 1, cooked: 0, badges: [] },
     quizIndex: 0,
     likes: [],
     
     load() {
-        const saved = localStorage.getItem('yumr_v3_user');
-        if (saved) this.user = JSON.parse(saved);
+        try {
+            const saved = localStorage.getItem('yumr_v3_user');
+            if (saved) this.user = JSON.parse(saved);
+        } catch(e) { console.error("Storage error", e); }
     },
     
     save() {
-        localStorage.setItem('yumr_v3_user', JSON.stringify(this.user));
-        UI.updateStats();
+        try {
+            localStorage.setItem('yumr_v3_user', JSON.stringify(this.user));
+            UI.updateStats();
+        } catch(e) {}
     },
     
     addXP(amount) {
         const oldLevel = Math.floor(this.user.xp / 100) + 1;
         this.user.xp += amount;
         const newLevel = Math.floor(this.user.xp / 100) + 1;
-        
         this.user.level = newLevel;
         this.save();
-        
         FX.xpBurst(amount);
         if (newLevel > oldLevel) UI.showLevelUp(newLevel);
     }
@@ -89,22 +89,76 @@ const Router = {
         
         if (next) {
             next.classList.add('active');
-            // Force reflow
-            void next.offsetWidth;
+            void next.offsetWidth; // Force Reflow
             next.style.opacity = '1';
             next.style.transform = 'scale(1)';
         }
 
-        // Toggle Nav Bar visibility
         const nav = document.getElementById('main-nav');
-        const hideNavScreens = ['splash', 'onboarding', 'quiz', 'auth', 'cooking'];
-        nav.style.transform = hideNavScreens.includes(screenId) ? 'translateY(150%)' : 'translateY(0)';
+        if(nav) {
+            const hideNavScreens = ['splash', 'onboarding', 'quiz', 'auth', 'cooking'];
+            nav.style.transform = hideNavScreens.includes(screenId) ? 'translateY(150%)' : 'translateY(0)';
+        }
     }
 };
 
 // =======================
-// 4. UI CONTROLLER
+// 4. MODULES
 // =======================
+
+// ONBOARDING MODULE (Fixed)
+const Onboarding = {
+    index: 0,
+    init() {
+        this.slider = document.getElementById('ob-slider');
+        this.dots = document.getElementById('ob-dots');
+        if(!this.slider) return;
+
+        this.render();
+        
+        const btnNext = document.getElementById('ob-next');
+        if(btnNext) {
+            btnNext.onclick = () => {
+                if(this.index < DATA.onboarding.length - 1) {
+                    this.index++;
+                    this.update();
+                } else {
+                    Router.go('quiz');
+                }
+            };
+        }
+        
+        const btnSkip = document.getElementById('ob-skip');
+        if(btnSkip) btnSkip.onclick = () => Router.go('auth');
+    },
+    
+    render() {
+        this.slider.innerHTML = DATA.onboarding.map((slide, i) => `
+            <div class="ob-slide ${i === 0 ? 'active' : ''}" data-index="${i}">
+                <div class="ob-icon">${slide.icon}</div>
+                <h2 class="ob-title">${slide.title}</h2>
+                <p class="ob-text">${slide.text}</p>
+            </div>
+        `).join('');
+        
+        this.dots.innerHTML = DATA.onboarding.map((_, i) => `
+            <div class="ob-dot ${i === 0 ? 'active' : ''}"></div>
+        `).join('');
+    },
+    
+    update() {
+        document.querySelectorAll('.ob-slide').forEach((el, i) => {
+            el.classList.toggle('active', i === this.index);
+        });
+        document.querySelectorAll('.ob-dot').forEach((el, i) => {
+            el.classList.toggle('active', i === this.index);
+        });
+        document.getElementById('ob-next').textContent = 
+            this.index === DATA.onboarding.length - 1 ? "Commencer" : "Continuer";
+    }
+};
+
+// UI CONTROLLER
 const UI = {
     init() {
         State.load();
@@ -113,40 +167,57 @@ const UI = {
         this.renderLeaderboard();
         this.updateStats();
         
-        // Splash logic
+        // SPLASH LOGIC
         setTimeout(() => {
-            document.querySelector('.loader-fill').style.width = '100%';
+            const loader = document.querySelector('.loader-fill');
+            if(loader) loader.style.width = '100%';
+            
             setTimeout(() => {
-                Router.go(State.user.username ? 'home' : 'onboarding');
+                // Decide where to go
+                if(State.user.username) {
+                    Router.go('home');
+                } else {
+                    Router.go('onboarding');
+                }
             }, 1000);
         }, 500);
     },
 
     updateStats() {
-        document.getElementById('xp-val').textContent = State.user.xp;
-        document.getElementById('streak-val').textContent = State.user.streak;
-        document.getElementById('profile-name').textContent = "@" + (State.user.username || "Guest");
-        document.getElementById('profile-lvl').textContent = State.user.level;
-        document.getElementById('stat-cooked').textContent = State.user.cooked;
-        document.getElementById('stat-streak').textContent = State.user.streak;
+        const xpEl = document.getElementById('xp-val');
+        if(xpEl) xpEl.textContent = State.user.xp;
         
-        // Update League
+        const streakEl = document.getElementById('streak-val');
+        if(streakEl) streakEl.textContent = State.user.streak;
+        
+        const nameEl = document.getElementById('profile-name');
+        if(nameEl) nameEl.textContent = "@" + (State.user.username || "Guest");
+        
+        const lvlEl = document.getElementById('profile-lvl');
+        if(lvlEl) lvlEl.textContent = State.user.level;
+        
+        ['cooked', 'streak', 'badges'].forEach(k => {
+            const el = document.getElementById('stat-' + k);
+            if(el) el.textContent = State.user[k] || 0;
+        });
+
         const league = DATA.leagues.slice().reverse().find(l => State.user.xp >= l.min) || DATA.leagues[0];
-        document.getElementById('league-name').textContent = "Ligue " + league.name;
-        document.getElementById('league-icon').style.textShadow = `0 0 20px ${league.color}`;
+        const leagueName = document.getElementById('league-name');
+        if(leagueName) leagueName.textContent = "Ligue " + league.name;
     },
 
     renderFeed() {
         const container = document.getElementById('feed-list');
-        container.innerHTML = DATA.posts.map((post, i) => `
-            <div class="feed-card bounce-click" ondblclick="UI.likePost(this)">
+        if(!container) return;
+        container.innerHTML = DATA.posts.map((post) => `
+            <div class="feed-card bounce-click" onclick="UI.likePost(this)">
                 <div class="feed-header">
                     <img src="https://i.pravatar.cc/150?u=${post.user}" class="feed-avatar">
                     <span style="font-weight:600">${post.user}</span>
                 </div>
                 <div class="feed-img-container">
                     <img src="${post.img}" class="feed-img">
-                    <div class="heart-overlay">❤️</div>
+                    <div class="heart-overlay" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:80px; opacity:0; transform:scale(0); transition:all 0.3s var(--spring);">❤️</div>
                 </div>
                 <div class="feed-actions">
                     <span class="action-heart">🤍</span>
@@ -161,33 +232,48 @@ const UI = {
 
     likePost(el) {
         const heart = el.querySelector('.action-heart');
+        const overlay = el.querySelector('.heart-overlay');
         heart.textContent = '❤️';
         heart.classList.add('heart-anim');
+        
+        overlay.style.opacity = '1';
+        overlay.style.transform = 'scale(1)';
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+            overlay.style.transform = 'scale(0)';
+        }, 500);
+        
         State.addXP(5);
     },
 
     renderRecipes() {
         const hero = DATA.recipes[0];
-        document.getElementById('hero-img').style.backgroundImage = `url(${hero.img})`;
-        document.getElementById('hero-title').textContent = hero.name;
-        document.getElementById('hero-time').textContent = `⏱️ ${hero.time}min`;
-        document.getElementById('hero-cal').textContent = `🔥 ${hero.cal}kcal`;
+        const heroImg = document.getElementById('hero-img');
+        if(heroImg) {
+            heroImg.style.backgroundImage = `url(${hero.img})`;
+            document.getElementById('hero-title').textContent = hero.name;
+            document.getElementById('hero-time').textContent = `⏱️ ${hero.time}min`;
+            document.getElementById('hero-cal').textContent = `🔥 ${hero.cal}kcal`;
+        }
         
         const grid = document.getElementById('recipes-grid');
-        grid.innerHTML = DATA.recipes.slice(1).map(r => `
-            <div class="glass-card bounce-click" style="padding:10px; margin-bottom:10px;" onclick="Cooking.start(${r.id})">
-                <div style="height:120px; border-radius:12px; background:url(${r.img}) center/cover; margin-bottom:8px;"></div>
-                <h4 style="margin-bottom:4px;">${r.name}</h4>
-                <span style="font-size:12px; opacity:0.7">⏱️ ${r.time}min • 🔥 ${r.cal}</span>
-            </div>
-        `).join('');
+        if(grid) {
+            grid.innerHTML = DATA.recipes.slice(1).map(r => `
+                <div class="glass-card bounce-click" style="padding:10px; margin-bottom:10px;" onclick="Cooking.start(${r.id})">
+                    <div style="height:120px; border-radius:12px; background:url(${r.img}) center/cover; margin-bottom:8px;"></div>
+                    <h4 style="margin-bottom:4px;">${r.name}</h4>
+                    <span style="font-size:12px; opacity:0.7">⏱️ ${r.time}min • 🔥 ${r.cal}</span>
+                </div>
+            `).join('');
+        }
     },
     
     renderLeaderboard() {
         const list = document.getElementById('leaderboard-list');
+        if(!list) return;
         let html = '';
         for(let i=1; i<=5; i++) {
-            const isMe = i === 4; // Fake position
+            const isMe = i === 4; 
             html += `
                 <div style="display:flex; align-items:center; padding:12px; border-bottom:1px solid rgba(255,255,255,0.05); ${isMe ? 'background:rgba(255,107,53,0.1)' : ''}">
                     <strong style="width:20px">${i}</strong>
@@ -208,12 +294,11 @@ const UI = {
     }
 };
 
-// =======================
-// 5. QUIZ ENGINE (PHYSICS)
-// =======================
+// QUIZ ENGINE
 const Quiz = {
     init() {
         this.stack = document.getElementById('quiz-stack');
+        if(!this.stack) return;
         this.renderCards();
         this.bindEvents();
     },
@@ -230,7 +315,6 @@ const Quiz = {
     },
 
     bindEvents() {
-        // Touch logic for Swipe
         let startX, currentX, card;
         
         this.stack.addEventListener('touchstart', (e) => {
@@ -247,7 +331,6 @@ const Quiz = {
             let deg = diff * 0.1;
             card.style.transform = `translateX(${diff}px) rotate(${deg}deg)`;
             
-            // Visual Feedback
             if(diff > 50) card.style.boxShadow = `0 0 30px var(--success)`;
             else if(diff < -50) card.style.boxShadow = `0 0 30px var(--danger)`;
             else card.style.boxShadow = '';
@@ -256,21 +339,21 @@ const Quiz = {
         this.stack.addEventListener('touchend', (e) => {
             if(!card) return;
             let diff = currentX - startX;
-            card.style.transition = 'transform 0.3s ease';
+            card.style.transition = 'transform 0.3s var(--spring)';
             
-            if (diff > 100) this.swipe(true); // Right (Love)
-            else if (diff < -100) this.swipe(false); // Left (Nope)
+            if (diff > 100) this.swipe(true);
+            else if (diff < -100) this.swipe(false);
             else {
-                // Reset
                 card.style.transform = `scale(1) translateY(0)`;
                 card.style.boxShadow = '';
             }
             card = null;
         });
         
-        // Buttons
-        document.getElementById('quiz-love').onclick = () => this.swipe(true);
-        document.getElementById('quiz-nope').onclick = () => this.swipe(false);
+        const btnLove = document.getElementById('quiz-love');
+        if(btnLove) btnLove.onclick = () => this.swipe(true);
+        const btnNope = document.getElementById('quiz-nope');
+        if(btnNope) btnNope.onclick = () => this.swipe(false);
     },
     
     swipe(liked) {
@@ -285,11 +368,9 @@ const Quiz = {
         
         setTimeout(() => {
             card.remove();
-            // End of Quiz?
             if(State.quizIndex >= DATA.quiz.length) {
                 Router.go('auth');
             } else {
-                // Re-adjust stack visual
                 Array.from(this.stack.children).forEach((c, i) => {
                     c.style.transform = `scale(${1 - i*0.05}) translateY(${i*10}px)`;
                 });
@@ -298,30 +379,31 @@ const Quiz = {
     }
 };
 
-// =======================
-// 6. COOKING ENGINE
-// =======================
+// COOKING ENGINE
 const Cooking = {
     interval: null,
-    
     start(recipeId) {
         Router.go('cooking');
         const recipe = DATA.recipes.find(r => r.id === recipeId);
-        document.getElementById('step-text').innerHTML = `Recette : <strong style="color:var(--primary)">${recipe.name}</strong><br><br>Préparez vos ingrédients et ustensiles.`;
-        this.resetTimer(10); // Demo: 10s timer
+        if(recipe) {
+            document.getElementById('step-text').innerHTML = `Recette : <strong style="color:var(--primary)">${recipe.name}</strong><br><br>Préparez vos ingrédients et ustensiles.`;
+            this.resetTimer(10);
+        }
     },
-    
     resetTimer(seconds) {
         clearInterval(this.interval);
         const ring = document.getElementById('timer-ring');
         const display = document.getElementById('timer-display');
-        const max = 283; // 2 * PI * 45
+        const max = 283; 
         let current = seconds;
         
         ring.style.strokeDashoffset = 0;
         display.textContent = this.fmt(current);
         
-        document.getElementById('timer-toggle').onclick = () => {
+        const btn = document.getElementById('timer-toggle');
+        btn.textContent = "▶";
+        btn.onclick = () => {
+            btn.textContent = "⏸";
             this.interval = setInterval(() => {
                 current--;
                 display.textContent = this.fmt(current);
@@ -339,17 +421,15 @@ const Cooking = {
             }, 1000);
         };
     },
-    
     fmt(s) { return `00:${s < 10 ? '0'+s : s}`; }
 };
 
-// =======================
-// 7. EFFECTS (PARTICLES)
-// =======================
+// FX ENGINE
 const FX = {
     confetti() {
         const colors = ['#FF6B35', '#FFD700', '#4ECB71', '#6C5DD3'];
         const container = document.getElementById('particles-container');
+        if(!container) return;
         
         for(let i=0; i<30; i++) {
             const p = document.createElement('div');
@@ -364,18 +444,12 @@ const FX = {
             setTimeout(() => p.remove(), 3000);
         }
     },
-    
-    xpBurst(amount) {
-        // Simple visual feedback in log or toast could be added here
-        console.log(`✨ +${amount} XP`);
-    }
+    xpBurst(amount) { console.log(`✨ +${amount} XP`); }
 };
 
-// =======================
-// 8. INITIALIZATION
-// =======================
+// INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
-    // Nav Binding
+    // Navigation Binding
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.onclick = () => {
             const target = btn.dataset.target;
@@ -387,22 +461,44 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
     
-    // Auth Logic
-    document.getElementById('auth-submit').onclick = (e) => {
-        e.preventDefault();
-        State.user.username = document.getElementById('input-username').value || "Chef";
-        State.save();
-        State.addXP(100); // Welcome bonus
-        Router.go('home');
-    };
+    // Auth Binding
+    const authSubmit = document.getElementById('auth-submit');
+    if(authSubmit) {
+        authSubmit.onclick = (e) => {
+            e.preventDefault();
+            const username = document.getElementById('input-username').value;
+            if(username) {
+                State.user.username = username;
+                State.save();
+                State.addXP(100);
+                Router.go('home');
+            }
+        };
+    }
     
-    document.getElementById('ob-next').onclick = () => Router.go('quiz');
-    document.getElementById('ob-skip').onclick = () => Router.go('auth');
-    document.getElementById('hero-card').onclick = () => Cooking.start(1);
-    document.getElementById('cooking-close').onclick = () => Router.go('home');
-    document.getElementById('levelup-close').onclick = () => document.getElementById('levelup-overlay').style.display = 'none';
+    // Generic Binding (Safety Checks)
+    const heroCard = document.getElementById('hero-card');
+    if(heroCard) heroCard.onclick = () => Cooking.start(1);
+    
+    const cookClose = document.getElementById('cooking-close');
+    if(cookClose) cookClose.onclick = () => Router.go('home');
+    
+    const lvlClose = document.getElementById('levelup-close');
+    if(lvlClose) lvlClose.onclick = () => document.getElementById('levelup-overlay').style.display = 'none';
 
-    // Start App
+    const cookNav = document.getElementById('nav-cook');
+    if(cookNav) cookNav.onclick = () => Cooking.start(1);
+    
+    const logoutBtn = document.getElementById('btn-logout');
+    if(logoutBtn) logoutBtn.onclick = () => {
+        if(confirm('Déconnexion ?')) {
+            localStorage.removeItem('yumr_v3_user');
+            location.reload();
+        }
+    };
+
+    // Init Modules
     UI.init();
+    Onboarding.init();
     Quiz.init();
 });
