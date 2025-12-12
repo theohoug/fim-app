@@ -111,9 +111,14 @@ const BADGES = [
 state.badges = BADGES;
 
 const POSTS = [
-    { id: 1, user: "ChefAlex", avatar: "https://i.pravatar.cc/36?img=4", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400", caption: "Mon poke bowl 🥗 #healthy", likes: 42, time: "2h" },
-    { id: 2, user: "FoodieKing", avatar: "https://i.pravatar.cc/36?img=3", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400", caption: "Pizza maison 🍕", likes: 87, time: "5h" },
-    { id: 3, user: "CookingQueen", avatar: "https://i.pravatar.cc/36?img=2", img: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400", caption: "Dessert du dimanche 🍰", likes: 156, time: "1j" }
+    { id: 1, user: "ChefAlex", avatar: "https://i.pravatar.cc/36?img=4", img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400", caption: "Mon poke bowl 🥗 #healthy", likes: 42, time: "2h", comments: [
+        { user: "FoodieKing", avatar: "https://i.pravatar.cc/32?img=3", text: "Ça donne trop envie ! 🤤" },
+        { user: "CookingQueen", avatar: "https://i.pravatar.cc/32?img=2", text: "Super présentation !" }
+    ]},
+    { id: 2, user: "FoodieKing", avatar: "https://i.pravatar.cc/36?img=3", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400", caption: "Pizza maison 🍕", likes: 87, time: "5h", comments: [
+        { user: "ChefAlex", avatar: "https://i.pravatar.cc/32?img=4", text: "La pâte a l'air parfaite !" }
+    ]},
+    { id: 3, user: "CookingQueen", avatar: "https://i.pravatar.cc/36?img=2", img: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400", caption: "Dessert du dimanche 🍰", likes: 156, time: "1j", comments: [] }
 ];
 
 state.posts = POSTS;
@@ -437,6 +442,11 @@ function initMainApp() {
     state.fridge = JSON.parse(localStorage.getItem('yumr_fridge')) || [...FRIDGE_INIT];
     if ($('u-name')) $('u-name').textContent = state.user?.username || 'Chef';
     if ($('p-name')) $('p-name').textContent = '@' + (state.user?.username || 'chef').toLowerCase();
+    
+    // Hide FAB initially (not on feed tab)
+    const fab = $('fab-post');
+    if (fab) fab.style.display = 'none';
+    
     updateStats();
     renderRecipes();
     renderFeed();
@@ -452,6 +462,12 @@ $$('.nav-btn[data-tab]').forEach(btn => {
         btn.classList.add('active');
         $$('.tab').forEach(t => t.classList.remove('active'));
         $(`tab-${btn.dataset.tab}`).classList.add('active');
+        
+        // Show FAB only on feed tab
+        const fab = $('fab-post');
+        if (fab) {
+            fab.style.display = btn.dataset.tab === 'feed' ? 'flex' : 'none';
+        }
     };
 });
 
@@ -1087,20 +1103,21 @@ $$('.ltab').forEach(t => {
 function renderFeed() {
     $('feed').innerHTML = state.posts.map(p => `
         <div class="feed-post">
-            <div class="feed-header">
+            <div class="feed-header" onclick="viewProfile('${p.user}')">
                 <div class="feed-av" style="background-image:url(${p.avatar})"></div>
                 <div class="feed-user">
                     <strong>${p.user}</strong>
                     <span>${p.time}</span>
                 </div>
             </div>
-            <div class="feed-img" style="background-image:url(${p.img})"></div>
+            ${p.img ? `<div class="feed-img" style="background-image:url(${p.img})" onclick="viewPost(${p.id})"></div>` : ''}
             <div class="feed-content">
                 <div class="feed-actions">
                     <button class="${p.liked ? 'liked' : ''}" onclick="likePost(${p.id})">❤️ ${p.likes}</button>
-                    <button>💬 0</button>
+                    <button onclick="viewPost(${p.id})">💬 ${p.comments?.length || 0}</button>
                 </div>
-                <p><strong>${p.user}</strong> ${p.caption}</p>
+                <p onclick="viewPost(${p.id})" style="cursor:pointer"><strong>${p.user}</strong> ${p.caption}</p>
+                ${p.recipe ? `<p style="font-size:11px;color:var(--accent);margin-top:4px;cursor:pointer" onclick="openRecipe(${p.recipe.id})">🍳 Voir la recette: ${p.recipe.name}</p>` : ''}
             </div>
         </div>
     `).join('');
@@ -1113,6 +1130,367 @@ window.likePost = id => {
         p.likes += (p.liked ? 1 : -1);
         renderFeed();
         if (p.liked) showXP(2);
+    }
+};
+
+// ============================================
+// CREATE POST
+// ============================================
+if ($('fab-post')) {
+    $('fab-post').onclick = () => {
+        openModal('m-create-post');
+        renderCreatePost();
+    };
+}
+
+let createPostType = 'image';
+let createPostImage = null;
+let createPostRecipe = null;
+
+function renderCreatePost() {
+    $('create-post-content').innerHTML = `
+        <div class="post-type-selector">
+            <button class="post-type-btn ${createPostType === 'recipe' ? 'active' : ''}" data-type="recipe">
+                <span>🍳</span>
+                <span>Recette</span>
+            </button>
+            <button class="post-type-btn ${createPostType === 'image' ? 'active' : ''}" data-type="image">
+                <span>📷</span>
+                <span>Photo</span>
+            </button>
+            <button class="post-type-btn ${createPostType === 'text' ? 'active' : ''}" data-type="text">
+                <span>💬</span>
+                <span>Texte</span>
+            </button>
+        </div>
+        <div class="post-form">
+            <div class="post-user-preview">
+                <img src="https://i.pravatar.cc/40?img=33">
+                <span>@${state.user?.username || 'chef'}</span>
+            </div>
+            ${createPostType !== 'text' ? `
+                <div class="post-image-upload ${createPostImage ? 'has-image' : ''}" id="post-img-upload">
+                    ${createPostImage ? `
+                        <img src="${createPostImage}">
+                        <button class="remove-img" id="remove-post-img">✕</button>
+                    ` : `
+                        <span>📷</span>
+                        <span>Ajouter une photo</span>
+                    `}
+                </div>
+            ` : ''}
+            <textarea class="post-textarea" id="post-caption" placeholder="${createPostType === 'text' ? 'Écris quelque chose...' : 'Ajoute une légende...'}">${createPostType === 'text' ? '' : ''}</textarea>
+            ${createPostType === 'recipe' ? `
+                <div class="recipe-selector" id="recipe-selector">
+                    <div class="recipe-selector-header" id="recipe-selector-toggle">
+                        <span>🍽️</span>
+                        <span>${createPostRecipe ? createPostRecipe.name : 'Associer une recette'}</span>
+                        <span>›</span>
+                    </div>
+                    <div class="recipe-selector-list" id="recipe-list" style="display:none">
+                        ${RECIPES.map(r => `
+                            <div class="recipe-select-item ${createPostRecipe?.id === r.id ? 'selected' : ''}" data-id="${r.id}">
+                                <img src="${r.img}">
+                                <div>
+                                    <strong>${r.name}</strong>
+                                    <small>⏱️ ${r.time}min</small>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+        </div>
+    `;
+    
+    // Type selector
+    $$('.post-type-btn').forEach(btn => {
+        btn.onclick = () => {
+            createPostType = btn.dataset.type;
+            createPostImage = null;
+            createPostRecipe = null;
+            renderCreatePost();
+        };
+    });
+    
+    // Image upload simulation
+    const imgUpload = $('post-img-upload');
+    if (imgUpload) {
+        imgUpload.onclick = e => {
+            if (e.target.id === 'remove-post-img') return;
+            // Simulate image selection with random food images
+            const foodImages = [
+                'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400',
+                'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400',
+                'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=400',
+                'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=400',
+                'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=400'
+            ];
+            createPostImage = foodImages[Math.floor(Math.random() * foodImages.length)];
+            renderCreatePost();
+            toast('📷 Photo ajoutée !');
+        };
+    }
+    
+    // Remove image
+    const removeBtn = $('remove-post-img');
+    if (removeBtn) {
+        removeBtn.onclick = e => {
+            e.stopPropagation();
+            createPostImage = null;
+            renderCreatePost();
+        };
+    }
+    
+    // Recipe selector
+    const recipeToggle = $('recipe-selector-toggle');
+    if (recipeToggle) {
+        recipeToggle.onclick = () => {
+            const list = $('recipe-list');
+            list.style.display = list.style.display === 'none' ? 'block' : 'none';
+        };
+    }
+    
+    $$('.recipe-select-item').forEach(item => {
+        item.onclick = () => {
+            createPostRecipe = RECIPES.find(r => r.id === parseInt(item.dataset.id));
+            renderCreatePost();
+        };
+    });
+}
+
+// Publish button
+if ($('btn-publish')) {
+    $('btn-publish').onclick = publishPost;
+}
+
+function publishPost() {
+    const caption = $('post-caption')?.value || '';
+    
+    if (createPostType === 'text' && !caption.trim()) {
+        toast('Écris quelque chose !', 'error');
+        return;
+    }
+    
+    if (createPostType !== 'text' && !createPostImage) {
+        toast('Ajoute une photo !', 'error');
+        return;
+    }
+    
+    const newPost = {
+        id: Date.now(),
+        user: state.user?.username || 'chef',
+        avatar: 'https://i.pravatar.cc/36?img=33',
+        img: createPostImage,
+        caption: caption,
+        recipe: createPostRecipe,
+        likes: 0,
+        liked: false,
+        time: 'maintenant',
+        comments: []
+    };
+    
+    state.posts.unshift(newPost);
+    closeModal('m-create-post');
+    renderFeed();
+    showXP(25);
+    toast('🎉 Post publié !', 'success');
+    
+    // Reset
+    createPostType = 'image';
+    createPostImage = null;
+    createPostRecipe = null;
+}
+
+// ============================================
+// VIEW POST
+// ============================================
+window.viewPost = id => {
+    const post = state.posts.find(p => p.id === id);
+    if (!post) return;
+    
+    openModal('m-view-post');
+    
+    $('view-post-content').innerHTML = `
+        <div class="view-post-user" onclick="viewProfile('${post.user}')">
+            <img src="${post.avatar}">
+            <div class="view-post-user-info">
+                <strong>@${post.user}</strong>
+                <span>${post.time}</span>
+            </div>
+            ${post.user !== (state.user?.username || 'chef') ? `
+                <button class="btn btn-primary btn-sm follow-btn" data-user="${post.user}">S'abonner</button>
+            ` : ''}
+        </div>
+        ${post.img ? `<div class="view-post-image" style="background-image:url(${post.img})"></div>` : ''}
+        <div class="view-post-actions">
+            <button class="${post.liked ? 'liked' : ''}" onclick="togglePostLike(${post.id})">
+                <span>${post.liked ? '❤️' : '🤍'}</span>
+                <span>${post.likes}</span>
+            </button>
+            <button onclick="focusComment()">
+                <span>💬</span>
+                <span>${post.comments?.length || 0}</span>
+            </button>
+            <button onclick="sharePost(${post.id})">
+                <span>📤</span>
+                <span>Partager</span>
+            </button>
+        </div>
+        <div class="view-post-caption">
+            <strong>@${post.user}</strong>
+            ${post.caption}
+        </div>
+        ${post.recipe ? `
+            <div class="view-post-recipe" onclick="openRecipe(${post.recipe.id})">
+                <img src="${post.recipe.img}">
+                <div>
+                    <strong>${post.recipe.name}</strong>
+                    <small>⏱️ ${post.recipe.time}min • Voir la recette</small>
+                </div>
+                <span>›</span>
+            </div>
+        ` : ''}
+        <div class="view-post-time">${post.time}</div>
+        <div class="view-post-comments">
+            <h4>Commentaires</h4>
+            ${(post.comments || []).length > 0 ? post.comments.map(c => `
+                <div class="comment-item">
+                    <img src="${c.avatar}">
+                    <div>
+                        <strong>@${c.user}</strong>
+                        <p>${c.text}</p>
+                    </div>
+                </div>
+            `).join('') : '<p style="color:var(--text3);font-size:13px">Aucun commentaire</p>'}
+        </div>
+        <div class="comment-input-wrap">
+            <input type="text" id="comment-input" placeholder="Ajouter un commentaire...">
+            <button onclick="addComment(${post.id})">Envoyer</button>
+        </div>
+    `;
+    
+    // Follow button
+    const followBtn = document.querySelector('.follow-btn');
+    if (followBtn) {
+        followBtn.onclick = e => {
+            e.stopPropagation();
+            const isFollowing = followBtn.textContent === 'Abonné';
+            followBtn.textContent = isFollowing ? "S'abonner" : 'Abonné';
+            followBtn.classList.toggle('btn-primary', isFollowing);
+            followBtn.classList.toggle('btn-glass', !isFollowing);
+            if (!isFollowing) {
+                showXP(10);
+                toast(`Tu suis @${followBtn.dataset.user} !`);
+            }
+        };
+    }
+};
+
+window.togglePostLike = id => {
+    const post = state.posts.find(p => p.id === id);
+    if (post) {
+        post.liked = !post.liked;
+        post.likes += post.liked ? 1 : -1;
+        viewPost(id);
+        renderFeed();
+        if (post.liked) showXP(2);
+    }
+};
+
+window.focusComment = () => {
+    $('comment-input')?.focus();
+};
+
+window.sharePost = id => {
+    toast('📤 Lien copié !', 'success');
+};
+
+window.addComment = postId => {
+    const input = $('comment-input');
+    if (!input || !input.value.trim()) return;
+    
+    const post = state.posts.find(p => p.id === postId);
+    if (!post) return;
+    
+    if (!post.comments) post.comments = [];
+    post.comments.push({
+        user: state.user?.username || 'chef',
+        avatar: 'https://i.pravatar.cc/32?img=33',
+        text: input.value.trim()
+    });
+    
+    viewPost(postId);
+    renderFeed();
+    showXP(5);
+    toast('💬 Commentaire ajouté !');
+};
+
+// ============================================
+// VIEW PROFILE
+// ============================================
+window.viewProfile = username => {
+    openModal('m-view-profile');
+    
+    // Find user posts
+    const userPosts = state.posts.filter(p => p.user === username);
+    const isMe = username === (state.user?.username || 'chef');
+    const avatarNum = username === 'ChefAlex' ? 4 : username === 'FoodieKing' ? 3 : username === 'CookingQueen' ? 2 : 33;
+    
+    $('view-profile-content').innerHTML = `
+        <div class="profile-view-hero">
+            <div class="profile-view-banner"></div>
+            <div class="profile-view-info">
+                <img src="https://i.pravatar.cc/80?img=${avatarNum}">
+                <h2>@${username}</h2>
+                <p>${isMe ? 'Mon profil' : 'Membre Yumr'}</p>
+                <div class="profile-view-stats">
+                    <div>
+                        <strong>${userPosts.length}</strong>
+                        <span>Posts</span>
+                    </div>
+                    <div>
+                        <strong>${Math.floor(Math.random() * 500) + 50}</strong>
+                        <span>Abonnés</span>
+                    </div>
+                    <div>
+                        <strong>${Math.floor(Math.random() * 200) + 20}</strong>
+                        <span>Abonnements</span>
+                    </div>
+                </div>
+                ${!isMe ? `
+                    <div class="profile-view-actions">
+                        <button class="btn btn-primary follow-profile-btn">S'abonner</button>
+                        <button class="btn btn-glass">Message</button>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+        <div class="profile-view-posts">
+            <h4>Publications</h4>
+            ${userPosts.length > 0 ? `
+                <div class="profile-posts-grid">
+                    ${userPosts.map(p => p.img ? `
+                        <div style="background-image:url(${p.img})" onclick="closeModal('m-view-profile');viewPost(${p.id})"></div>
+                    ` : '').join('')}
+                </div>
+            ` : '<p style="color:var(--text3);font-size:13px;text-align:center;padding:20px">Aucune publication</p>'}
+        </div>
+    `;
+    
+    // Follow button
+    const followProfileBtn = document.querySelector('.follow-profile-btn');
+    if (followProfileBtn) {
+        followProfileBtn.onclick = () => {
+            const isFollowing = followProfileBtn.textContent === 'Abonné';
+            followProfileBtn.textContent = isFollowing ? "S'abonner" : 'Abonné';
+            followProfileBtn.classList.toggle('btn-primary', isFollowing);
+            followProfileBtn.classList.toggle('btn-glass', !isFollowing);
+            if (!isFollowing) {
+                showXP(10);
+                toast(`Tu suis @${username} !`);
+            }
+        };
     }
 };
 
