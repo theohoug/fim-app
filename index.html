@@ -6,7 +6,7 @@
     <title>Yumr</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div id="app">
@@ -269,6 +269,7 @@
                     <button class="ftab" data-feed="following">Abonnements</button>
                 </div>
                 <div class="feed" id="feed"></div>
+                <button class="fab" id="fab-post"><span>+</span></button>
             </div>
             <!-- PROFILE TAB -->
             <div class="tab" id="tab-profile">
@@ -330,6 +331,44 @@
     <div class="modal" id="m-coach"><div class="modal-bg" data-close="m-coach"></div><div class="modal-sheet"><div class="modal-handle"></div><div style="text-align:center;padding:30px"><span style="font-size:48px">🤖</span><h3 style="margin:16px 0">Coach IA</h3><p style="color:var(--text2);margin-bottom:16px">Conseils personnalisés</p><button class="btn btn-primary" onclick="openModal('m-premium')">Essayer Premium</button></div></div></div>
     <div class="modal" id="m-rating"><div class="modal-bg"></div><div class="modal-sheet"><div class="modal-handle"></div><div id="rating-content"></div></div></div>
 
+    <!-- CREATE POST MODAL -->
+    <div class="modal" id="m-create-post">
+        <div class="modal-bg" data-close="m-create-post"></div>
+        <div class="modal-sheet" style="max-height:90vh">
+            <div class="modal-handle"></div>
+            <div class="create-post-header">
+                <button class="back-btn" data-close="m-create-post">✕</button>
+                <h2>Nouveau post</h2>
+                <button class="btn btn-primary btn-sm" id="btn-publish">Publier</button>
+            </div>
+            <div id="create-post-content"></div>
+        </div>
+    </div>
+
+    <!-- VIEW POST MODAL -->
+    <div class="modal fullscreen" id="m-view-post">
+        <div class="view-post-container">
+            <div class="view-post-header">
+                <button class="back-btn" data-close="m-view-post">←</button>
+                <span>Publication</span>
+                <button class="btn btn-glass btn-sm">•••</button>
+            </div>
+            <div class="view-post-scroll" id="view-post-content"></div>
+        </div>
+    </div>
+
+    <!-- VIEW PROFILE MODAL -->
+    <div class="modal fullscreen" id="m-view-profile">
+        <div class="view-post-container">
+            <div class="view-post-header">
+                <button class="back-btn" data-close="m-view-profile">←</button>
+                <span>Profil</span>
+                <button class="btn btn-glass btn-sm">•••</button>
+            </div>
+            <div class="view-post-scroll" id="view-profile-content"></div>
+        </div>
+    </div>
+
     <!-- COOKING MODE -->
     <div class="cook-mode" id="cook-mode">
         <div class="cook-header">
@@ -371,6 +410,6 @@
     </div>
 </div>
 
-<script src="js/app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
