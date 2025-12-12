@@ -1,1068 +1,1002 @@
-/* =====================================================
-   YUMR - Swipe. Cook. Enjoy.
-   Premium Culinary App
-   ===================================================== */
-
-const API_URL = 'https://foodmatchs-api-production.up.railway.app/api';
-
-// =====================================================
-// MOCK DATA
-// =====================================================
-
-const MOCK_FRIDGE = [
-    { id: '1', name: 'Œufs', quantity: '6', category: 'laitiers', icon: '🥚', expirationDate: '2024-12-15' },
-    { id: '2', name: 'Poulet', quantity: '500g', category: 'viandes', icon: '🍗', expirationDate: '2024-12-13' },
-    { id: '3', name: 'Tomates', quantity: '4', category: 'legumes', icon: '🍅', expirationDate: '2024-12-14' },
-    { id: '4', name: 'Parmesan', quantity: '150g', category: 'laitiers', icon: '🧀', expirationDate: '2024-12-20' },
-    { id: '5', name: 'Pâtes', quantity: '500g', category: 'epicerie', icon: '🍝', expirationDate: '2025-06-01' },
-    { id: '6', name: 'Crème fraîche', quantity: '20cl', category: 'laitiers', icon: '🥛', expirationDate: '2024-12-13' },
-];
-
-const MOCK_LEADERBOARD = [
-    { rank: 1, name: 'ChefPro99', points: 2847, avatar: 'https://i.pravatar.cc/100?img=1' },
-    { rank: 2, name: 'MarieFood', points: 2634, avatar: 'https://i.pravatar.cc/100?img=2' },
-    { rank: 3, name: 'CuistoMax', points: 2521, avatar: 'https://i.pravatar.cc/100?img=3' },
-    { rank: 4, name: 'GourmetLucie', points: 2398, avatar: 'https://i.pravatar.cc/100?img=4' },
-    { rank: 5, name: 'ChefThomas', points: 2256, avatar: 'https://i.pravatar.cc/100?img=5' },
-    { rank: 6, name: 'FoodieParis', points: 2134, avatar: 'https://i.pravatar.cc/100?img=6' },
-    { rank: 7, name: 'CookMaster', points: 2089, avatar: 'https://i.pravatar.cc/100?img=7' },
-    { rank: 8, name: 'ChefSophie', points: 1987, avatar: 'https://i.pravatar.cc/100?img=8' },
-    { rank: 9, name: 'GastroNico', points: 1856, avatar: 'https://i.pravatar.cc/100?img=9' },
-    { rank: 10, name: 'YumrFan', points: 1743, avatar: 'https://i.pravatar.cc/100?img=10' },
-];
-
-const MOCK_BADGES = [
-    { id: 1, name: 'Premier Plat', icon: '🥇', desc: 'Cuisiner sa première recette', unlocked: true },
-    { id: 2, name: 'Streak 7j', icon: '🔥', desc: '7 jours consécutifs', unlocked: true },
-    { id: 3, name: 'Social Chef', icon: '👥', desc: '100 abonnés', unlocked: false },
-    { id: 4, name: 'Globe-trotter', icon: '🌍', desc: '10 cuisines différentes', unlocked: true },
-    { id: 5, name: 'Veggie Week', icon: '🌱', desc: '7 jours végétarien', unlocked: false },
-    { id: 6, name: 'Sommelier', icon: '🍷', desc: '50 accords mets-vins', unlocked: false },
-    { id: 7, name: 'Économe', icon: '💰', desc: '10 repas à moins de 5€', unlocked: true },
-    { id: 8, name: 'Batch Master', icon: '📅', desc: '4 meal preps complétés', unlocked: false },
-    { id: 9, name: 'Streak 30j', icon: '🔥🔥', desc: '30 jours consécutifs', unlocked: false },
-];
-
-const QUIZ_IMAGES = {
-    'pizza': 'photo-1565299624946-b28f40a0ae38',
-    'pasta': 'photo-1621996346565-e3dbc646d9a9',
-    'sushi': 'photo-1579871494447-9811cf80d66c',
-    'burger': 'photo-1568901346375-23c9450c58cd',
-    'salade': 'photo-1512621776951-a57141f2eefd',
-    'dessert': 'photo-1551024601-bec78aea704b',
-    'viande': 'photo-1600891964092-4316c288032e',
-    'poisson': 'photo-1534604973900-c43ab4c2e0ab',
-    'asiatique': 'photo-1569718212165-3a8278d5f624',
-    'mexicain': 'photo-1565299585323-38d6b0865b47',
-    'default': 'photo-1504674900247-0877df9cc836'
-};
-
-const RECIPE_IMAGES = {
-    'starter': 'photo-1512621776951-a57141f2eefd',
-    'main': 'photo-1546069901-ba9599a7e63c',
-    'dessert': 'photo-1551024601-bec78aea704b',
-    'cheese': 'photo-1452195100486-9cc805987862',
-    'wine': 'photo-1510812431401-41d2bd2722f3'
-};
-
-// =====================================================
-// STATE
-// =====================================================
-
-const state = {
-    user: null,
-    token: null,
-    questionCount: 30,
-    diet: 'omnivore',
-    allergies: [],
-    goal: 'none',
-    questions: [],
-    answers: [],
-    currentQuestion: 0,
-    calculatedProfile: null,
-    recipes: [],
-    favorites: JSON.parse(localStorage.getItem('yumr_favorites') || '[]'),
-    fridge: [...MOCK_FRIDGE],
-    todayMenu: null,
-    menuOptions: {
-        budget: 'medium',
-        persons: 2,
-        maxTime: 30,
-        useFridge: false,
-        cheese: false,
-        wine: false
-    },
-    currentSlide: 1
-};
-
-// =====================================================
-// HELPERS
-// =====================================================
-
-const $ = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
-
-async function api(endpoint, opts = {}) {
-    const headers = { 'Content-Type': 'application/json', ...opts.headers };
-    if (state.token) headers['Authorization'] = `Bearer ${state.token}`;
-    const res = await fetch(`${API_URL}${endpoint}`, { ...opts, headers });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Erreur');
-    return data;
-}
-
-function showScreen(id) {
-    $$('.screen').forEach(s => s.classList.remove('active'));
-    $(`#${id}`).classList.add('active');
-    window.scrollTo(0, 0);
-}
-
-function showTab(tab) {
-    $$('.tab-page').forEach(t => t.classList.remove('active'));
-    $$('.nav-item').forEach(b => b.classList.remove('active'));
-    $(`#tab-${tab}`)?.classList.add('active');
-    $(`.nav-item[data-tab="${tab}"]`)?.classList.add('active');
-    
-    if (tab === 'explore') loadRecipes();
-    if (tab === 'leagues') loadLeaderboard();
-    if (tab === 'profile') updateProfileUI();
-}
-
-function showModal(id) { $(`#${id}`).classList.add('active'); }
-function hideModal(id) { $(`#${id}`).classList.remove('active'); }
-
-function toast(msg, type = '') {
-    const t = document.createElement('div');
-    t.className = `toast ${type}`;
-    t.textContent = msg;
-    $('#toast-container').appendChild(t);
-    setTimeout(() => t.remove(), 3000);
-}
-
-function showXP(amount) {
-    const popup = $('#xp-popup');
-    $('.xp-popup-text').textContent = `+${amount} XP`;
-    popup.classList.add('show');
-    setTimeout(() => popup.classList.remove('show'), 2000);
-}
-
-function getQuizImage(question) {
-    const text = (question.question || '').toLowerCase();
-    for (const [key, val] of Object.entries(QUIZ_IMAGES)) {
-        if (text.includes(key)) return `https://images.unsplash.com/${val}?w=400&h=250&fit=crop`;
-    }
-    return `https://images.unsplash.com/${QUIZ_IMAGES.default}?w=400&h=250&fit=crop`;
-}
-
-function getRecipeImage(recipe) {
-    const type = recipe?.type || 'main';
-    const photoId = RECIPE_IMAGES[type] || RECIPE_IMAGES.main;
-    return `https://images.unsplash.com/${photoId}?w=400&h=300&fit=crop`;
-}
-
-function getDaysUntilExpiry(date) {
-    const today = new Date();
-    const expiry = new Date(date);
-    const diff = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-    return diff;
-}
-
-// =====================================================
-// INITIALIZATION
-// =====================================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    initEventListeners();
-    initSwipe();
-    
-    // Splash screen
-    setTimeout(() => {
-        checkAuth();
-    }, 2000);
-});
-
-function checkAuth() {
-    const token = localStorage.getItem('yumr_token');
-    const user = localStorage.getItem('yumr_user');
-    
-    if (token && user) {
-        state.token = token;
-        state.user = JSON.parse(user);
-        loadMainApp();
-    } else {
-        showScreen('welcome-screen');
-    }
-}
-
-// =====================================================
-// EVENT LISTENERS
-// =====================================================
-
-function initEventListeners() {
-    // Welcome screen
-    $('#welcome-start-btn').onclick = () => showScreen('quiz-setup-screen');
-    $('#welcome-login-btn').onclick = () => showScreen('login-screen');
-    
-    // Welcome slides
-    $$('.dot').forEach(dot => {
-        dot.onclick = () => goToSlide(parseInt(dot.dataset.slide));
-    });
-    
-    // Login
-    $('#login-back-btn').onclick = () => showScreen('welcome-screen');
-    $('#login-form').onsubmit = handleLogin;
-    
-    // Quiz setup
-    $('#quiz-setup-back-btn').onclick = () => showScreen('welcome-screen');
-    $$('input[name="quiz-count"]').forEach(i => i.onchange = () => state.questionCount = +i.value);
-    $$('input[name="diet"]').forEach(i => i.onchange = () => state.diet = i.value);
-    $$('.allergy-chip input').forEach(i => i.onchange = () => {
-        state.allergies = [...$$('.allergy-chip input:checked')].map(c => c.value);
-    });
-    $$('input[name="goal"]').forEach(i => i.onchange = () => state.goal = i.value);
-    $('#start-quiz-btn').onclick = startQuiz;
-    
-    // Quiz
-    $('#quiz-close-btn').onclick = () => { if (confirm('Quitter le quiz ?')) showScreen('quiz-setup-screen'); };
-    $('#quiz-nope-btn').onclick = () => answerQuestion(false);
-    $('#quiz-love-btn').onclick = () => answerQuestion(true);
-    
-    // Result
-    $('#create-account-btn').onclick = () => {
-        if (state.calculatedProfile) $('#register-profile').textContent = state.calculatedProfile.name;
-        showScreen('register-screen');
-    };
-    $('#skip-account-btn').onclick = () => { toast('Mode invité'); loadMainAppAsGuest(); };
-    
-    // Register
-    $('#register-back-btn').onclick = () => showScreen('result-screen');
-    $('#register-form').onsubmit = handleRegister;
-    
-    // Navigation
-    $$('.nav-item').forEach(b => b.onclick = () => showTab(b.dataset.tab));
-    
-    // Home - Menu generation
-    $('#generate-menu-btn').onclick = () => showModal('menu-options-modal');
-    
-    // Menu options
-    $$('.budget-btn').forEach(b => b.onclick = () => {
-        $$('.budget-btn').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        state.menuOptions.budget = b.dataset.budget;
-    });
-    
-    $$('.time-btn').forEach(b => b.onclick = () => {
-        $$('.time-btn').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        state.menuOptions.maxTime = parseInt(b.dataset.time);
-    });
-    
-    $('#persons-minus').onclick = () => {
-        state.menuOptions.persons = Math.max(1, state.menuOptions.persons - 1);
-        $('#persons-value').textContent = state.menuOptions.persons;
-    };
-    $('#persons-plus').onclick = () => {
-        state.menuOptions.persons = Math.min(12, state.menuOptions.persons + 1);
-        $('#persons-value').textContent = state.menuOptions.persons;
-    };
-    
-    $('#use-fridge-toggle').onchange = e => state.menuOptions.useFridge = e.target.checked;
-    $('#cheese-toggle').onchange = e => state.menuOptions.cheese = e.target.checked;
-    $('#wine-toggle').onchange = e => state.menuOptions.wine = e.target.checked;
-    
-    $('#confirm-menu-btn').onclick = generateDailyMenu;
-    
-    // Quick actions
-    $('#quick-fridge').onclick = () => { openFridge(); };
-    $('#menu-fridge').onclick = () => { openFridge(); };
-    $('#quick-shopping').onclick = () => showModal('shopping-modal');
-    $('#quick-mealprep').onclick = () => toast('Meal Prep - Bientôt disponible !');
-    $('#quick-coach').onclick = () => toast('Coach IA - Bientôt disponible !');
-    
-    // Modal closes
-    $$('[data-close]').forEach(b => b.onclick = () => hideModal(b.dataset.close));
-    $$('.modal-overlay').forEach(el => el.onclick = () => el.closest('.modal').classList.remove('active'));
-    
-    // Fridge
-    $('#add-ingredient-btn').onclick = () => showModal('add-ingredient-modal');
-    $('#save-ingredient-btn').onclick = saveIngredient;
-    $('#scan-fridge-btn').onclick = () => toast('Snap Frigo IA - Bientôt disponible !');
-    $('#scan-receipt-btn').onclick = () => toast('Scan ticket - Bientôt disponible !');
-    $('#tgtg-btn').onclick = () => toast('Too Good To Go - Bientôt disponible !');
-    
-    $$('.fridge-cat').forEach(c => c.onclick = () => {
-        $$('.fridge-cat').forEach(x => x.classList.remove('active'));
-        c.classList.add('active');
-        displayFridge(c.dataset.cat);
-    });
-    
-    // Explore
-    let searchTimeout;
-    $('#search-recipes').oninput = e => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => loadRecipes(e.target.value), 300);
-    };
-    
-    $$('.filter-chip').forEach(c => c.onclick = () => {
-        $$('.filter-chip').forEach(x => x.classList.remove('active'));
-        c.classList.add('active');
-        loadRecipes('', c.dataset.filter);
-    });
-    
-    // Post
-    $('#upload-zone').onclick = () => $('#post-image-input').click();
-    $('#post-image-input').onchange = handlePostImage;
-    $('#publish-post-btn').onclick = publishPost;
-    
-    // Leagues
-    $('#view-league-btn').onclick = () => showTab('leagues');
-    
-    // Profile
-    $('#avatar-edit-btn').onclick = () => $('#avatar-input').click();
-    $('#avatar-input').onchange = handleAvatarUpload;
-    $('#menu-preferences').onclick = () => toast('Préférences - Ouvrir les paramètres');
-    $('#menu-premium').onclick = () => showModal('premium-modal');
-    $('#menu-referral').onclick = () => toast('Code parrainage copié !', 'success');
-    $('#menu-settings').onclick = () => toast('Paramètres - Bientôt disponible');
-    $('#menu-logout').onclick = logout;
-    $('#view-all-badges').onclick = () => showModal('badges-modal');
-    
-    // Premium
-    $('#subscribe-btn').onclick = () => toast('Essai gratuit activé !', 'success');
-}
-
-// Welcome slides
-function goToSlide(num) {
-    state.currentSlide = num;
-    $$('.welcome-slide').forEach(s => s.classList.remove('active'));
-    $$('.dot').forEach(d => d.classList.remove('active'));
-    $(`.welcome-slide[data-slide="${num}"]`).classList.add('active');
-    $(`.dot[data-slide="${num}"]`).classList.add('active');
-}
-
-// =====================================================
-// SWIPE
-// =====================================================
-
-function initSwipe() {
-    const card = $('#quiz-card');
-    if (!card) return;
-    
-    let startX = 0, currentX = 0, isDragging = false;
-    
-    const onStart = (x) => {
-        startX = x;
-        currentX = x;
-        isDragging = true;
-        card.classList.add('dragging');
-    };
-    
-    const onMove = (x) => {
-        if (!isDragging) return;
-        currentX = x;
-        const diff = currentX - startX;
-        card.style.transform = `translateX(${diff}px) rotate(${diff * 0.05}deg)`;
-        
-        card.classList.remove('hint-left', 'hint-right');
-        if (diff < -50) card.classList.add('hint-left');
-        if (diff > 50) card.classList.add('hint-right');
-    };
-    
-    const onEnd = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        card.classList.remove('dragging');
-        
-        const diff = currentX - startX;
-        if (diff < -100) {
-            answerQuestion(false);
-        } else if (diff > 100) {
-            answerQuestion(true);
-        } else {
-            card.style.transform = '';
-            card.classList.remove('hint-left', 'hint-right');
-        }
-    };
-    
-    card.addEventListener('touchstart', e => onStart(e.touches[0].clientX), { passive: true });
-    card.addEventListener('touchmove', e => onMove(e.touches[0].clientX), { passive: true });
-    card.addEventListener('touchend', onEnd);
-    
-    card.addEventListener('mousedown', e => onStart(e.clientX));
-    document.addEventListener('mousemove', e => onMove(e.clientX));
-    document.addEventListener('mouseup', onEnd);
-}
-
-// =====================================================
-// AUTH
-// =====================================================
-
-async function handleLogin(e) {
-    e.preventDefault();
-    try {
-        const data = await api('/auth/login', {
-            method: 'POST',
-            body: JSON.stringify({
-                email: $('#login-email').value,
-                password: $('#login-password').value
-            })
-        });
-        
-        state.token = data.token;
-        state.user = data.user;
-        localStorage.setItem('yumr_token', data.token);
-        localStorage.setItem('yumr_user', JSON.stringify(data.user));
-        loadMainApp();
-    } catch (err) {
-        $('#login-error').textContent = err.message;
-        $('#login-error').classList.add('show');
-    }
-}
-
-async function handleRegister(e) {
-    e.preventDefault();
-    try {
-        const data = await api('/auth/register', {
-            method: 'POST',
-            body: JSON.stringify({
-                username: $('#register-username').value,
-                email: $('#register-email').value,
-                password: $('#register-password').value
-            })
-        });
-        
-        state.token = data.token;
-        state.user = data.user;
-        localStorage.setItem('yumr_token', data.token);
-        localStorage.setItem('yumr_user', JSON.stringify(data.user));
-        
-        // Save quiz + preferences
-        if (state.answers.length > 0) {
-            try {
-                await api('/quiz/submit', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        answers: state.answers,
-                        diet: state.diet,
-                        allergens: JSON.stringify(state.allergies)
-                    })
-                });
-            } catch (err) { console.error(err); }
-        }
-        
-        toast('Bienvenue sur Yumr! 🎉', 'success');
-        showXP(50);
-        loadMainApp();
-    } catch (err) {
-        $('#register-error').textContent = err.message;
-        $('#register-error').classList.add('show');
-    }
-}
-
-function logout() {
-    state.user = null;
-    state.token = null;
-    localStorage.removeItem('yumr_token');
-    localStorage.removeItem('yumr_user');
-    showScreen('welcome-screen');
-}
-
-// =====================================================
-// QUIZ
-// =====================================================
-
-async function startQuiz() {
-    try {
-        state.questions = await api(`/quiz/questions?count=${state.questionCount}`);
-        state.answers = [];
-        state.currentQuestion = 0;
-        showScreen('quiz-screen');
-        displayQuestion();
-    } catch (err) {
-        toast('Erreur chargement quiz', 'error');
-    }
-}
-
-function displayQuestion() {
-    const q = state.questions[state.currentQuestion];
-    if (!q) return;
-    
-    const card = $('#quiz-card');
-    card.classList.remove('swipe-left', 'swipe-right', 'hint-left', 'hint-right');
-    card.style.transform = '';
-    
-    $('#quiz-card-image').style.backgroundImage = `url(${getQuizImage(q)})`;
-    $('#quiz-card-emoji').textContent = q.emoji || '🍽️';
-    $('#quiz-card-question').textContent = q.question;
-    
-    const pct = ((state.currentQuestion + 1) / state.questions.length) * 100;
-    $('#quiz-progress-fill').style.width = `${pct}%`;
-    $('#quiz-counter').textContent = `${state.currentQuestion + 1}/${state.questions.length}`;
-}
-
-function answerQuestion(liked) {
-    const q = state.questions[state.currentQuestion];
-    state.answers.push({ question_id: q.id, liked });
-    
-    const card = $('#quiz-card');
-    card.classList.add(liked ? 'swipe-right' : 'swipe-left');
-    
-    // Update streak display
-    const streak = state.answers.filter(a => a.liked).length;
-    $('#quiz-streak').textContent = streak;
-    
-    setTimeout(() => {
-        state.currentQuestion++;
-        if (state.currentQuestion >= state.questions.length) {
-            finishQuiz();
-        } else {
-            displayQuestion();
-        }
-    }, 300);
-}
-
-async function finishQuiz() {
-    try {
-        const result = await api('/quiz/calculate-profile', {
-            method: 'POST',
-            body: JSON.stringify({ answers: state.answers })
-        });
-        state.calculatedProfile = result.profile;
-        displayResult(result.profile);
-    } catch (err) {
-        state.calculatedProfile = { name: 'Gourmet', emoji: '🍳', description: 'Tu apprécies la bonne cuisine.', traits: 'Curieux,Gourmand' };
-        displayResult(state.calculatedProfile);
-    }
-}
-
-function displayResult(profile) {
-    showScreen('result-screen');
-    $('#result-emoji').textContent = profile.emoji || '🍳';
-    $('#result-name').textContent = profile.name || 'Gourmet';
-    $('#result-description').textContent = profile.description || '';
-    
-    const traits = (profile.traits || '').split(',').filter(t => t.trim());
-    $('#result-traits').innerHTML = traits.map(t => `<span>${t.trim()}</span>`).join('');
-    
-    // Add confetti effect
-    createConfetti();
-}
-
-function createConfetti() {
-    const container = $('#result-confetti');
-    container.innerHTML = '';
-    const colors = ['#FF6B35', '#FFD166', '#4ECB71', '#FF4757'];
-    
-    for (let i = 0; i < 50; i++) {
-        const confetti = document.createElement('div');
-        confetti.style.cssText = `
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: ${colors[Math.floor(Math.random() * colors.length)]};
-            left: ${Math.random() * 100}%;
-            top: -10px;
-            border-radius: 2px;
-            animation: confettiFall ${2 + Math.random() * 2}s linear forwards;
-            animation-delay: ${Math.random() * 0.5}s;
-        `;
-        container.appendChild(confetti);
-    }
-    
-    // Add CSS animation
-    if (!document.querySelector('#confetti-style')) {
-        const style = document.createElement('style');
-        style.id = 'confetti-style';
-        style.textContent = `
-            @keyframes confettiFall {
-                to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-}
-
-// =====================================================
-// MAIN APP
-// =====================================================
-
-async function loadMainApp() {
-    showScreen('main-app');
-    showTab('home');
-    
-    try {
-        const userData = await api('/auth/me');
-        state.user = userData;
-        updateUserUI();
-    } catch (err) {
-        loadMainAppAsGuest();
-        return;
-    }
-    
-    checkDailyMenu();
-    loadStats();
-    loadBadges();
-}
-
-function loadMainAppAsGuest() {
-    showScreen('main-app');
-    showTab('home');
-    state.user = { username: 'Invité', level: 1, total_xp: 0 };
-    updateUserUI();
-}
-
-function updateUserUI() {
-    const u = state.user;
-    
-    // Header
-    $('#header-streak').textContent = u.current_streak || 0;
-    $('#header-xp').textContent = u.total_xp || 0;
-    
-    // Home
-    $('#home-username').textContent = u.username || 'Chef';
-    $('#stat-streak').textContent = u.current_streak || 0;
-    $('#stat-xp-week').textContent = u.total_xp || 0;
-    $('#stat-recipes').textContent = u.recipes_count || 0;
-    
-    // Fridge count
-    $('#fridge-count').textContent = state.fridge.length;
-    
-    // Profile
-    $('#profile-username').textContent = `@${u.username || 'user'}`;
-    $('#profile-level').textContent = u.level || 1;
-    $('#profile-xp').textContent = u.total_xp || 0;
-    $('#profile-recipes').textContent = u.recipes_count || 0;
-    $('#profile-streak-max').textContent = u.longest_streak || 0;
-    
-    // Culinary profile
-    const cp = u.culinary_profile || state.calculatedProfile;
-    if (cp) {
-        $('.culinary-emoji').textContent = cp.emoji || '🍳';
-        $('.culinary-name').textContent = cp.name || 'Gourmet';
-    }
-    
-    // XP bar
-    const level = u.level || 1;
-    const xp = u.total_xp || 0;
-    const currentLevelXP = Math.floor(100 * Math.pow(1.5, level - 1));
-    const nextLevelXP = Math.floor(100 * Math.pow(1.5, level));
-    const progress = ((xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100;
-    
-    $('#current-level').textContent = level;
-    $('#current-xp').textContent = xp;
-    $('#next-level-xp').textContent = nextLevelXP;
-    $('#xp-bar-fill').style.width = `${Math.min(100, Math.max(0, progress))}%`;
-}
-
-function updateProfileUI() {
-    updateUserUI();
-    loadBadges();
-}
-
-async function loadStats() {
-    if (!state.token) return;
-    try {
-        const stats = await api('/gamification/stats');
-        state.user.level = stats.level;
-        state.user.total_xp = stats.total_xp;
-        state.user.current_streak = stats.current_streak;
-        state.user.longest_streak = stats.longest_streak;
-        updateUserUI();
-    } catch (err) { console.error(err); }
-}
-
-// =====================================================
-// DAILY MENU
-// =====================================================
-
-async function checkDailyMenu() {
-    if (!state.token) return;
-    try {
-        const data = await api('/quiz/daily');
-        if (data.already_answered && data.menu) {
-            state.todayMenu = data.menu;
-            displayTodayMenu();
-        }
-    } catch (err) { console.error(err); }
-}
-
-async function generateDailyMenu() {
-    if (!state.token) {
-        toast('Connecte-toi d\'abord', 'error');
-        return;
-    }
-    
-    const opts = state.menuOptions;
-    
-    try {
-        const data = await api('/quiz/daily', {
-            method: 'POST',
-            body: JSON.stringify({
-                budget: opts.budget,
-                servings: opts.persons,
-                include_cheese: opts.cheese,
-                include_wine: opts.wine
-            })
-        });
-        
-        state.todayMenu = data.menu;
-        hideModal('menu-options-modal');
-        displayTodayMenu();
-        
-        showXP(data.xp_gained || 20);
-        toast(`Streak: ${data.streak} 🔥`, 'success');
-        
-        $('#header-streak').textContent = data.streak;
-        $('#stat-streak').textContent = data.streak;
-    } catch (err) {
-        toast(err.message || 'Erreur', 'error');
-    }
-}
-
-function displayTodayMenu() {
-    $('#daily-menu-status').textContent = 'Ton menu est prêt !';
-    $('#generate-menu-btn').textContent = 'Voir';
-    
-    const preview = $('#daily-menu-preview');
-    preview.classList.remove('hidden');
-    
-    const types = { starter: 'Entrée', main: 'Plat', dessert: 'Dessert', cheese: 'Fromage', wine: 'Vin' };
-    const items = [];
-    
-    ['starter', 'main', 'dessert', 'cheese', 'wine'].forEach(t => {
-        const meal = state.todayMenu[t];
-        if (meal) items.push({ type: t, label: types[t], meal });
-    });
-    
-    preview.innerHTML = items.map(i => `
-        <div class="menu-item-row" onclick="openRecipe('${i.meal.id}')">
-            <div class="menu-item-img" style="background-image:url(${getRecipeImage(i.meal)})"></div>
-            <div class="menu-item-info">
-                <span class="menu-item-type">${i.label}</span>
-                <span class="menu-item-name">${i.meal.name}</span>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Yumr - Swipe. Cook. Enjoy.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- ========== SPLASH ========== -->
+        <div class="screen active" id="splash">
+            <div class="splash-orbs">
+                <div class="orb orb-1"></div>
+                <div class="orb orb-2"></div>
+                <div class="orb orb-3"></div>
             </div>
-            <span style="color:var(--text-muted)">→</span>
-        </div>
-    `).join('');
-}
-
-// =====================================================
-// FRIDGE
-// =====================================================
-
-function openFridge() {
-    showModal('fridge-modal');
-    displayFridge('all');
-    displayExpiringItems();
-}
-
-function displayFridge(category = 'all') {
-    const items = category === 'all' 
-        ? state.fridge 
-        : state.fridge.filter(i => i.category === category);
-    
-    if (!items.length) {
-        $('#fridge-list').innerHTML = `
-            <div style="text-align:center;padding:40px;color:var(--text-secondary)">
-                <p style="font-size:48px;margin-bottom:16px">🧊</p>
-                <p>Aucun ingrédient dans cette catégorie</p>
-            </div>
-        `;
-        return;
-    }
-    
-    $('#fridge-list').innerHTML = items.map(item => {
-        const days = getDaysUntilExpiry(item.expirationDate);
-        let expClass = 'ok';
-        let expText = `${days}j`;
-        
-        if (days < 0) { expClass = 'danger'; expText = 'Périmé'; }
-        else if (days <= 2) { expClass = 'danger'; }
-        else if (days <= 5) { expClass = 'warning'; }
-        
-        return `
-            <div class="fridge-item">
-                <span class="fridge-item-icon">${item.icon || '🥕'}</span>
-                <div class="fridge-item-info">
-                    <div class="fridge-item-name">${item.name}</div>
-                    <div class="fridge-item-qty">${item.quantity}</div>
+            <div class="splash-content">
+                <div class="splash-logo">
+                    <div class="logo-ring"></div>
+                    <span class="logo-icon">🍽️</span>
                 </div>
-                <span class="fridge-item-exp ${expClass}">${expText}</span>
-                <button class="fridge-item-del" onclick="deleteFridgeItem('${item.id}')">🗑️</button>
-            </div>
-        `;
-    }).join('');
-}
-
-function displayExpiringItems() {
-    const expiring = state.fridge.filter(i => getDaysUntilExpiry(i.expirationDate) <= 3);
-    
-    if (!expiring.length) {
-        $('#fridge-expiring').classList.add('hidden');
-        return;
-    }
-    
-    $('#fridge-expiring').classList.remove('hidden');
-    $('#expiring-list').innerHTML = expiring.map(i => `
-        <div class="fridge-item" style="margin-bottom:8px">
-            <span class="fridge-item-icon">${i.icon}</span>
-            <div class="fridge-item-info">
-                <div class="fridge-item-name">${i.name}</div>
-            </div>
-            <span class="fridge-item-exp danger">${getDaysUntilExpiry(i.expirationDate)}j</span>
-        </div>
-    `).join('');
-}
-
-function saveIngredient() {
-    const name = $('#ingredient-name').value.trim();
-    if (!name) { toast('Nom requis', 'error'); return; }
-    
-    const newItem = {
-        id: Date.now().toString(),
-        name,
-        quantity: $('#ingredient-qty').value || '1',
-        category: $('#ingredient-category').value,
-        icon: getCategoryIcon($('#ingredient-category').value),
-        expirationDate: $('#ingredient-expiry').value || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    };
-    
-    state.fridge.push(newItem);
-    hideModal('add-ingredient-modal');
-    
-    // Reset form
-    $('#ingredient-name').value = '';
-    $('#ingredient-qty').value = '';
-    $('#ingredient-expiry').value = '';
-    
-    toast('Ingrédient ajouté !', 'success');
-    displayFridge('all');
-    displayExpiringItems();
-    $('#fridge-count').textContent = state.fridge.length;
-}
-
-function deleteFridgeItem(id) {
-    state.fridge = state.fridge.filter(i => i.id !== id);
-    displayFridge($('.fridge-cat.active')?.dataset.cat || 'all');
-    displayExpiringItems();
-    $('#fridge-count').textContent = state.fridge.length;
-}
-
-function getCategoryIcon(cat) {
-    const icons = { fruits: '🍎', legumes: '🥬', viandes: '🥩', laitiers: '🧀', epicerie: '🥫', surgeles: '🧊' };
-    return icons[cat] || '🥕';
-}
-
-// =====================================================
-// RECIPES
-// =====================================================
-
-async function loadRecipes(search = '', filter = 'all') {
-    try {
-        let endpoint = '/meals?limit=50';
-        if (search) endpoint += `&search=${encodeURIComponent(search)}`;
-        if (filter && filter !== 'all') endpoint += `&type=${filter}`;
-        
-        const data = await api(endpoint);
-        state.recipes = data.meals || [];
-        displayRecipes();
-    } catch (err) {
-        console.error(err);
-        // Use mock data
-        state.recipes = [];
-        displayRecipes();
-    }
-}
-
-function displayRecipes() {
-    const grid = $('#recipes-grid');
-    
-    if (!state.recipes.length) {
-        grid.innerHTML = `
-            <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-secondary)">
-                <p style="font-size:48px;margin-bottom:16px">🔍</p>
-                <h3 style="margin-bottom:8px">Aucun résultat</h3>
-                <p>Essaie une autre recherche</p>
-            </div>
-        `;
-        return;
-    }
-    
-    grid.innerHTML = state.recipes.map(r => {
-        const isSaved = state.favorites.includes(r.id);
-        return `
-            <div class="recipe-card" onclick="openRecipe('${r.id}')">
-                <div class="recipe-card-img" style="background-image:url(${getRecipeImage(r)})">
-                    <button class="recipe-card-save ${isSaved ? 'saved' : ''}" onclick="event.stopPropagation(); toggleFavorite('${r.id}')">
-                        ${isSaved ? '❤️' : '🤍'}
-                    </button>
+                <h1 class="splash-title">Yumr</h1>
+                <p class="splash-tagline">Swipe. Cook. Enjoy.</p>
+                <div class="splash-loader">
+                    <div class="loader-bar"></div>
                 </div>
-                <div class="recipe-card-body">
-                    <div class="recipe-card-name">${r.name}</div>
-                    <div class="recipe-card-meta">
-                        <span>⏱️ ${(r.prep_time || 0) + (r.cook_time || 0)}min</span>
-                        <span>💰 ${'€'.repeat(r.budget === 'low' ? 1 : r.budget === 'high' ? 3 : 2)}</span>
+            </div>
+        </div>
+
+        <!-- ========== ONBOARDING ========== -->
+        <div class="screen" id="onboarding">
+            <div class="ob-bg-orbs">
+                <div class="orb orb-accent"></div>
+                <div class="orb orb-gold"></div>
+            </div>
+            <div class="ob-slides" id="ob-slides">
+                <!-- Slide 1 -->
+                <div class="ob-slide active" data-slide="0">
+                    <div class="ob-visual">
+                        <div class="ob-cards-stack">
+                            <div class="ob-card ob-c1"><span>🍕</span></div>
+                            <div class="ob-card ob-c2"><span>🍣</span></div>
+                            <div class="ob-card ob-c3"><span>🥗</span></div>
+                        </div>
+                        <div class="ob-swipe-hint">
+                            <span>←</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+                    <div class="ob-text">
+                        <h2>Swipe tes goûts</h2>
+                        <p>Découvre ton profil culinaire unique en quelques swipes fun</p>
+                    </div>
+                </div>
+                <!-- Slide 2 -->
+                <div class="ob-slide" data-slide="1">
+                    <div class="ob-visual">
+                        <div class="ob-menu-demo glass-card">
+                            <div class="ob-menu-item"><span>🥗</span><span>Entrée du jour</span></div>
+                            <div class="ob-menu-item"><span>🍝</span><span>Plat signature</span></div>
+                            <div class="ob-menu-item"><span>🍰</span><span>Dessert gourmand</span></div>
+                        </div>
+                    </div>
+                    <div class="ob-text">
+                        <h2>Menus sur-mesure</h2>
+                        <p>Chaque jour, un menu adapté à tes goûts, ton frigo et ton budget</p>
+                    </div>
+                </div>
+                <!-- Slide 3 -->
+                <div class="ob-slide" data-slide="2">
+                    <div class="ob-visual">
+                        <div class="ob-gamif">
+                            <div class="ob-xp-badge">+50 XP</div>
+                            <div class="ob-streak-badge">🔥 7</div>
+                            <div class="ob-trophy">🏆</div>
+                        </div>
+                    </div>
+                    <div class="ob-text">
+                        <h2>Deviens un Chef</h2>
+                        <p>Gagne de l'XP, monte en ligue et débloque des badges exclusifs</p>
+                    </div>
+                </div>
+                <!-- Slide 4 -->
+                <div class="ob-slide" data-slide="3">
+                    <div class="ob-visual">
+                        <div class="ob-social-demo">
+                            <div class="ob-post-card glass-card">
+                                <div class="ob-post-img">📸</div>
+                                <div class="ob-post-likes">❤️ 234</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ob-text">
+                        <h2>Partage & Inspire</h2>
+                        <p>Poste tes créations culinaires et découvre celles de la communauté</p>
                     </div>
                 </div>
             </div>
-        `;
-    }).join('');
-}
-
-function toggleFavorite(id) {
-    const idx = state.favorites.indexOf(id);
-    if (idx > -1) {
-        state.favorites.splice(idx, 1);
-        toast('Retiré des favoris');
-    } else {
-        state.favorites.push(id);
-        toast('Ajouté aux favoris !', 'success');
-    }
-    localStorage.setItem('yumr_favorites', JSON.stringify(state.favorites));
-    displayRecipes();
-}
-
-async function openRecipe(id) {
-    try {
-        const r = await api(`/meals/${id}`);
-        const isSaved = state.favorites.includes(id);
-        const types = { starter: 'Entrée', main: 'Plat', dessert: 'Dessert', cheese: 'Fromage', wine: 'Vin' };
-        
-        $('#recipe-detail-page').innerHTML = `
-            <div class="recipe-detail-hero" style="background-image:url(${getRecipeImage(r)})">
-                <button class="btn-back recipe-detail-back" onclick="hideModal('recipe-modal')">←</button>
-                <button class="recipe-detail-save ${isSaved ? 'saved' : ''}" onclick="toggleFavorite('${id}')">${isSaved ? '❤️' : '🤍'}</button>
+            <div class="ob-dots">
+                <span class="ob-dot active"></span>
+                <span class="ob-dot"></span>
+                <span class="ob-dot"></span>
+                <span class="ob-dot"></span>
             </div>
-            <div class="recipe-detail-content">
-                <span class="recipe-detail-type">${types[r.type] || r.type}</span>
-                <h1 class="recipe-detail-title">${r.name}</h1>
-                <p class="recipe-detail-desc">${r.description || ''}</p>
-                
-                <div class="recipe-detail-meta">
-                    <span class="recipe-meta-item">⏱️ ${(r.prep_time || 0) + (r.cook_time || 0)} min</span>
-                    <span class="recipe-meta-item">💰 ${'€'.repeat(r.budget === 'low' ? 1 : r.budget === 'high' ? 3 : 2)}</span>
-                    ${r.calories ? `<span class="recipe-meta-item">🔥 ${r.calories} kcal</span>` : ''}
+            <div class="ob-footer">
+                <button class="btn btn-primary btn-glow" id="ob-next">Continuer</button>
+                <button class="btn btn-link" id="ob-login">J'ai déjà un compte</button>
+            </div>
+        </div>
+
+        <!-- ========== LOGIN ========== -->
+        <div class="screen" id="login">
+            <div class="auth-bg-orbs">
+                <div class="orb orb-accent"></div>
+            </div>
+            <button class="btn-back" data-go="onboarding">←</button>
+            <div class="auth-content">
+                <div class="auth-header">
+                    <span class="auth-icon">👋</span>
+                    <h1>Bon retour !</h1>
+                    <p>Connecte-toi pour retrouver ta progression</p>
                 </div>
-                
-                ${r.ingredients?.length ? `
-                    <div class="recipe-detail-section">
-                        <h3>🥕 Ingrédients</h3>
-                        <ul>${r.ingredients.map(i => `<li><strong>${i.name}</strong> - ${i.qty}</li>`).join('')}</ul>
+                <form class="auth-form" id="login-form">
+                    <div class="input-wrap glass-card">
+                        <span class="input-icon">📧</span>
+                        <input type="email" placeholder="Email" required id="login-email">
                     </div>
-                ` : ''}
-                
-                ${r.recipe?.steps?.length ? `
-                    <div class="recipe-detail-section">
-                        <h3>👨‍🍳 Préparation</h3>
-                        <ol>${r.recipe.steps.map(s => `<li>${s}</li>`).join('')}</ol>
+                    <div class="input-wrap glass-card">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" placeholder="Mot de passe" required id="login-pwd">
                     </div>
-                ` : ''}
+                    <p class="auth-error" id="login-error"></p>
+                    <button type="submit" class="btn btn-primary btn-glow btn-full">Se connecter</button>
+                </form>
             </div>
-        `;
+        </div>
+
+        <!-- ========== QUIZ SETUP ========== -->
+        <div class="screen" id="quiz-setup">
+            <div class="setup-bg-orbs">
+                <div class="orb orb-accent"></div>
+                <div class="orb orb-gold"></div>
+            </div>
+            <button class="btn-back" data-go="onboarding">←</button>
+            <div class="setup-header">
+                <div class="setup-progress"><div class="setup-progress-fill"></div></div>
+                <span class="setup-step">Personnalisation</span>
+                <h1>Configure ton profil</h1>
+            </div>
+            <div class="setup-scroll">
+                <!-- Durée -->
+                <section class="setup-section">
+                    <h3>⏱️ Durée du quiz</h3>
+                    <div class="duration-options">
+                        <label class="duration-opt glass-card">
+                            <input type="radio" name="duration" value="10">
+                            <div class="duration-content">
+                                <span class="duration-num">10</span>
+                                <span class="duration-name">Express</span>
+                                <span class="duration-time">~2 min</span>
+                            </div>
+                        </label>
+                        <label class="duration-opt glass-card selected">
+                            <input type="radio" name="duration" value="30" checked>
+                            <div class="duration-content">
+                                <span class="duration-num">30</span>
+                                <span class="duration-name">Standard</span>
+                                <span class="duration-time">~5 min</span>
+                                <span class="duration-rec">⭐</span>
+                            </div>
+                        </label>
+                        <label class="duration-opt glass-card">
+                            <input type="radio" name="duration" value="50">
+                            <div class="duration-content">
+                                <span class="duration-num">50</span>
+                                <span class="duration-name">Complet</span>
+                                <span class="duration-time">~10 min</span>
+                            </div>
+                        </label>
+                    </div>
+                </section>
+                <!-- Régime -->
+                <section class="setup-section">
+                    <h3>🍽️ Régime alimentaire</h3>
+                    <div class="diet-options">
+                        <label class="diet-opt glass-card selected"><input type="radio" name="diet" value="omnivore" checked><span>🥩</span><span>Omnivore</span></label>
+                        <label class="diet-opt glass-card"><input type="radio" name="diet" value="flexitarian"><span>🥗</span><span>Flexitarien</span></label>
+                        <label class="diet-opt glass-card"><input type="radio" name="diet" value="vegetarian"><span>🥬</span><span>Végétarien</span></label>
+                        <label class="diet-opt glass-card"><input type="radio" name="diet" value="vegan"><span>🌱</span><span>Végan</span></label>
+                    </div>
+                </section>
+                <!-- Allergies -->
+                <section class="setup-section">
+                    <h3>⚠️ Allergies & intolérances</h3>
+                    <div class="chips-wrap">
+                        <label class="chip glass-card"><input type="checkbox" value="gluten"><span>🌾 Gluten</span></label>
+                        <label class="chip glass-card"><input type="checkbox" value="lactose"><span>🥛 Lactose</span></label>
+                        <label class="chip glass-card"><input type="checkbox" value="nuts"><span>🥜 Arachides</span></label>
+                        <label class="chip glass-card"><input type="checkbox" value="seafood"><span>🦐 Crustacés</span></label>
+                        <label class="chip glass-card"><input type="checkbox" value="eggs"><span>🥚 Œufs</span></label>
+                        <label class="chip glass-card"><input type="checkbox" value="soy"><span>🫘 Soja</span></label>
+                        <label class="chip glass-card"><input type="checkbox" value="fish"><span>🐟 Poisson</span></label>
+                    </div>
+                </section>
+                <!-- Objectif -->
+                <section class="setup-section">
+                    <h3>🎯 Objectif santé</h3>
+                    <div class="goals-list">
+                        <label class="goal-opt glass-card selected"><input type="radio" name="goal" value="none" checked><span>😊 Aucun objectif</span></label>
+                        <label class="goal-opt glass-card"><input type="radio" name="goal" value="weight_loss"><span>🏃 Perte de poids</span></label>
+                        <label class="goal-opt glass-card"><input type="radio" name="goal" value="muscle"><span>💪 Prise de masse</span></label>
+                        <label class="goal-opt glass-card"><input type="radio" name="goal" value="cutting"><span>🔥 Sèche</span></label>
+                        <label class="goal-opt glass-card"><input type="radio" name="goal" value="health"><span>❤️ Manger sainement</span></label>
+                    </div>
+                </section>
+                <!-- Medical -->
+                <section class="setup-section">
+                    <h3>🏥 Conditions médicales</h3>
+                    <div class="chips-wrap">
+                        <label class="chip glass-card"><input type="checkbox" value="cholesterol"><span>❤️ Cholestérol</span></label>
+                        <label class="chip glass-card"><input type="checkbox" value="diabetes"><span>💉 Diabète</span></label>
+                        <label class="chip glass-card"><input type="checkbox" value="hypertension"><span>🩺 Hypertension</span></label>
+                    </div>
+                </section>
+            </div>
+            <div class="setup-footer glass-bar">
+                <button class="btn btn-primary btn-glow btn-full" id="start-quiz">
+                    <span>Commencer le quiz</span>
+                    <span class="btn-arrow">→</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ========== QUIZ SWIPE ========== -->
+        <div class="screen" id="quiz">
+            <div class="quiz-bg-orbs">
+                <div class="orb orb-accent"></div>
+            </div>
+            <div class="quiz-header">
+                <button class="btn-close" id="quiz-close">✕</button>
+                <div class="quiz-progress">
+                    <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quiz-fill"></div></div>
+                    <span class="quiz-count" id="quiz-count">1/30</span>
+                </div>
+                <div class="quiz-streak glass-pill">
+                    <span class="fire">🔥</span>
+                    <span id="quiz-streak">0</span>
+                </div>
+            </div>
+            <div class="quiz-arena">
+                <div class="quiz-card glass-card" id="quiz-card">
+                    <div class="quiz-card-img" id="quiz-img"></div>
+                    <div class="quiz-card-body">
+                        <span class="quiz-emoji" id="quiz-emoji">🍕</span>
+                        <p class="quiz-question" id="quiz-question">Tu aimes les pizzas ?</p>
+                    </div>
+                    <div class="quiz-hint quiz-hint-nope"><span>👎</span><span>NOPE</span></div>
+                    <div class="quiz-hint quiz-hint-love"><span>💚</span><span>LOVE</span></div>
+                </div>
+            </div>
+            <div class="quiz-actions">
+                <button class="quiz-btn quiz-btn-nope" id="btn-nope">
+                    <span>👎</span>
+                    <small>Bof</small>
+                </button>
+                <button class="quiz-btn quiz-btn-love" id="btn-love">
+                    <span>💚</span>
+                    <small>J'adore</small>
+                </button>
+            </div>
+        </div>
+
+        <!-- ========== QUIZ RESULT ========== -->
+        <div class="screen" id="result">
+            <canvas id="confetti"></canvas>
+            <div class="result-bg-orbs">
+                <div class="orb orb-gold"></div>
+                <div class="orb orb-accent"></div>
+            </div>
+            <div class="result-content">
+                <div class="result-badge glass-pill">🎉 Bravo !</div>
+                <h1>Ton profil culinaire</h1>
+                <div class="profile-card glass-card">
+                    <div class="profile-glow"></div>
+                    <span class="profile-emoji" id="res-emoji">🍳</span>
+                    <h2 class="profile-name" id="res-name">Le Gourmet</h2>
+                    <p class="profile-desc" id="res-desc">Tu apprécies la bonne cuisine et les saveurs authentiques.</p>
+                    <div class="profile-traits" id="res-traits"></div>
+                </div>
+                <div class="result-xp glass-pill">
+                    <span class="sparkle">✨</span>
+                    <span>+50 XP gagnés !</span>
+                </div>
+                <div class="result-unlock">
+                    <p>Crée ton compte pour débloquer :</p>
+                    <ul>
+                        <li>📅 Menu du jour personnalisé</li>
+                        <li>🧊 Gestion intelligente du frigo</li>
+                        <li>🏆 Ligues & Classements</li>
+                        <li>🛒 Liste de courses automatique</li>
+                    </ul>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-primary btn-glow btn-full" id="create-account">Créer mon compte gratuit</button>
+                    <button class="btn btn-ghost" id="guest-mode">Continuer en invité</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== REGISTER ========== -->
+        <div class="screen" id="register">
+            <div class="auth-bg-orbs"><div class="orb orb-accent"></div></div>
+            <button class="btn-back" data-go="result">←</button>
+            <div class="auth-content">
+                <div class="auth-header">
+                    <span class="auth-icon">🚀</span>
+                    <h1>Rejoins Yumr !</h1>
+                    <p>Profil détecté : <strong id="reg-profile">Gourmet</strong></p>
+                </div>
+                <form class="auth-form" id="register-form">
+                    <div class="input-wrap glass-card">
+                        <span class="input-icon">👤</span>
+                        <input type="text" placeholder="Pseudo" required id="reg-username" minlength="3">
+                    </div>
+                    <div class="input-wrap glass-card">
+                        <span class="input-icon">📧</span>
+                        <input type="email" placeholder="Email" required id="reg-email">
+                    </div>
+                    <div class="input-wrap glass-card">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" placeholder="Mot de passe (6+ car.)" required id="reg-pwd" minlength="6">
+                    </div>
+                    <p class="auth-error" id="reg-error"></p>
+                    <button type="submit" class="btn btn-primary btn-glow btn-full">Créer mon compte</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========== MAIN APP ========== -->
+        <div class="screen" id="main">
+            <!-- Header -->
+            <header class="app-header glass-bar">
+                <div class="header-brand">
+                    <span class="brand-icon">🍽️</span>
+                    <span class="brand-name">Yumr</span>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-pill glass-pill"><span class="fire">🔥</span><span id="h-streak">0</span></div>
+                    <div class="stat-pill glass-pill"><span>✨</span><span id="h-xp">0</span></div>
+                    <button class="notif-btn" id="notif-btn">🔔<span class="notif-badge">3</span></button>
+                </div>
+            </header>
+
+            <!-- Tabs Container -->
+            <main class="tabs-container">
+                <!-- HOME -->
+                <section class="tab active" id="tab-home">
+                    <div class="greeting">
+                        <h1>Salut <span id="user-name">Chef</span> ! 👋</h1>
+                        <p>Qu'est-ce qu'on cuisine aujourd'hui ?</p>
+                    </div>
+
+                    <!-- Daily Menu Card -->
+                    <div class="daily-menu glass-card" id="daily-card">
+                        <div class="daily-top">
+                            <div class="daily-icon">👨‍🍳</div>
+                            <div class="daily-info">
+                                <h3>Menu du jour</h3>
+                                <p id="daily-status">Génère ton menu personnalisé</p>
+                            </div>
+                        </div>
+                        <div class="daily-items" id="daily-items"></div>
+                        <button class="btn btn-primary btn-glow btn-full" id="gen-menu">✨ Générer mon menu</button>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <button class="quick-btn glass-card" data-action="fridge">
+                            <span class="quick-icon">🧊</span>
+                            <span class="quick-name">Mon Frigo</span>
+                            <span class="quick-count" id="fridge-count">0</span>
+                        </button>
+                        <button class="quick-btn glass-card" data-action="shopping">
+                            <span class="quick-icon">🛒</span>
+                            <span class="quick-name">Courses</span>
+                        </button>
+                        <button class="quick-btn glass-card" data-action="mealprep">
+                            <span class="quick-icon">📅</span>
+                            <span class="quick-name">Meal Prep</span>
+                            <span class="quick-pro">PRO</span>
+                        </button>
+                        <button class="quick-btn glass-card" data-action="coach">
+                            <span class="quick-icon">🤖</span>
+                            <span class="quick-name">Coach IA</span>
+                            <span class="quick-pro">PRO</span>
+                        </button>
+                        <button class="quick-btn glass-card" data-action="restaurant">
+                            <span class="quick-icon">🍴</span>
+                            <span class="quick-name">Mode Resto</span>
+                            <span class="quick-pro">PRO</span>
+                        </button>
+                        <button class="quick-btn glass-card" data-action="referral">
+                            <span class="quick-icon">🎁</span>
+                            <span class="quick-name">Parrainer</span>
+                        </button>
+                    </div>
+
+                    <!-- Weekly Challenge -->
+                    <div class="challenge-card glass-card">
+                        <div class="challenge-header">
+                            <span class="challenge-label">🎯 Défi de la semaine</span>
+                            <span class="challenge-timer">5j restants</span>
+                        </div>
+                        <h3>Carbonara revisitée</h3>
+                        <p>Poste ta version et gagne jusqu'à 500 XP !</p>
+                        <div class="challenge-footer">
+                            <span>👥 247 participants</span>
+                            <button class="btn btn-sm btn-outline" id="join-challenge">Participer</button>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="stats-section">
+                        <h3>📊 Cette semaine</h3>
+                        <div class="stats-grid">
+                            <div class="stat-box glass-card">
+                                <span class="stat-num" id="s-recipes">0</span>
+                                <span class="stat-label">Recettes</span>
+                            </div>
+                            <div class="stat-box glass-card">
+                                <span class="stat-num" id="s-streak">0</span>
+                                <span class="stat-label">Streak</span>
+                            </div>
+                            <div class="stat-box glass-card">
+                                <span class="stat-num" id="s-xp">0</span>
+                                <span class="stat-label">XP</span>
+                            </div>
+                            <div class="stat-box glass-card clickable" data-goto="leagues">
+                                <span class="stat-num" id="s-rank">#--</span>
+                                <span class="stat-label">Rang</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EXPLORE -->
+                <section class="tab" id="tab-explore">
+                    <h1 class="tab-title">Explorer</h1>
+                    <div class="search-bar glass-card">
+                        <span>🔍</span>
+                        <input type="text" placeholder="Rechercher une recette..." id="search-input">
+                    </div>
+                    <div class="explore-tabs">
+                        <button class="exp-tab active" data-exp="recipes">🍝 Recettes</button>
+                        <button class="exp-tab" data-exp="trending">🔥 Tendances</button>
+                        <button class="exp-tab" data-exp="saved">💾 Sauvegardés</button>
+                    </div>
+                    <div class="filter-bar">
+                        <button class="filter-chip active" data-filter="all">Tout</button>
+                        <button class="filter-chip" data-filter="starter">🥗 Entrées</button>
+                        <button class="filter-chip" data-filter="main">🍖 Plats</button>
+                        <button class="filter-chip" data-filter="dessert">🍰 Desserts</button>
+                        <button class="filter-chip" data-filter="quick">⚡ <30min</button>
+                        <button class="filter-chip" data-filter="cheap">💰 Budget</button>
+                    </div>
+                    <div class="recipes-grid" id="recipes-grid"></div>
+                </section>
+
+                <!-- FEED -->
+                <section class="tab" id="tab-feed">
+                    <h1 class="tab-title">Feed</h1>
+                    <div class="feed-tabs">
+                        <button class="feed-tab active" data-feed="foryou">Pour toi</button>
+                        <button class="feed-tab" data-feed="following">Suivis</button>
+                        <button class="feed-tab" data-feed="trending">🔥 Top</button>
+                    </div>
+                    <div class="stories-row" id="stories">
+                        <div class="story add-story"><div class="story-avatar">➕</div><span>Ta story</span></div>
+                    </div>
+                    <div class="feed-list" id="feed-list"></div>
+                </section>
+
+                <!-- LEAGUES -->
+                <section class="tab" id="tab-leagues">
+                    <h1 class="tab-title">🏆 Ligues</h1>
+                    <div class="current-league glass-card">
+                        <span class="league-icon" id="league-icon">🥈</span>
+                        <div class="league-info">
+                            <span class="league-name" id="league-name">Ligue Argent</span>
+                            <span class="league-pos">Position : <strong id="league-pos">#12</strong></span>
+                        </div>
+                        <div class="league-timer">
+                            <small>Reset</small>
+                            <strong id="league-reset">2j 14h</strong>
+                        </div>
+                    </div>
+                    <div class="leagues-list">
+                        <button class="league-pill glass-pill" data-league="champion">👑 Champion</button>
+                        <button class="league-pill glass-pill" data-league="diamond">💎 Diamant</button>
+                        <button class="league-pill glass-pill" data-league="gold">🥇 Or</button>
+                        <button class="league-pill glass-pill active" data-league="silver">🥈 Argent</button>
+                        <button class="league-pill glass-pill" data-league="bronze">🥉 Bronze</button>
+                    </div>
+                    <div class="leaderboard" id="leaderboard"></div>
+                    <div class="rewards-card glass-card">
+                        <h4>🎁 Récompenses</h4>
+                        <div class="reward-row"><span>🥇 Top 1</span><span>+500 XP + Badge</span></div>
+                        <div class="reward-row"><span>🥈 Top 3</span><span>+300 XP</span></div>
+                        <div class="reward-row"><span>🥉 Top 10</span><span>+100 XP + Promo</span></div>
+                    </div>
+                </section>
+
+                <!-- PROFILE -->
+                <section class="tab" id="tab-profile">
+                    <div class="profile-header glass-card">
+                        <div class="profile-cover"></div>
+                        <div class="profile-avatar-wrap">
+                            <div class="profile-avatar" id="p-avatar">
+                                <img src="https://i.pravatar.cc/200?u=me" alt="">
+                            </div>
+                            <span class="avatar-level" id="p-level">1</span>
+                        </div>
+                        <h2 id="p-name">@username</h2>
+                        <div class="profile-type-badge glass-pill">
+                            <span id="p-emoji">🍳</span>
+                            <span id="p-type">Gourmet</span>
+                        </div>
+                        <div class="profile-stats-row">
+                            <div><strong id="ps-xp">0</strong><span>XP</span></div>
+                            <div><strong id="ps-cooked">0</strong><span>Cuisinés</span></div>
+                            <div><strong id="ps-streak">0</strong><span>Best Streak</span></div>
+                            <div><strong id="ps-badges">0</strong><span>Badges</span></div>
+                        </div>
+                    </div>
+                    <div class="xp-card glass-card">
+                        <div class="xp-header">
+                            <span>Niveau <strong id="xp-lvl">1</strong></span>
+                            <span><span id="xp-cur">0</span> / <span id="xp-next">100</span> XP</span>
+                        </div>
+                        <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
+                    </div>
+                    <div class="badges-card glass-card">
+                        <div class="badges-header">
+                            <h4>🏅 Badges</h4>
+                            <button class="btn-link" id="all-badges">Voir tout</button>
+                        </div>
+                        <div class="badges-row" id="badges-preview"></div>
+                    </div>
+                    <div class="profile-menu">
+                        <button class="menu-item glass-card" data-action="preferences"><span>⚙️</span><span>Préférences alimentaires</span><span>›</span></button>
+                        <button class="menu-item glass-card" data-action="fridge"><span>🧊</span><span>Mon Frigo</span><span>›</span></button>
+                        <button class="menu-item glass-card" data-action="premium"><span>⭐</span><span>Passer Premium</span><span class="menu-pro">PRO</span></button>
+                        <button class="menu-item glass-card" data-action="referral"><span>🎁</span><span>Parrainer des amis</span><span>›</span></button>
+                        <button class="menu-item glass-card" data-action="settings"><span>🔧</span><span>Paramètres</span><span>›</span></button>
+                        <button class="menu-item glass-card danger" id="logout"><span>🚪</span><span>Déconnexion</span></button>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Bottom Nav -->
+            <nav class="bottom-nav glass-bar">
+                <button class="nav-item active" data-tab="home"><span>🏠</span><small>Home</small></button>
+                <button class="nav-item" data-tab="explore"><span>🔍</span><small>Explorer</small></button>
+                <button class="nav-item nav-center" id="post-btn"><span class="nav-plus">➕</span></button>
+                <button class="nav-item" data-tab="leagues"><span>🏆</span><small>Ligues</small></button>
+                <button class="nav-item" data-tab="profile"><span>👤</span><small>Profil</small></button>
+            </nav>
+        </div>
+
+        <!-- ========== MODALS ========== -->
         
-        showModal('recipe-modal');
-    } catch (err) {
-        toast('Erreur chargement recette', 'error');
-    }
-}
-
-// =====================================================
-// LEADERBOARD
-// =====================================================
-
-function loadLeaderboard() {
-    const list = $('#leaderboard');
-    const myRank = 12; // Mock
-    
-    list.innerHTML = MOCK_LEADERBOARD.map((p, idx) => `
-        <div class="leaderboard-item ${idx + 1 === myRank ? 'me' : ''}">
-            <span class="lb-rank ${p.rank === 1 ? 'gold' : p.rank === 2 ? 'silver' : p.rank === 3 ? 'bronze' : ''}">#${p.rank}</span>
-            <div class="lb-avatar" style="background-image:url(${p.avatar})"></div>
-            <span class="lb-name">${p.name}</span>
-            <span class="lb-points">${p.points} pts</span>
+        <!-- Menu Options -->
+        <div class="modal" id="modal-menu">
+            <div class="modal-backdrop"></div>
+            <div class="modal-sheet glass-card">
+                <div class="modal-handle"></div>
+                <h3>🍽️ Options du menu</h3>
+                <div class="modal-body">
+                    <div class="opt-section">
+                        <label>💰 Budget</label>
+                        <div class="opt-row">
+                            <button class="opt-btn glass-pill active" data-budget="low">€</button>
+                            <button class="opt-btn glass-pill" data-budget="medium">€€</button>
+                            <button class="opt-btn glass-pill" data-budget="high">€€€</button>
+                        </div>
+                    </div>
+                    <div class="opt-section">
+                        <label>👥 Personnes</label>
+                        <div class="stepper">
+                            <button class="step-btn" id="p-minus">−</button>
+                            <span class="step-val" id="p-val">2</span>
+                            <button class="step-btn" id="p-plus">+</button>
+                        </div>
+                    </div>
+                    <div class="opt-section">
+                        <label>⏱️ Temps max</label>
+                        <div class="opt-row">
+                            <button class="opt-btn glass-pill" data-time="15">15min</button>
+                            <button class="opt-btn glass-pill active" data-time="30">30min</button>
+                            <button class="opt-btn glass-pill" data-time="60">1h</button>
+                            <button class="opt-btn glass-pill" data-time="999">∞</button>
+                        </div>
+                    </div>
+                    <div class="opt-section">
+                        <label class="toggle-label glass-card">
+                            <span>🧊 Utiliser mon frigo en priorité</span>
+                            <input type="checkbox" id="opt-fridge" checked>
+                            <span class="toggle"></span>
+                        </label>
+                    </div>
+                    <div class="opt-section">
+                        <label class="toggle-label glass-card">
+                            <span>🧀 Inclure fromage</span>
+                            <input type="checkbox" id="opt-cheese">
+                            <span class="toggle"></span>
+                        </label>
+                    </div>
+                    <div class="opt-section">
+                        <label class="toggle-label glass-card">
+                            <span>🍷 Suggérer un vin</span>
+                            <input type="checkbox" id="opt-wine">
+                            <span class="toggle"></span>
+                        </label>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-glow btn-full" id="confirm-menu">✨ Générer le menu</button>
+            </div>
         </div>
-    `).join('');
-    
-    $('#league-position').textContent = `#${myRank}`;
-}
 
-// =====================================================
-// BADGES
-// =====================================================
-
-function loadBadges() {
-    // Preview (first 5)
-    $('#badges-preview').innerHTML = MOCK_BADGES.slice(0, 5).map(b => `
-        <div class="badge-item ${b.unlocked ? '' : 'locked'}">
-            <div class="badge-icon">${b.icon}</div>
-            <div class="badge-name">${b.name}</div>
+        <!-- Fridge -->
+        <div class="modal modal-full" id="modal-fridge">
+            <div class="modal-page">
+                <div class="modal-topbar glass-bar">
+                    <button class="btn-back" data-close="modal-fridge">←</button>
+                    <h2>🧊 Mon Frigo</h2>
+                    <button class="btn btn-sm btn-primary" id="add-item">+ Ajouter</button>
+                </div>
+                <div class="modal-scroll">
+                    <div class="fridge-actions">
+                        <button class="fridge-action glass-card" id="scan-fridge">
+                            <span>📷</span>
+                            <span>Scanner frigo</span>
+                            <span class="action-badge">IA</span>
+                        </button>
+                        <button class="fridge-action glass-card" id="scan-ticket">
+                            <span>🧾</span>
+                            <span>Scanner ticket</span>
+                        </button>
+                    </div>
+                    <div class="fridge-cats">
+                        <button class="cat-btn active" data-cat="all">Tout</button>
+                        <button class="cat-btn" data-cat="fruits">🍎 Fruits</button>
+                        <button class="cat-btn" data-cat="legumes">🥬 Légumes</button>
+                        <button class="cat-btn" data-cat="viandes">🥩 Viandes</button>
+                        <button class="cat-btn" data-cat="laitiers">🧀 Laitiers</button>
+                        <button class="cat-btn" data-cat="epicerie">🥫 Épicerie</button>
+                        <button class="cat-btn" data-cat="surgeles">❄️ Surgelés</button>
+                    </div>
+                    <div class="fridge-list" id="fridge-list"></div>
+                    <div class="expiring-section glass-card" id="expiring-section">
+                        <h4>⚠️ Bientôt périmé</h4>
+                        <div id="expiring-list"></div>
+                        <button class="btn btn-outline btn-sm btn-full" id="tgtg-btn">🍀 Envoyer vers Too Good To Go</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    `).join('');
-    
-    $('#profile-badges').textContent = MOCK_BADGES.filter(b => b.unlocked).length;
-    
-    // Full grid
-    $('#badges-grid').innerHTML = MOCK_BADGES.map(b => `
-        <div class="badge-card ${b.unlocked ? '' : 'locked'}">
-            <div class="badge-card-icon">${b.icon}</div>
-            <div class="badge-card-name">${b.name}</div>
-            <div class="badge-card-desc">${b.desc}</div>
+
+        <!-- Add Item -->
+        <div class="modal" id="modal-additem">
+            <div class="modal-backdrop"></div>
+            <div class="modal-sheet glass-card">
+                <div class="modal-handle"></div>
+                <h3>➕ Ajouter un ingrédient</h3>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Nom</label>
+                        <input type="text" class="form-input glass-card" id="item-name" placeholder="Ex: Tomates">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quantité</label>
+                            <input type="text" class="form-input glass-card" id="item-qty" placeholder="500g">
+                        </div>
+                        <div class="form-group">
+                            <label>Catégorie</label>
+                            <select class="form-input glass-card" id="item-cat">
+                                <option value="fruits">🍎 Fruits</option>
+                                <option value="legumes">🥬 Légumes</option>
+                                <option value="viandes">🥩 Viandes</option>
+                                <option value="laitiers">🧀 Laitiers</option>
+                                <option value="epicerie">🥫 Épicerie</option>
+                                <option value="surgeles">❄️ Surgelés</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Date de péremption</label>
+                        <input type="date" class="form-input glass-card" id="item-exp">
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-full" id="save-item">Ajouter</button>
+            </div>
         </div>
-    `).join('');
-}
 
-// =====================================================
-// POST
-// =====================================================
+        <!-- Shopping -->
+        <div class="modal modal-full" id="modal-shopping">
+            <div class="modal-page">
+                <div class="modal-topbar glass-bar">
+                    <button class="btn-back" data-close="modal-shopping">←</button>
+                    <h2>🛒 Liste de courses</h2>
+                    <button class="btn btn-sm btn-ghost" id="share-list">📤</button>
+                </div>
+                <div class="modal-scroll">
+                    <div class="shopping-summary glass-card">
+                        <div><strong id="shop-count">0</strong> articles</div>
+                        <div>Estimé : <strong id="shop-total">~0€</strong></div>
+                    </div>
+                    <div class="shopping-list" id="shopping-list"></div>
+                    <button class="btn btn-primary btn-glow btn-full" id="order-btn">🛒 Commander (bientôt)</button>
+                </div>
+            </div>
+        </div>
 
-function handlePostImage(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = ev => {
-        $('#post-preview').src = ev.target.result;
-        $('#post-preview').classList.remove('hidden');
-        $('#upload-zone').classList.add('hidden');
-    };
-    reader.readAsDataURL(file);
-}
+        <!-- Premium -->
+        <div class="modal modal-full" id="modal-premium">
+            <div class="modal-page premium-bg">
+                <div class="modal-topbar glass-bar">
+                    <button class="btn-back" data-close="modal-premium">←</button>
+                    <h2>⭐ Yumr Pro</h2>
+                </div>
+                <div class="modal-scroll">
+                    <div class="premium-hero">
+                        <span class="premium-crown">👑</span>
+                        <h2>Débloquez tout le potentiel</h2>
+                        <p>Devenez un vrai Chef avec Yumr Pro</p>
+                    </div>
+                    <div class="premium-features">
+                        <div class="prem-feat glass-card"><span>🍽️</span><div><h4>Menus illimités</h4><p>Régénérez autant que vous voulez</p></div></div>
+                        <div class="prem-feat glass-card"><span>🤖</span><div><h4>Coach Nutrition IA</h4><p>Conseils personnalisés 24/7</p></div></div>
+                        <div class="prem-feat glass-card"><span>📊</span><div><h4>Macros détaillés</h4><p>Calories, protéines, glucides</p></div></div>
+                        <div class="prem-feat glass-card"><span>📅</span><div><h4>Meal Prep</h4><p>Planifiez votre semaine entière</p></div></div>
+                        <div class="prem-feat glass-card"><span>🍴</span><div><h4>Mode Restaurant</h4><p>Scannez les menus pour check régime</p></div></div>
+                        <div class="prem-feat glass-card"><span>📷</span><div><h4>Snap Frigo IA</h4><p>Photographiez, on détecte tout</p></div></div>
+                    </div>
+                    <div class="premium-plans">
+                        <div class="plan glass-card" data-plan="plus">
+                            <h4>Yumr+</h4>
+                            <div class="plan-price">4.99€<small>/mois</small></div>
+                            <p>ou 39.99€/an</p>
+                        </div>
+                        <div class="plan glass-card popular" data-plan="pro">
+                            <span class="plan-badge">POPULAIRE</span>
+                            <h4>Yumr Pro</h4>
+                            <div class="plan-price">9.99€<small>/mois</small></div>
+                            <p>ou 99.99€/an</p>
+                        </div>
+                        <div class="plan glass-card" data-plan="family">
+                            <h4>Yumr Famille</h4>
+                            <div class="plan-price">14.99€<small>/mois</small></div>
+                            <p>Jusqu'à 6 membres</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-glow btn-full" id="subscribe">Essai gratuit 7 jours</button>
+                </div>
+            </div>
+        </div>
 
-function publishPost() {
-    if (!$('#post-preview').src) {
-        toast('Ajoute une photo', 'error');
-        return;
-    }
-    
-    showXP(30);
-    toast('Post publié ! 🎉', 'success');
-    
-    // Reset
-    $('#post-preview').src = '';
-    $('#post-preview').classList.add('hidden');
-    $('#upload-zone').classList.remove('hidden');
-    $('#post-caption').value = '';
-    
-    showTab('home');
-}
+        <!-- Post -->
+        <div class="modal modal-full" id="modal-post">
+            <div class="modal-page">
+                <div class="modal-topbar glass-bar">
+                    <button class="btn-back" data-close="modal-post">←</button>
+                    <h2>📸 Nouveau post</h2>
+                    <button class="btn btn-sm btn-primary" id="publish">Publier</button>
+                </div>
+                <div class="modal-scroll">
+                    <div class="post-upload glass-card" id="post-upload">
+                        <span>📷</span>
+                        <p>Ajoute une photo de ton plat</p>
+                        <input type="file" id="post-file" accept="image/*" hidden>
+                    </div>
+                    <img id="post-preview" class="post-preview" src="" alt="">
+                    <div class="form-group">
+                        <textarea class="form-input glass-card" id="post-caption" placeholder="Décris ton plat..." rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-input glass-card" id="post-recipe">
+                            <option value="">Lier à une recette (optionnel)</option>
+                        </select>
+                    </div>
+                    <p class="post-xp">+30 XP à la publication</p>
+                </div>
+            </div>
+        </div>
 
-// Avatar
-function handleAvatarUpload(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = ev => {
-        $('#avatar-img').src = ev.target.result;
-        toast('Photo mise à jour !', 'success');
-    };
-    reader.readAsDataURL(file);
-}
+        <!-- Recipe Detail -->
+        <div class="modal modal-full" id="modal-recipe">
+            <div class="modal-page" id="recipe-content"></div>
+        </div>
 
-// =====================================================
-// GLOBAL FUNCTIONS
-// =====================================================
+        <!-- Coach IA -->
+        <div class="modal modal-full" id="modal-coach">
+            <div class="modal-page">
+                <div class="modal-topbar glass-bar">
+                    <button class="btn-back" data-close="modal-coach">←</button>
+                    <h2>🤖 Coach Nutrition</h2>
+                    <span class="pro-pill">PRO</span>
+                </div>
+                <div class="chat-container" id="chat-msgs">
+                    <div class="chat-msg bot">
+                        <div class="chat-avatar">🤖</div>
+                        <div class="chat-bubble glass-card">Salut ! Je suis ton coach nutrition IA. Comment puis-je t'aider ?</div>
+                    </div>
+                </div>
+                <div class="chat-input glass-bar">
+                    <input type="text" placeholder="Pose ta question..." id="chat-input">
+                    <button class="chat-send" id="chat-send">📤</button>
+                </div>
+            </div>
+        </div>
 
-window.openRecipe = openRecipe;
-window.toggleFavorite = toggleFavorite;
-window.deleteFridgeItem = deleteFridgeItem;
+        <!-- Meal Prep -->
+        <div class="modal modal-full" id="modal-mealprep">
+            <div class="modal-page">
+                <div class="modal-topbar glass-bar">
+                    <button class="btn-back" data-close="modal-mealprep">←</button>
+                    <h2>📅 Meal Prep</h2>
+                    <span class="pro-pill">PRO</span>
+                </div>
+                <div class="modal-scroll">
+                    <div class="premium-lock">
+                        <span>🔒</span>
+                        <h3>Fonctionnalité Premium</h3>
+                        <p>Planifie ta semaine entière avec des menus cohérents et une liste de courses consolidée.</p>
+                        <button class="btn btn-primary btn-glow" data-action="premium">Débloquer Yumr Pro</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Restaurant Mode -->
+        <div class="modal modal-full" id="modal-restaurant">
+            <div class="modal-page">
+                <div class="modal-topbar glass-bar">
+                    <button class="btn-back" data-close="modal-restaurant">←</button>
+                    <h2>🍴 Mode Restaurant</h2>
+                    <span class="pro-pill">PRO</span>
+                </div>
+                <div class="modal-scroll">
+                    <div class="scan-zone glass-card">
+                        <span>📷</span>
+                        <p>Scanne un menu de restaurant</p>
+                        <button class="btn btn-primary" id="scan-menu">Scanner le menu</button>
+                    </div>
+                    <p class="scan-hint">L'IA analysera chaque plat et t'indiquera s'il correspond à ton régime.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Referral -->
+        <div class="modal modal-full" id="modal-referral">
+            <div class="modal-page">
+                <div class="modal-topbar glass-bar">
+                    <button class="btn-back" data-close="modal-referral">←</button>
+                    <h2>🎁 Parrainage</h2>
+                </div>
+                <div class="modal-scroll">
+                    <div class="referral-hero">
+                        <span>🎁</span>
+                        <h3>Invite tes amis !</h3>
+                        <p>Gagne 1 mois Premium gratuit pour 3 amis invités</p>
+                    </div>
+                    <div class="referral-code glass-card">
+                        <small>Ton code</small>
+                        <strong id="ref-code">YUMR-XXXX</strong>
+                        <button class="btn btn-sm btn-primary" id="copy-code">Copier</button>
+                    </div>
+                    <div class="referral-stats glass-card">
+                        <div><strong id="ref-inv">0</strong><span>Invités</span></div>
+                        <div><strong id="ref-act">0</strong><span>Actifs</span></div>
+                        <div><strong id="ref-xp">0</strong><span>XP</span></div>
+                    </div>
+                    <div class="referral-rewards">
+                        <h4>Récompenses</h4>
+                        <div class="ref-row glass-card"><span>3 amis</span><span>1 mois Premium</span></div>
+                        <div class="ref-row glass-card"><span>5 amis</span><span>+500 XP + Badge</span></div>
+                        <div class="ref-row glass-card"><span>10 amis</span><span>3 mois Premium</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badges -->
+        <div class="modal modal-full" id="modal-badges">
+            <div class="modal-page">
+                <div class="modal-topbar glass-bar">
+                    <button class="btn-back" data-close="modal-badges">←</button>
+                    <h2>🏅 Tous les badges</h2>
+                </div>
+                <div class="modal-scroll">
+                    <div class="badges-grid" id="badges-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="modal modal-full" id="modal-settings">
+            <div class="modal-page">
+                <div class="modal-topbar glass-bar">
+                    <button class="btn-back" data-close="modal-settings">←</button>
+                    <h2>🔧 Paramètres</h2>
+                </div>
+                <div class="modal-scroll">
+                    <div class="settings-group">
+                        <h4>Compte</h4>
+                        <button class="setting-row glass-card"><span>👤</span><span>Mon compte</span><span>›</span></button>
+                        <button class="setting-row glass-card"><span>🔔</span><span>Notifications</span><span>›</span></button>
+                    </div>
+                    <div class="settings-group">
+                        <h4>Abonnement</h4>
+                        <button class="setting-row glass-card"><span>⭐</span><span>Gérer l'abonnement</span><span>›</span></button>
+                    </div>
+                    <div class="settings-group">
+                        <h4>À propos</h4>
+                        <button class="setting-row glass-card"><span>📄</span><span>CGU</span><span>›</span></button>
+                        <button class="setting-row glass-card"><span>🔒</span><span>Confidentialité</span><span>›</span></button>
+                        <button class="setting-row glass-card"><span>ℹ️</span><span>Version</span><span>1.0.0</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preferences -->
+        <div class="modal modal-full" id="modal-preferences">
+            <div class="modal-page">
+                <div class="modal-topbar glass-bar">
+                    <button class="btn-back" data-close="modal-preferences">←</button>
+                    <h2>⚙️ Préférences</h2>
+                    <button class="btn btn-sm btn-primary" id="save-prefs">Sauver</button>
+                </div>
+                <div class="modal-scroll" id="prefs-content"></div>
+            </div>
+        </div>
+
+        <!-- Challenge -->
+        <div class="modal modal-full" id="modal-challenge">
+            <div class="modal-page">
+                <div class="modal-topbar glass-bar">
+                    <button class="btn-back" data-close="modal-challenge">←</button>
+                    <h2>🎯 Défi</h2>
+                </div>
+                <div class="modal-scroll">
+                    <div class="challenge-hero glass-card">
+                        <span>🍝</span>
+                        <h2>Carbonara revisitée</h2>
+                        <p>Montre-nous ta version unique de ce classique italien !</p>
+                        <div class="challenge-meta"><span>⏱️ 5j</span><span>👥 247</span></div>
+                    </div>
+                    <div class="challenge-rewards glass-card">
+                        <h4>🎁 Récompenses</h4>
+                        <p>🥇 1er : 500 XP + Badge exclusif</p>
+                        <p>🥈 2-3 : 300 XP</p>
+                        <p>🥉 4-10 : 100 XP</p>
+                        <p>Participation : 50 XP</p>
+                    </div>
+                    <button class="btn btn-primary btn-glow btn-full" id="submit-challenge">📸 Participer</button>
+                    <h4 class="section-title">Participations</h4>
+                    <div class="challenge-entries" id="challenge-entries"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toasts -->
+        <div class="toast-container" id="toasts"></div>
+
+        <!-- XP Popup -->
+        <div class="xp-popup" id="xp-popup">
+            <span class="xp-icon">✨</span>
+            <span class="xp-amount" id="xp-amount">+50 XP</span>
+        </div>
+
+        <!-- Level Up -->
+        <div class="levelup-overlay" id="levelup">
+            <div class="levelup-modal glass-card">
+                <span>🎉</span>
+                <h2>Niveau supérieur !</h2>
+                <p>Tu es maintenant niveau <strong id="new-lvl">2</strong></p>
+                <button class="btn btn-primary" id="close-levelup">Super !</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
